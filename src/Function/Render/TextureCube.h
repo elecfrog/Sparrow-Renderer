@@ -37,7 +37,9 @@ public:
 	// virtual void LoadAsset(const std::string& filePath) override;
 	// virtual void SaveAsset(const std::string& filePath) override;
 
-private:
+	inline uint32_t GetRenderId() const { return m_RendererId;  }
+
+public:
 	uint32_t m_RendererId = 0;
 	TextureData m_ImgaeData;
 	std::array<std::filesystem::path, 6> m_filePaths;

@@ -8,7 +8,17 @@
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
 
-unsigned int envCubemap;
+
+glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+glm::mat4 captureViews[] =
+{
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+};
 
 inline void renderQuad() {
     if (quadVAO == 0) {
@@ -43,7 +53,6 @@ public:
     uint32_t counter = 0;
 
     void Include(std::uint32_t id, std::uint32_t slot) {
-//        counter++;
         textureIdSlotMap.emplace(id, slot);
 
         glActiveTexture(GL_TEXTURE0 + slot);
@@ -141,6 +150,13 @@ class Scene_LoadModel : public Scene {
     float     BlurStrength = 0.7f;
     bool      bEnableBloom = false;
 
+
+    // IBL Effects
+    unsigned int captureFBO;
+    unsigned int captureRBO;
+    bool bEnableIBL = false;
+
+
 public:
     Scene_LoadModel(WindowSystem *windowSystem)
             : Scene(windowSystem) {
@@ -217,7 +233,8 @@ public:
         skybox_Shader = std::make_shared<Shader>(ShaderPath("skybox/cubemap/skybox_cubemap.vert"), ShaderPath("skybox/cubemap/skybox_cubemap.frag"));
         skybox_Shader->Bind();
         skybox_textureCube = std::make_shared<TextureCube>(texCube_Stormy);
-        skybox_textureCube->Bind(4);
+        skybox_textureCube->Bind(22);
+//        textureManager.Include(skybox_textureCube->GetRenderId());
 
         BlurShader = std::make_shared<Shader>(ShaderPath("blur/gaussblur.vert"), ShaderPath("blur/gaussblur.frag"));
         bloom_Shader = std::make_shared<Shader>(ShaderPath("final.vert"),ShaderPath("final.frag"));
@@ -232,14 +249,16 @@ public:
         shaderLightingPass = std::make_shared<Shader>(ShaderPath("final.vert"), ShaderPath("ssao_lighting.frag"));
         lightShader = std::make_shared<Shader>(ShaderPath("light/light.vert"), ShaderPath("light/light.frag"));
 
-        GLCall(glActiveTexture(GL_TEXTURE22));
-        GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap));
 
-        auto results = Maths::GaussianKernelMat3(1.5);
-        for (double result : results)
-        {
-            std::cout << result << " ";
-        }
+        // IBL Effects
+		glGenFramebuffers(1, &captureFBO);
+		glGenRenderbuffers(1, &captureRBO);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+		glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+		equirectangularToCubemapShader = std::make_shared<Shader>(ShaderPath("ibl/cubemap.vert"), ShaderPath("ibl/equirectangular_to_cubemap.frag"));
     }
 
     ~Scene_LoadModel() override = default;
@@ -376,6 +395,7 @@ public:
                         BlurShader->SetUniformMat3f("blur_kernel", BlurKernel);
 
                         renderQuad();
+                        BlurHFBO->Unbind();
                     }
 
                 }
@@ -392,23 +412,36 @@ public:
                     BlurShader->SetUniformMat3f("blur_kernel", BlurKernel);
 
                     renderQuad();
+                    BlurVFBO->Unbind();
                 }
             }
-
-        	
-
             glDisable(GL_DEPTH_TEST);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-            BlurHFBO->Unbind();
-            BlurVFBO->Unbind();
+			glViewport(0, 0, 512, 512);
+			glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+			equirectangularToCubemapShader->Bind();
+			equirectangularToCubemapShader->SetUniform1i("equirectangularMap", 22);
+			equirectangularToCubemapShader->SetUniformMat4f("projection", captureProjection);
+
+			for (unsigned int i = 0; i < 6; ++i)
+			{
+			    equirectangularToCubemapShader->SetUniformMat4f("view", captureViews[i]);
+			    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, skybox_textureCube->m_RendererId, 0);
+			}
+
+			GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+			GLCall(glActiveTexture(GL_TEXTURE22));
+			GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_textureCube->m_RendererId));
+			GLCall(glViewport(0, 0, m_WindowSystem->GetWindowSize()[0], m_WindowSystem->GetWindowSize()[1]));
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             bloom_Shader->Bind();
-            bloom_Shader->SetUniform1i("bloom", static_cast<int>(bEnableBloom));
+            bloom_Shader->SetUniform1i("bloom", bEnableBloom);
             bloom_Shader->SetUniform1i("isSsao", 0);
             bloom_Shader->SetUniform1i("irradianceMap", 22);
             bloom_Shader->SetUniform1i("gNormal", textureManager.GetSlot(mrtFBO->GetTextureIds()[3]));
-            bloom_Shader->SetUniform1i("ibl", 0);
+            bloom_Shader->SetUniform1i("ibl", bEnableIBL);
 
             renderQuad();
         }
@@ -462,8 +495,8 @@ public:
             skybox_Shader->SetUniformMat4f("P", mainCamera.projMatrix);
 
             glBindVertexArray(skybox_VAO);
-            glActiveTexture(GL_TEXTURE4);
-            skybox_Shader->SetUniform1i("skybox", 4);
+            glActiveTexture(GL_TEXTURE22);
+            skybox_Shader->SetUniform1i("skybox", 22);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
             glBindVertexArray(0);
@@ -510,13 +543,21 @@ public:
 
         //--------------------------------------------------------
 		//bloom scale,bloom strength,bloom
-        ImGui::BeginChild("Bloom Effects");
+        ImGui::BeginChild("Bloom Effects" , ImVec2(0, 120));
         if (ImGui::CollapsingHeader("Bloom Effects", ImGuiTreeNodeFlags_DefaultOpen)) {
 
             ImGui::Checkbox("Enable Bloom", &bEnableBloom);
             ImGui::SliderFloat("Blur Scale (kernel, effects strength)", &BlurScaleKernel, 0.001f, 3.0f);
             ImGui::SliderFloat("Blur Scale (sampling, effects area)", &BlurScaleSampling, 0.0f, 2.0f); // 滑动条，范围从 0.0 到 2.0
             ImGui::SliderFloat("Blur Strength", &BlurStrength, 0.0f, 2.0f); // 滑动条，范围从 0.0 到 2.0
+        }
+        ImGui::EndChild();
+
+    	//--------------------------------------------------------
+        ImGui::BeginChild("IBL Effects");
+        if (ImGui::CollapsingHeader("IBL Effects", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+            ImGui::Checkbox("Enable IBL", &bEnableIBL);
         }
         ImGui::EndChild();
 
