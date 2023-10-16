@@ -10,6 +10,8 @@ out/
 *.exe
 *.ilk
 *.pdb
+*.exp
+*.lib
 *.dll
 *.manifest
 # big Model files

@@ -232,9 +232,9 @@ public:
 
         skybox_Shader = std::make_shared<Shader>(ShaderPath("skybox/cubemap/skybox_cubemap.vert"), ShaderPath("skybox/cubemap/skybox_cubemap.frag"));
         skybox_Shader->Bind();
-        skybox_textureCube = std::make_shared<TextureCube>(texCube_Stormy);
-        skybox_textureCube->Bind(22);
-//        textureManager.Include(skybox_textureCube->GetRenderId());
+        skybox_textureCube = std::make_shared<TextureCube>(texCube_Cloud);
+//        skybox_textureCube->Bind(22);
+		textureManager.Include(skybox_textureCube->GetRenderId());
 
         BlurShader = std::make_shared<Shader>(ShaderPath("blur/gaussblur.vert"), ShaderPath("blur/gaussblur.frag"));
         bloom_Shader = std::make_shared<Shader>(ShaderPath("final.vert"),ShaderPath("final.frag"));
@@ -421,7 +421,7 @@ public:
 			glViewport(0, 0, 512, 512);
 			glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 			equirectangularToCubemapShader->Bind();
-			equirectangularToCubemapShader->SetUniform1i("equirectangularMap", 22);
+			equirectangularToCubemapShader->SetUniform1i("equirectangularMap", textureManager.GetSlot(skybox_textureCube->GetRenderId()));
 			equirectangularToCubemapShader->SetUniformMat4f("projection", captureProjection);
 
 			for (unsigned int i = 0; i < 6; ++i)
@@ -431,15 +431,16 @@ public:
 			}
 
 			GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-			GLCall(glActiveTexture(GL_TEXTURE22));
-			GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_textureCube->m_RendererId));
+			GLCall(glActiveTexture(GL_TEXTURE0 + textureManager.GetSlot(skybox_textureCube->GetRenderId())));
+//            textureManager.Update(skybox_textureCube->GetRenderId());
+        	GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_textureCube->GetRenderId()));
 			GLCall(glViewport(0, 0, m_WindowSystem->GetWindowSize()[0], m_WindowSystem->GetWindowSize()[1]));
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             bloom_Shader->Bind();
             bloom_Shader->SetUniform1i("bloom", bEnableBloom);
             bloom_Shader->SetUniform1i("isSsao", 0);
-            bloom_Shader->SetUniform1i("irradianceMap", 22);
+            bloom_Shader->SetUniform1i("irradianceMap", textureManager.GetSlot(skybox_textureCube->GetRenderId()));
             bloom_Shader->SetUniform1i("gNormal", textureManager.GetSlot(mrtFBO->GetTextureIds()[3]));
             bloom_Shader->SetUniform1i("ibl", bEnableIBL);
 
@@ -495,8 +496,10 @@ public:
             skybox_Shader->SetUniformMat4f("P", mainCamera.projMatrix);
 
             glBindVertexArray(skybox_VAO);
-            glActiveTexture(GL_TEXTURE22);
-            skybox_Shader->SetUniform1i("skybox", 22);
+            GLCall(glActiveTexture(GL_TEXTURE0 + textureManager.GetSlot(skybox_textureCube->GetRenderId())));
+
+//            glActiveTexture(GL_TEXTURE22);
+            skybox_Shader->SetUniform1i("skybox", textureManager.GetSlot(skybox_textureCube->GetRenderId()));
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
             glBindVertexArray(0);
@@ -515,9 +518,6 @@ public:
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::DragFloat3("Position", glm::value_ptr(scene_Transform.position), 0.01f);
             ImGui::DragFloat3("Scale", glm::value_ptr(scene_Transform.scaling), 0.01f);
-
-//            glm::vec3 eulerAngles  = glm::eulerAngles(scene_Transform.rotation);
-
             ImGui::DragFloat3("Rotation", glm::value_ptr(scene_Transform.rotation.euler), 0.01f);
             scene_Transform.rotation.quaternion = glm::quat(scene_Transform.rotation.euler);
         }
