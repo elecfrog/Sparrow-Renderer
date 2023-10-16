@@ -1,0 +1,47 @@
+# IDE generated files
+.vs/
+.idea/
+
+# VS Cmake Setting file
+CmakeSettings.json
+
+# build files
+out/
+*.exe
+*.ilk
+*.pdb
+*.dll
+*.manifest
+# big Model files
+res/Models/Taunt.fbx
+res/Models/spartan_armour_mkv_-_halo_reach/
+
+res/Models/michi_bot/license.txt
+
+res/Models/michi_bot/scene.bin
+
+res/Models/michi_bot/scene.gltf
+
+res/Models/michi_bot/textures/mat_michi_baseColor.png
+
+res/Models/michi_bot/textures/mat_michi_emissive.png
+
+res/Models/michi_bot/textures/mat_michi_metallicRoughness.png
+
+res/Models/michi_bot/textures/mat_michi_normal.png
+
+cmake-build-debug/
+
+CMakeLists.txt.user
+
+build_vs/
+
+cmake-build-debug-vs-x64/
+
+build/
+
+Debug/
+
+imgui.ini
+
+assets/animations/cmuconvert-daz-01-09/
