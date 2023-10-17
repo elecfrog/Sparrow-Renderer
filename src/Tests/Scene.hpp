@@ -16,7 +16,7 @@ public:
 		: m_WindowSystem(windowSystem)
 	{ }
 
-	virtual ~Scene() {}
+	virtual ~Scene() = default;
 
 	virtual void InitOpenGLFunctions() {}
 	virtual void OnInput() {}

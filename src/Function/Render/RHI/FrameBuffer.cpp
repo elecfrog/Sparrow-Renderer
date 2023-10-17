@@ -5,8 +5,8 @@ FrameBuffer::FrameBuffer(uint32_t width, uint32_t height, AttachmentFormat type)
 	: m_Width(width), m_Height(height), m_Type(type)
 {
 	// Gen FrameBuffer
-	GLCall(glGenFramebuffers(1, &m_FrameBufferID));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBufferID));
+	GLCall(glGenFramebuffers(1, &m_FrameBufferId));
+	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBufferId));
 
 	// Gen FrameBufferTexture
 	glGenTextures(1, &m_FrameBufferTextureID);
@@ -41,19 +41,19 @@ FrameBuffer::FrameBuffer(uint32_t width, uint32_t height, AttachmentFormat type,
 	  numAttachments(num_attachments)
 {
 	// Gen FrameBuffer
-	GLCall(glGenFramebuffers(1, &m_FrameBufferID));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBufferID));
+	GLCall(glGenFramebuffers(1, &m_FrameBufferId))
+	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBufferId))
 
 	// Gen FrameBufferTexture
-	m_TextureIDs.resize(numAttachments);
-	glGenTextures(numAttachments, m_TextureIDs.data());
+	m_TextureIds.resize(numAttachments);
+	glGenTextures(numAttachments, m_TextureIds.data());
 
 	/*
 	 * essence: textures resource in the CPU pass to the GPU
 	 * */
-	for (unsigned int i = 0; i < m_TextureIDs.size(); i++)
+	for (unsigned int i = 0; i < m_TextureIds.size(); i++)
 	{
-		glBindTexture(GL_TEXTURE_2D, m_TextureIDs[i]);
+		glBindTexture(GL_TEXTURE_2D, m_TextureIds[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, (uint32_t)m_Type, m_Width, m_Height, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -61,7 +61,7 @@ FrameBuffer::FrameBuffer(uint32_t width, uint32_t height, AttachmentFormat type,
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		// attach texture to framebuffer
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_TextureIDs[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_TextureIds[i], 0);
 		// also check if framebuffers are complete (no need for depth buffer)
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		{
@@ -82,7 +82,7 @@ FrameBuffer::FrameBuffer(uint32_t width, uint32_t height, AttachmentFormat type,
 		 * */
 		std::vector<unsigned int> attachments;
 
-		for (unsigned int i = 0; i < m_TextureIDs.size(); i++)
+		for (unsigned int i = 0; i < m_TextureIds.size(); i++)
 		{
 			attachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
 		}
@@ -101,27 +101,27 @@ FrameBuffer::FrameBuffer(uint32_t width, uint32_t height, AttachmentFormat type,
 void FrameBuffer::Resize(int width, int height)
 {
 	// Gen FrameBuffer
-	GLCall(glGenFramebuffers(1, &m_FrameBufferID));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBufferID));
+	GLCall(glGenFramebuffers(1, &m_FrameBufferId));
+	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBufferId));
 
 	// Gen FrameBufferTexture
-	if (!m_TextureIDs.empty())
+	if (!m_TextureIds.empty())
 	{
-		for (unsigned int& m_TextureID : m_TextureIDs)
+		for (unsigned int& m_TextureID : m_TextureIds)
 		{
 			glDeleteTextures(1, &m_TextureID);
 		}
 	}
 
-	m_TextureIDs.resize(numAttachments);
-	glGenTextures(numAttachments, m_TextureIDs.data());
+	m_TextureIds.resize(numAttachments);
+	glGenTextures(numAttachments, m_TextureIds.data());
 
 	/*
 	 * essence: textures resource in the CPU pass to the GPU
 	 * */
-	for (unsigned int i = 0; i < m_TextureIDs.size(); i++)
+	for (unsigned int i = 0; i < m_TextureIds.size(); i++)
 	{
-		glBindTexture(GL_TEXTURE_2D, m_TextureIDs[i]);
+		glBindTexture(GL_TEXTURE_2D, m_TextureIds[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, (uint32_t)m_Type, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -129,7 +129,7 @@ void FrameBuffer::Resize(int width, int height)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		// attach texture to framebuffer
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_TextureIDs[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_TextureIds[i], 0);
 		// also check if framebuffers are complete (no need for depth buffer)
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			LogSystem::Debug("Framebuffer not complete!")
@@ -151,7 +151,7 @@ void FrameBuffer::Resize(int width, int height)
 		 * */
 		std::vector<unsigned int> attachments;
 
-		for (unsigned int i = 0; i < m_TextureIDs.size(); i++)
+		for (unsigned int i = 0; i < m_TextureIds.size(); i++)
 		{
 			attachments.emplace_back(GL_COLOR_ATTACHMENT0 + i);
 		}
@@ -167,14 +167,14 @@ void FrameBuffer::Resize(int width, int height)
 
 FrameBuffer::~FrameBuffer()
 {
-	GLCall(glDeleteBuffers(1, &m_FrameBufferID));
+	GLCall(glDeleteBuffers(1, &m_FrameBufferId));
 	GLCall(glDeleteTextures(1, &m_FrameBufferTextureID));
 	GLCall(glDeleteBuffers(1, &m_RenderBufferID));
 }
 
 void FrameBuffer::Bind() const
 {
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBufferID));
+	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBufferId));
 }
 
 void FrameBuffer::Unbind() const
@@ -184,7 +184,7 @@ void FrameBuffer::Unbind() const
 
 void FrameBuffer::BindRead() const
 {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FrameBufferID);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FrameBufferId);
 }
 
 void FrameBuffer::BindDraw() const

@@ -11,6 +11,7 @@
 
 #define SPW_ERROR(...) LogSystem::instance().log(LogSystem::LogType::App, LogSystem::LogLevel::error, __VA_ARGS__)
 #define SPW_INFO(...) LogSystem::instance().log(LogSystem::LogType::App, LogSystem::LogLevel::info, __VA_ARGS__)
+#define SPW_WARN(...) LogSystem::instance().log(LogSystem::LogType::App, LogSystem::LogLevel::warn, __VA_ARGS__)
 
 
 class LogSystem final {

@@ -15,7 +15,7 @@ Cylinder::Cylinder() : start{0.f, 1.0f, 0}, end{0.f, -1.0f, 0} {
 
 void Cylinder::buildMeshFilter(uint32_t N, float r) {
 
-    std::vector<TexturedVertex_new> vertices(4 * N + 2);
+    std::vector<AttribVertex> vertices(4 * N + 2);
     std::vector<std::uint32_t> indices(12 * N);
 
 

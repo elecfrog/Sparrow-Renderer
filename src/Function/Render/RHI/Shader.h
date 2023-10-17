@@ -45,8 +45,8 @@ public:
     enum ShaderType {
         NONE = 0,
         VERTEX = GL_VERTEX_SHADER,
-        Tesc  = GL_TESS_CONTROL_SHADER,
-        Tese  = GL_TESS_EVALUATION_SHADER,
+        Tesc = GL_TESS_CONTROL_SHADER,
+        Tese = GL_TESS_EVALUATION_SHADER,
         FRAGMENT = GL_FRAGMENT_SHADER,
         Geometry = GL_GEOMETRY_SHADER,
     };
@@ -93,8 +93,6 @@ public:
     inline unsigned int getShaderId() const { return ID; }
 
 
-
-    
     std::string ParseShader(ShaderType shaderType, const fspath &file_path) {
         // 1. retrieve the vertex/fragment source code from filePath
         std::string shaderCode;
@@ -134,7 +132,9 @@ public:
 
     }
 
-    void CreateShaderProgram(const std::string &vertexCode, const std::string &fragmentCode, const std::string &tescCode, const std::string &teseCode) {
+    void
+    CreateShaderProgram(const std::string &vertexCode, const std::string &fragmentCode, const std::string &tescCode,
+                        const std::string &teseCode) {
 
         unsigned int vertShaderId = ReadAndCompileShader(ShaderType::VERTEX, vertexCode);
         unsigned int fragShaderId = ReadAndCompileShader(ShaderType::FRAGMENT, fragmentCode);
@@ -182,7 +182,7 @@ public:
     ~Shader();
 
     // Activates the Shader Program
-    Shader& Bind();
+    Shader &Bind();
 
     void Unbind() const;
 
@@ -190,23 +190,27 @@ public:
     /***********************************************
     * Utility functions to help to set uniform values
     ************************************************/
-    Shader& SetUniform1i(const std::string &name, int value);
+    Shader &SetUniform1i(const std::string &name, int value);
 
-    Shader& SetUniform4f(const std::string &name, float v0, float v1, float v2, float v3);
+    Shader &SetUniform1u(const std::string &name, uint32_t value);
 
-    Shader& SetUniform4f(const std::string &name, glm::vec4 _vec);
+    Shader &SetUniform4f(const std::string &name, float v0, float v1, float v2, float v3);
 
-    Shader& SetUniform3f(const std::string &name, glm::vec3 _vec);
+    Shader &SetUniform4f(const std::string &name, glm::vec4 _vec);
 
-    Shader& SetUniform3f(const std::string &name, glm::vec4 _vec);
+    Shader &SetUniform3f(const std::string &name, glm::vec3 _vec);
 
-    Shader& SetUniform1f(const std::string &name, float _vec);
+    Shader &SetUniform3f(const std::string &name, glm::vec4 _vec);
 
-    Shader& SetUniform3f(const std::string &name, float _x, float _y, float _z);
-    Shader& SetUniformMat4f(const std::string &name, glm::mat4 &matrix);
-    Shader& SetUniformMat3f(const std::string &name, glm::mat3 &matrix);
+    Shader &SetUniform1f(const std::string &name, float _vec);
 
-    Shader& SetUniformVec1i(const std::string &name, std::vector<int> &vector);
+    Shader &SetUniform3f(const std::string &name, float _x, float _y, float _z);
+
+    Shader &SetUniformMat4f(const std::string &name, glm::mat4 &matrix);
+
+    Shader &SetUniformMat3f(const std::string &name, glm::mat3 &matrix);
+
+    Shader &SetUniformVec1i(const std::string &name, std::vector<int> &vector);
 
 private:
     /***********************************************
@@ -232,8 +236,7 @@ private:
 };
 
 
-static void ReloadShader(const std::shared_ptr<Shader>& shader)
-{
+static void ReloadShader(const std::shared_ptr<Shader> &shader) {
     std::make_shared<Shader>(shader->vertPath, shader->fragPath);
 }
 

@@ -13,7 +13,7 @@ struct UVSphere {
     std::shared_ptr<StaticMesh> meshFilter;
     std::shared_ptr<MeshRenderer> meshRenderer;
 
-    std::vector<TexturedVertex_new> vertices;
+    std::vector<AttribVertex> vertices;
 
 
     explicit UVSphere(glm::vec3 origin = glm::vec3()) {
@@ -31,7 +31,7 @@ struct UVSphere {
                 float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
 
                 vertices.emplace_back(
-                        TexturedVertex_new{
+                        AttribVertex{
                                 glm::vec3(xPos, yPos, zPos) + origin,
                                 glm::vec3(xPos, yPos, zPos),
                                 glm::vec3(0.0f),

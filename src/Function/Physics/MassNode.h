@@ -22,7 +22,7 @@ struct MassNode {
 
 
     // graphics
-    TexturedVertex_new vertex{};
+    AttribVertex vertex{};
     glm::vec3 oldPos{};
 
     bool isFixed = false;

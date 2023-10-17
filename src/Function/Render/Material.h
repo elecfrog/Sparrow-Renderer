@@ -15,6 +15,16 @@ enum class PBRTextureType
     Unknown = 18,
 };
 
+struct MaterialTextures
+{
+    std::shared_ptr<Texture2D> albedo;
+    std::shared_ptr<Texture2D> normal;
+    std::shared_ptr<Texture2D> metallic;
+    std::shared_ptr<Texture2D> roughness;
+    std::shared_ptr<Texture2D> ao;
+    std::shared_ptr<Texture2D> emissive;
+};
+
 struct MaterialProperties
 {
     std::string name;
@@ -78,15 +88,7 @@ struct MaterialProperties
     float shininessStrength;
     float refracti;
 
-    struct Textures_
-    {
-        std::shared_ptr<Texture2D> albedo;
-        std::shared_ptr<Texture2D> normal;
-        std::shared_ptr<Texture2D> metallic;
-        std::shared_ptr<Texture2D> roughness;
-        std::shared_ptr<Texture2D> ao;
-        std::shared_ptr<Texture2D> emissive;
-    } textures{};
+    MaterialTextures textures{};
 };
 
 class Material : public Asset
@@ -100,9 +102,7 @@ public:
     {
 	    m_MaterialProperties = prop;
     }
-
-    // static std::shared_ptr<Material> LoadMaterial(const std::string& filename); // intergrate in model.cpp
-
+    
     [[nodiscard]] std::shared_ptr<Shader> GetShader() const;
     void SetShader(const std::shared_ptr<Shader>& shader);
     void SetShader(std::shared_ptr<Shader>&& shader);
@@ -111,7 +111,7 @@ public:
     void SetMaterialProperites(const MaterialProperties& properties);
     void SetMaterialProperites(MaterialProperties&& properties);
 
-    MaterialProperties::Textures_ GetTextures() const
+    MaterialTextures GetTextures() const
     {
         return { m_MaterialProperties.textures };
     }

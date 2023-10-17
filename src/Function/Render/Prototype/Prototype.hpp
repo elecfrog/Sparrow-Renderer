@@ -10,7 +10,7 @@
 
 struct StaticMesh;
 struct MeshRenderer;
-struct TexturedVertex_new;
+struct AttribVertex;
 struct Shader;
 struct Camera;
 struct Light;
@@ -24,5 +24,5 @@ struct Prototype {
 
     std::shared_ptr<StaticMesh> meshFilter;
     std::shared_ptr<MeshRenderer> meshRenderer;
-    std::vector<TexturedVertex_new> vertices;
+    std::vector<AttribVertex> vertices;
 };

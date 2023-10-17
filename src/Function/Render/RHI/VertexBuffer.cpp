@@ -32,12 +32,6 @@ namespace elf
 		             GL_STATIC_DRAW);
 	}
 
-	VertexBuffer::VertexBuffer(std::vector<TexturedVertex_new>& vertices)
-	{
-		glGenBuffers(1, &m_RenderID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(AttribVertex), vertices.data(), GL_STATIC_DRAW);
-	}
 
 	VertexBuffer::VertexBuffer(std::vector<SkinnedVertex>& _attribVertices)
 	{

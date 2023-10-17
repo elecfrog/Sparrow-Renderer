@@ -29,7 +29,7 @@ Cloth::Cloth(glm::vec3 position, int width, int length, int nodesDensity)
     GetNode(nodesPerRow - 1, (nodesPerColumn - 1))->isFixed = true;
 }
 
-Cloth::Cloth(glm::vec3 position, std::vector<TexturedVertex_new> &clothObj)
+Cloth::Cloth(glm::vec3 position, std::vector<AttribVertex> &clothObj)
         : position(position), width(16), length(16), nodesDensity(2) {
     nodesPerRow = width * nodesDensity;
     nodesPerColumn = length * nodesDensity;
@@ -60,7 +60,7 @@ Cloth::Cloth(glm::vec3 position, std::vector<TexturedVertex_new> &clothObj)
     GetNode(nodesPerRow - 1, (nodesPerColumn - 1))->isFixed = true;
 }
 
-void Cloth::CreateMassNodeByVertex(TexturedVertex_new &vertex) {
+void Cloth::CreateMassNodeByVertex(AttribVertex&vertex) {
     glm::vec3 currPos = vertex.position;
 
     MassNode *node = new MassNode(currPos);
@@ -173,7 +173,7 @@ void Cloth::collision() {
     }
 }
 
-std::vector<TexturedVertex_new> &Cloth::GetTriangles() {
+std::vector<AttribVertex> &Cloth::GetTriangles() {
     vertices.clear();
 
     for (int i = 0; i < nodesPerRow - 1; i++) {
@@ -191,9 +191,9 @@ std::vector<TexturedVertex_new> &Cloth::GetTriangles() {
     return vertices;
 }
 
-std::vector<TexturedVertex_new> Cloth::GetNodes() {
+std::vector<AttribVertex> Cloth::GetNodes() {
 
-    std::vector<TexturedVertex_new> ret;
+    std::vector<AttribVertex> ret;
 
     for (int i = 0; i < nodesPerRow; i++) {
         for (int j = 0; j < nodesPerColumn; j++) {

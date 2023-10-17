@@ -56,10 +56,10 @@ public:
 
         if (meshType == MeshType::TexturedMesh) {
             // Linking Vertex Attributes
-            vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, sizeof(TexturedVertex_new), ((void*)offsetof(TexturedVertex_new, position)));
-            vao->LinkAttrib(*vbo, 1, 3, GL_FLOAT, sizeof(TexturedVertex_new), ((void*)offsetof(TexturedVertex_new, normal)));
-            vao->LinkAttrib(*vbo, 2, 3, GL_FLOAT, sizeof(TexturedVertex_new), ((void*)offsetof(TexturedVertex_new, tangent)));
-            vao->LinkAttrib(*vbo, 3, 2, GL_FLOAT, sizeof(TexturedVertex_new), ((void*)offsetof(TexturedVertex_new, texCoords)));
+            vao->LinkAttrib(*vbo, 0, 3, GL_FLOAT, sizeof(AttribVertex), ((void*)offsetof(AttribVertex, position)));
+            vao->LinkAttrib(*vbo, 1, 3, GL_FLOAT, sizeof(AttribVertex), ((void*)offsetof(AttribVertex, normal)));
+            vao->LinkAttrib(*vbo, 2, 3, GL_FLOAT, sizeof(AttribVertex), ((void*)offsetof(AttribVertex, tangent)));
+            vao->LinkAttrib(*vbo, 3, 2, GL_FLOAT, sizeof(AttribVertex), ((void*)offsetof(AttribVertex, texCoords)));
         }
         
         if (meshType == MeshType::TexturedMesh) {

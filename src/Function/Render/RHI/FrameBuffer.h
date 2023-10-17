@@ -28,14 +28,19 @@ public:
 
 	std::vector<uint32_t> GetTextureIds() const
 	{
-		return m_TextureIDs;
+		return m_TextureIds;
+	}
+	
+    [[nodiscard]] uint32_t GetTextureId(size_t id) const
+	{
+		return m_TextureIds.at(id);
 	}
 
 	void Resize(int width, int height);
 
 private:
-	uint32_t m_FrameBufferID, m_RenderBufferID, m_FrameBufferTextureID;
-	std::vector<uint32_t> m_TextureIDs;
+	uint32_t m_FrameBufferId, m_RenderBufferID, m_FrameBufferTextureID;
+	std::vector<uint32_t> m_TextureIds;
 	uint32_t m_Width, m_Height;
 	bool usingDepth = true;
 	AttachmentFormat m_Type;

@@ -37,7 +37,7 @@ void Cone::Render(Shader &shader, Camera &camera, glm::mat4 &matModel, const Lig
 
 void Cone::buildMeshFilter(uint32_t N, float r) {
 
-    std::vector<TexturedVertex_new> vertices(2 * N + 2);
+    std::vector<AttribVertex> vertices(2 * N + 2);
     std::vector<std::uint32_t> indices(6 * N);
 
     vertices[2 * N + 0].position = tip;       // tip of cone

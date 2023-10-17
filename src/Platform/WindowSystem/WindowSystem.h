@@ -14,16 +14,13 @@
 #include <functional>
 #include <vector>
 
-struct WindowExt
-{
-    uint32_t width{ 960 };
-    uint32_t height{ 540 };
+struct WindowExt {
+    int width{960};
+    int height{540};
 };
 
 struct WindowCreateInfo {
     WindowExt windowExt;
-	// int width{ 960 };
- //    int height{540};
     const char *title{"Sparrow Renderer"};
     bool is_fullscreen{false};
 };
@@ -35,7 +32,7 @@ public:
 
     ~WindowSystem();
 
-    void Init(const WindowCreateInfo& create_info);
+    void Init(const WindowCreateInfo &create_info);
 
     void PollEvents() const;
 
@@ -49,11 +46,11 @@ public:
 
     WindowExt GetWindowSize() const;
 
-	inline uint32_t GetWindowWidth() const {
+    [[nodiscard]] inline int GetWindowWidth() const {
         return m_WindowExt.width;
     }
 
-	inline uint32_t GetWindowHeight() const {
+    [[nodiscard]] inline int GetWindowHeight() const {
         return m_WindowExt.height;
     }
 
@@ -61,13 +58,15 @@ public:
     using onMouseButtonFunc = std::function<void(int, int, int)>;
     using onScrollFunc = std::function<void(double, double)>;
     using onCursorPosFunc = std::function<void(double, double)>;
-    
+
     // framebuffer
     using onFramebufferFunc = std::function<void(int, int)>;
+
     void RegisterOnFramebufferFunc(const onFramebufferFunc &func) { m_onFramebufferFunc.push_back(func); }
+
     std::vector<onFramebufferFunc> m_onFramebufferFunc;
 
-    
+
     void RegisterOnMouseScrollFunc(const onScrollFunc &func) { m_onScrollFunc.push_back(func); }
 
     void RegisterOnMouseButtonFunc(const onMouseButtonFunc &func) { m_onMouseButtonFunc.push_back(func); }
@@ -174,7 +173,7 @@ protected:
         for (auto &func: m_onScrollFunc)
             func(xoffset, yoffset);
     }
-    
+
     void onFrameBufferChanged(int xoffset, int yoffset) {
         for (auto &func: m_onFramebufferFunc)
             func(xoffset, yoffset);

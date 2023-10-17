@@ -36,7 +36,6 @@
 		std::cerr << __FILE__ << ':' << __LINE__ << ": " << #function_call << "\n\n";\
 		BREAKPOINT(); } // <-- scope_end}
 
-
 //static void GLAPIENTRY GlDebugMessage_cb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *param)
 //{
 //	char *source_, *type_, *severity_;

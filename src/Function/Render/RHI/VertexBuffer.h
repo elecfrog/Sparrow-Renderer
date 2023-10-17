@@ -31,8 +31,6 @@ namespace elf
 
 		VertexBuffer(std::vector<SkinnedVertex>& _attribVertices);
 
-        VertexBuffer(std::vector<TexturedVertex_new> &vertices);
-
         ~VertexBuffer();
 
 		void Bind() const;

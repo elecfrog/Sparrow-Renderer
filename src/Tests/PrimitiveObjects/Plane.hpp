@@ -11,33 +11,33 @@ struct Plane {
     std::shared_ptr<StaticMesh> meshFilter;
     std::shared_ptr<MeshRenderer> meshRenderer;
 
-    std::vector<TexturedVertex_new> vertices
+    std::vector<AttribVertex> vertices
             {
-                    TexturedVertex_new{glm::vec3(-2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+                    AttribVertex{glm::vec3(-2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
                                        glm::vec2(1.0f, 0.0f)}, // Top-left
-                    TexturedVertex_new{glm::vec3(-2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+                    AttribVertex{glm::vec3(-2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
                                        glm::vec2(1.0f, 1.0f)}, // Bottom-left
-                    TexturedVertex_new{glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+                    AttribVertex{glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
                                        glm::vec2(0.0f, 0.0f)},  // Top-right
-                    TexturedVertex_new{glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+                    AttribVertex{glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
                                        glm::vec2(0.0f, 0.0f)},  // Top-right
-                    TexturedVertex_new{glm::vec3(-2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+                    AttribVertex{glm::vec3(-2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
                                        glm::vec2(1.0f, 1.0f)}, // Bottom-left
-                    TexturedVertex_new{glm::vec3(2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+                    AttribVertex{glm::vec3(2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
                                        glm::vec2(0.0f, 1.0f)}, // Bottom-right
 
-//                    TexturedVertex_new{glm::vec3(-2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+//                    AttribVertex{glm::vec3(-2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
 //                                       glm::vec2(1.0f, 1.0f)}, // Bottom-left (swapped)
-//                    TexturedVertex_new{glm::vec3(-2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+//                    AttribVertex{glm::vec3(-2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
 //                                       glm::vec2(1.0f, 0.0f)}, // Top-left (swapped)
-//                    TexturedVertex_new{glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+//                    AttribVertex{glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
 //                                       glm::vec2(0.0f, 0.0f)}, // Top-right (unchanged)
 //
-//                    TexturedVertex_new{glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+//                    AttribVertex{glm::vec3(2.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
 //                                       glm::vec2(0.0f, 0.0f)}, // Top-right (unchanged)
-//                    TexturedVertex_new{glm::vec3(2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+//                    AttribVertex{glm::vec3(2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
 //                                       glm::vec2(0.0f, 1.0f)}, // Bottom-right (unchanged)
-//                    TexturedVertex_new{glm::vec3(-2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
+//                    AttribVertex{glm::vec3(-2.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.f),
 //                                       glm::vec2(1.0f, 1.0f)}, // Bottom-left (swapped)
 
             };

@@ -52,8 +52,8 @@ static void ExportOBJ(fs::path path, std::shared_ptr<Cloth> &cloth) {
     ar(cereal::make_nvp("clothObject", nodes));
 }
 
-static std::vector<TexturedVertex_new> ImportOBJ(fs::path path) {
-    std::vector<TexturedVertex_new> ret;
+static std::vector<AttribVertex> ImportOBJ(fs::path path) {
+    std::vector<AttribVertex> ret;
     std::ifstream inputAsset(path);
     cereal::BinaryInputArchive ar(inputAsset);
     ar(cereal::make_nvp("clothObject", ret));
