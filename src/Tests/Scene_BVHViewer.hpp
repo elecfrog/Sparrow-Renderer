@@ -49,7 +49,7 @@ class Scene_BVHViewer : public Scene {
 public:
     Scene_BVHViewer(WindowSystem *windowSystem)
             : Scene(windowSystem) {
-        RegisterInputs();
+        Scene::RegisterInputs();
 
         // Init Plane
         sphereShader = std::make_shared<Shader>(vsPath, fsPath);
@@ -96,7 +96,7 @@ public:
         double currentTime = glfwGetTime();
         float deltaTime = float(currentTime - lastTime);
 
-        processInput(m_WindowSystem->GetWindowHandle(), deltaTime);
+        ProcessInput(deltaTime);
 
         mainCamera.UpdateCameraMatrix();
 
@@ -167,89 +167,6 @@ public:
         ImGui::SliderFloat("FOV", &mainCamera.FOV, 10.0f, 120.0f);
     }
 
-    void RegisterInputs() {
-        m_WindowSystem->RegisterOnMouseScrollFunc(
-                std::bind(&Scene_BVHViewer::OnMouseScrolling, this, std::placeholders::_1,
-                          std::placeholders::_2));
-        m_WindowSystem->RegisterOnMouseButtonFunc(
-                std::bind(&Scene_BVHViewer::onMouseButtonClicked, this, std::placeholders::_1,
-                          std::placeholders::_2));
-        m_WindowSystem->RegisterOnCursorPosFunc(
-                std::bind(&Scene_BVHViewer::onCursorPos, this, std::placeholders::_1, std::placeholders::_2));
-    }
-
-    inline void onCursorPos(double xpos, double ypos) {
-        if (is_dragging) {
-            curr_x = xpos;
-            curr_y = ypos;
-            double dx = curr_x - start_x;
-            double dy = curr_y - start_y;
-
-            auto y_offset = dy;
-            auto x_offset = dx;
-            if (std::fabs(dx) > std::fabs(dy)) {
-                y_offset *= this->mainCamera.keySensitivity;
-            } else {
-                x_offset *= this->mainCamera.keySensitivity;
-            }
-            this->mainCamera.yaw -= x_offset * this->mainCamera.keySensitivity;
-            this->mainCamera.pitch -= y_offset * this->mainCamera.keySensitivity;
-
-            start_x = curr_x;
-            start_y = curr_y;
-        }
-    }
-
-    inline void onMouseButtonClicked(int button, int action) {
-
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-            is_dragging = true;
-            glfwGetCursorPos(m_WindowSystem->GetWindowHandle(), &start_x, &start_y);
-        } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-            is_dragging = false;
-        }
-    }
-
-
-    inline void OnMouseScrolling(double xoffset, double yoffset) {
-        spdlog::info("Mouse Scrolled: {0}, {1}", xoffset, yoffset);
-        this->mainCamera.cameraPos -= (float) yoffset * 0.5f;
-    }
-
-
-    void processInput(GLFWwindow *window, float deltaTime) {
-        float cameraSpeed = 0.05f * deltaTime; // adjust accordingly
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(
-                    glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(
-                    glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS &&
-            glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS &&
-            glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV -= mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV += mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV *= -1.0f;
-    }
 
 
     void DrawAnimationComponent() const {

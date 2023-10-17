@@ -14,12 +14,20 @@
 #include <functional>
 #include <vector>
 
+struct WindowExt
+{
+    uint32_t width{ 960 };
+    uint32_t height{ 540 };
+};
+
 struct WindowCreateInfo {
-    int width{960};
-    int height{540};
+    WindowExt windowExt;
+	// int width{ 960 };
+ //    int height{540};
     const char *title{"Sparrow Renderer"};
     bool is_fullscreen{false};
 };
+
 
 class WindowSystem {
 public:
@@ -27,7 +35,7 @@ public:
 
     ~WindowSystem();
 
-    void Init(WindowCreateInfo create_info);
+    void Init(const WindowCreateInfo& create_info);
 
     void PollEvents() const;
 
@@ -39,7 +47,15 @@ public:
 
     GLFWwindow *GetWindowHandle() const;
 
-    std::array<int, 2> GetWindowSize() const;
+    WindowExt GetWindowSize() const;
+
+	inline uint32_t GetWindowWidth() const {
+        return m_WindowExt.width;
+    }
+
+	inline uint32_t GetWindowHeight() const {
+        return m_WindowExt.height;
+    }
 
     using onKeyFunc = std::function<void(int, int, int, int)>;
     using onMouseButtonFunc = std::function<void(int, int, int)>;
@@ -122,11 +138,8 @@ protected:
             int w, h;
             glfwGetFramebufferSize(window, &w, &h);
 
-            app->m_width = width;
-            app->m_height = height;
-
-//            LogSystem::Debug("Window Size Callback")
-
+            app->m_WindowExt.width = width;
+            app->m_WindowExt.height = height;
         }
     }
 
@@ -140,7 +153,7 @@ protected:
 
 
     static void ErrorCallback(int error, const char *description) {
-        spdlog::critical("Error: {0}", description);
+        SPW_ERROR("Error: {0}", description);
     }
 
     void onKey(int key, int scancode, int action, int mods) {
@@ -171,8 +184,9 @@ protected:
 private:
 
     GLFWwindow *m_window{nullptr};
-    int m_width{0};
-    int m_height{0};
+    WindowExt m_WindowExt;
+    // int m_width{0};
+    // int m_height{0};
 
     bool m_is_focus_mode{false};
 

@@ -8,11 +8,10 @@
 #include <glm/gtx/quaternion.hpp>
 
 struct Rotation {
-    glm::quat quaternion /*= glm::quat()*/;
-    glm::vec3 euler/* = glm::vec3()*/;
+    glm::quat quaternion{};
+    glm::vec3 euler{};
 
-    explicit Rotation(glm::vec3 v)
-            : euler(v), quaternion(glm::quat(v)) {}
+    explicit Rotation(const glm::vec3& v) : quaternion(glm::quat(v)), euler(v) {}
 };
 
 struct Transform {

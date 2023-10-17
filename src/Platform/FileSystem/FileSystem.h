@@ -18,6 +18,7 @@ namespace fs = std::filesystem;
 using FilePath = fs::path;
 #define Path(x) FileSystem::CheckedPath(x)
 #define ShaderPath(x) FileSystem::CheckedPath("./assets/shaders/" x)
+#define AssetPath(x) FileSystem::CheckedPath("./assets/" x)
 
 class FileSystem
 {

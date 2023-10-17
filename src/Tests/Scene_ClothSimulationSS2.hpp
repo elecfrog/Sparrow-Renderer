@@ -26,9 +26,6 @@ class Scene_ClothSimulationSS2 : public Scene {
     std::shared_ptr<MeshRenderer> clothMeshRenderer;
     std::shared_ptr<Shader> clothShader;
 
-    // Camera
-    Camera mainCamera{glm::vec3(1.45, 0.348, 2.021), 240.f, -11.45f, 45.0f, 0.01f};
-
     // GUI Variables
     bool is_wireframe = false;
     bool reloadShaders = false;
@@ -40,11 +37,7 @@ class Scene_ClothSimulationSS2 : public Scene {
     std::shared_ptr<Shader> skybox_Shader;
     std::shared_ptr<TextureCube> skybox_textureCube;
 
-    bool is_dragging = false;
-    double start_x = 0, start_y = 0;
-    double curr_x = 0, curr_y = 0;
-
-    //wind
+	//wind
     float windDirectionX = 0;
     float windDirectionY = 0;
     float windDirectionZ = 0;
@@ -55,7 +48,7 @@ public:
     Scene_ClothSimulationSS2(WindowSystem *windowSystem)
             : Scene(windowSystem) {
         InitOpenGLFunctions();
-        RegisterInputs();
+        Scene::RegisterInputs();
 
         {
             // Init Skybox
@@ -70,21 +63,18 @@ public:
             GLCall(glBindVertexArray(0));
         }
 
-        skybox_Shader = std::make_shared<Shader>(Path("./assets/shaders/skybox/cubemap/skybox_cubemap.vert"),
-                                                 Path("./assets/shaders/skybox/cubemap/skybox_cubemap.frag"));
+        skybox_Shader = std::make_shared<Shader>(ShaderPath("skybox/cubemap.vert"), ShaderPath("skybox/cubemap.frag"));
         skybox_Shader->Bind();
         skybox_textureCube = std::make_shared<TextureCube>(texCube_Lake);
         skybox_textureCube->Bind(4);
 
-        planeShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                               Path("./assets/shaders/plane/plane.frag"));
-        sphereShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                                Path("./assets/shaders/plane/plane.frag"));
-        clothShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                               Path("./assets/shaders/plane/plane.frag"));
+        planeShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane.frag"));
+        sphereShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane.frag"));
+        clothShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane.frag"));
 
-        auto data = ImportOBJ(Path("./assets/cloth/cloth.obj"));
+        auto data = ImportOBJ(AssetPath("cloth/cloth.obj"));
         clothObject = std::make_shared<Cloth>(glm::vec3(0), data);
+
     }
 
     ~Scene_ClothSimulationSS2() override = default;
@@ -103,7 +93,7 @@ public:
         double currentTime = glfwGetTime();
         auto deltaTime = float(currentTime - lastTime);
         if (deltaTime > 1.0f / 60.0f) {
-            processInput(m_WindowSystem->GetWindowHandle(), deltaTime);
+            Scene::ProcessInput(deltaTime);
             mainCamera.UpdateCameraMatrix();
             fn_wireframeMode(is_wireframe);
         }
@@ -135,12 +125,10 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (reloadShaders) {
-            planeShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                                   Path("./assets/shaders/plane/plane.frag"));
-            sphereShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                                    Path("./assets/shaders/plane/plane.frag"));
+            ReloadShader(planeShader);
+            ReloadShader(sphereShader);
             reloadShaders = false;
-            std::cout << "[Reload Shader]" << std::endl;
+            SPW_INFO("Reload Shaders");
         }
 
         glEnable(GL_DEPTH_TEST);
@@ -155,7 +143,7 @@ public:
         {
             /* Draw plane */
             glm::mat4 M = glm::translate(I, glm::vec3(0.0f, -1.0f, 0.0f));
-            planeObject.Render(planeShader, std::make_shared<Mesh>(), mainCamera, M, light);
+            planeObject.Render(planeShader, mainCamera, M, light);
         }
 
         {
@@ -260,92 +248,5 @@ public:
         ImGui::SliderFloat("Direction Z", &windDirectionZ, -10.0f, 10.0f);
 
         ImGui::EndChild();
-    }
-
-    void RegisterInputs() {
-        m_WindowSystem->RegisterOnMouseScrollFunc(
-                std::bind(&Scene_ClothSimulationSS2::OnMouseScrolling, this, std::placeholders::_1,
-                          std::placeholders::_2));
-        m_WindowSystem->RegisterOnMouseButtonFunc(
-                std::bind(&Scene_ClothSimulationSS2::onMouseButtonClicked, this, std::placeholders::_1,
-                          std::placeholders::_2));
-        m_WindowSystem->RegisterOnCursorPosFunc(
-                std::bind(&Scene_ClothSimulationSS2::onCursorPos, this, std::placeholders::_1, std::placeholders::_2));
-    }
-
-    inline void onCursorPos(double xpos, double ypos) {
-        if (is_dragging) {
-            curr_x = xpos;
-            curr_y = ypos;
-            double dx = curr_x - start_x;
-            double dy = curr_y - start_y;
-
-            LogSystem::Info("Record Mouse Offsets: dx = {0}, dy = {1}", dx, dy);
-
-            auto y_offset = dy;
-            auto x_offset = dx;
-            if (std::fabs(dx) > std::fabs(dy)) {
-                y_offset *= this->mainCamera.keySensitivity;
-            } else {
-                x_offset *= this->mainCamera.keySensitivity;
-            }
-            this->mainCamera.yaw -= x_offset * this->mainCamera.keySensitivity;
-            this->mainCamera.pitch -= y_offset * this->mainCamera.keySensitivity;
-
-            start_x = curr_x;
-            start_y = curr_y;
-        }
-    }
-
-    inline void onMouseButtonClicked(int button, int action) {
-
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-            is_dragging = true;
-            // double xpos, ypos;
-            glfwGetCursorPos(m_WindowSystem->GetWindowHandle(), &start_x, &start_y);
-            LogSystem::Info("Left Mouse Pressed: {0}, {1}", start_x, start_y);
-        } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-            is_dragging = false;
-            LogSystem::Info("Left Mouse Release");
-        }
-    }
-
-    inline void OnMouseScrolling(double xoffset, double yoffset) {
-        LogSystem::Info("Mouse Scrolled: {0}, {1}", xoffset, yoffset);
-        this->mainCamera.cameraPos -= (float) yoffset * 0.5f;
-    }
-
-    void processInput(GLFWwindow *window, float deltaTime) {
-        float cameraSpeed = 0.05f * deltaTime;
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(
-                    glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(
-                    glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS &&
-            glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS &&
-            glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV -= mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV += mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV *= -1.0f;
     }
 };

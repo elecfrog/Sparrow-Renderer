@@ -383,6 +383,11 @@ std::unique_ptr<Model> Model::LoadModel(const std::string& filename)
     return LoadByAssimp(filename);
 }
 
+std::unique_ptr<Model> Model::LoadModel(const std::filesystem::path& file_path)
+{
+    return LoadByAssimp(file_path.string());
+}
+
 
 std::unique_ptr<Model> Model::LoadByAssimp(const std::string& filename)
 {

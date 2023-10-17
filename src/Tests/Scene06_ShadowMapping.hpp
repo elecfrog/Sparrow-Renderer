@@ -286,8 +286,9 @@ public:
         GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
         // 2. reset viewport, and then render the scene
-        GLCall(glViewport(0, 0, m_WindowSystem->GetWindowSize()[0], m_WindowSystem->GetWindowSize()[1]));
-        GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+        GLCall(glViewport(0, 0, m_WindowSystem->GetWindowWidth(), m_WindowSystem->GetWindowHeight()))
+
+    	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
 
         if (visiable_cpCube)
         {

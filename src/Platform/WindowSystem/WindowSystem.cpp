@@ -12,16 +12,13 @@ WindowSystem::~WindowSystem() {
 #define SPW_RENDER_API_OPENGL
 #define SPW_VSYNC
 
-void WindowSystem::Init(WindowCreateInfo create_info) {
+void WindowSystem::Init(const WindowCreateInfo& create_info) {
     if (!glfwInit()) {
-#include <spdlog/spdlog.h>
-
-        spdlog::critical("Failed to Create GLFW Window");
+        SPW_ERROR("Failed to Create GLFW Window");
         return;
     }
 
-    m_width = create_info.width;
-    m_height = create_info.height;
+    m_WindowExt = create_info.windowExt;
 
     glfwWindowHint(GLFW_SAMPLES, 1);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -32,9 +29,9 @@ void WindowSystem::Init(WindowCreateInfo create_info) {
 #endif
 
 
-    m_window = glfwCreateWindow(create_info.width, create_info.height, create_info.title, nullptr, nullptr);
+    m_window = glfwCreateWindow(m_WindowExt.width, m_WindowExt.height, create_info.title, nullptr, nullptr);
     if (!m_window) {
-        // LOG_FATAL(__FUNCTION__, "failed to create window");
+        SPW_ERROR("Failed to Create Window Handle");
         glfwTerminate();
         return;
     }
@@ -44,9 +41,7 @@ void WindowSystem::Init(WindowCreateInfo create_info) {
 #ifdef SPW_RENDER_API_OPENGL
     glfwMakeContextCurrent(m_window);
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-#include <spdlog/spdlog.h>
-
-        spdlog::critical("Failed to Create GLFW Window");
+        SPW_ERROR("Failed to Load GLAD");
         return;
     }
 #endif
@@ -69,7 +64,7 @@ void WindowSystem::Init(WindowCreateInfo create_info) {
     // glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
 
-    glfwSetCursorPos(m_window, m_width / 2, m_height / 2);
+    glfwSetCursorPos(m_window, m_WindowExt.width / 2, m_WindowExt.height / 2);
 
     glfwSetErrorCallback(ErrorCallback);
 
@@ -92,7 +87,7 @@ void WindowSystem::SetTitle(const char *title) { glfwSetWindowTitle(m_window, ti
 
 GLFWwindow *WindowSystem::GetWindowHandle() const { return m_window; }
 
-std::array<int, 2> WindowSystem::GetWindowSize() const { return std::array<int, 2>({m_width, m_height}); }
+WindowExt WindowSystem::GetWindowSize() const { return m_WindowExt; }
 
 void WindowSystem::SetFocusMode(bool mode) {
     m_is_focus_mode = mode;

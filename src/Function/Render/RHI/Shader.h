@@ -113,7 +113,7 @@ public:
             shaderCode = file_stream.str();
         }
         catch (std::ifstream::failure &e) {
-            SPW_ERROR("Shader::{} FILE_NOT_SUCCESSFULLY_READ: {}", shaderType, e.what())
+            SPW_ERROR("Shader::{} FILE_NOT_SUCCESSFULLY_READ: {}", shaderType, e.what());
         }
 
         return shaderCode;

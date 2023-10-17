@@ -47,8 +47,7 @@ struct Plane {
         meshRenderer = std::make_shared<MeshRenderer>(RenderMode::PerVertex, MeshType::TexturedMesh, meshFilter);
     }
 
-    inline void Render(const std::shared_ptr<Shader> &shader, const std::shared_ptr<Mesh> &mesh, Camera &camera,
-                       glm::mat4 &model_matrix, const Light &light) {
+    inline void Render(const std::shared_ptr<Shader> &shader, Camera &camera, glm::mat4 &model_matrix, const Light &light) {
 
         shader->Bind();
         meshRenderer->BindVAO();

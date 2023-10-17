@@ -8,333 +8,242 @@
 #include <functional>
 #include "ScenePreCompiled.h"
 #include "Function/Render/TextureCube.h"
-#include "Core/Maths/Maths.h"
 #include "Function/Physics/Cloth.h"
 
-class Scene_ClothSimulationSS1 : public Scene {
+class Scene_ClothSimulationSS1 : public Scene
+{
+	// plane
+	Plane planeObject;
+	std::shared_ptr<Shader> planeShader;
 
-    // plane
-    Plane planeObject;
-    std::shared_ptr<Shader> planeShader;
+	// sphere
+	UVSphere sphereObject;
+	std::shared_ptr<Shader> sphereShader;
 
-    // sphere
-    UVSphere sphereObject;
-    std::shared_ptr<Shader> sphereShader;
+	//cloth
+	std::shared_ptr<Cloth> clothObject;
+	std::shared_ptr<MeshRenderer> clothMeshRenderer;
+	std::shared_ptr<Shader> clothShader;
 
-    //cloth
-    std::shared_ptr<Cloth> clothObject;
-    std::shared_ptr<MeshRenderer> clothMeshRenderer;
-    std::shared_ptr<Shader> clothShader;
+	// GUI Variables
+	bool is_wireframe = false;
+	bool reloadShaders = false;
+	bool renderSphere = true;
+	bool cloth_simulation = false;
+	bool corner_fixed = true;
 
-    // Camera
-    Camera mainCamera{glm::vec3(1.45, 0.348, 2.021), 240.f, -11.45f, 45.0f, 0.01f};
-
-    // GUI Variables
-    bool is_wireframe = false;
-    bool reloadShaders = false;
-    bool renderSphere = true;
-    bool cloth_simulation = false;
-    bool corner_fixed = true;
-
-    // skybox Members
-    unsigned int skybox_VAO, skybox_VBO;
-    std::shared_ptr<Shader> skybox_Shader;
-    std::shared_ptr<TextureCube> skybox_textureCube;
-
-    bool is_dragging = false;
-    double start_x = 0, start_y = 0;
-    double curr_x = 0, curr_y = 0;
-
+	// skybox Members
+	unsigned int skybox_VAO, skybox_VBO;
+	std::shared_ptr<Shader> skybox_Shader;
+	std::shared_ptr<TextureCube> skybox_textureCube;
 
 public:
-    Scene_ClothSimulationSS1(WindowSystem *windowSystem)
-            : Scene(windowSystem) {
-        InitOpenGLFunctions();
-        RegisterInputs();
+	Scene_ClothSimulationSS1(WindowSystem* windowSystem)
+		: Scene(windowSystem)
+	{
+		InitOpenGLFunctions();
+		Scene::RegisterInputs();
 
-        {
-            // Init Skybox
-            GLCall(glGenVertexArrays(1, &skybox_VAO));
-            GLCall(glGenBuffers(1, &skybox_VBO));
-            GLCall(glBindVertexArray(skybox_VAO));
-            GLCall(glBindBuffer(GL_ARRAY_BUFFER, skybox_VBO));
-            GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW));
-            GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void *>(nullptr)));
-            GLCall(glEnableVertexAttribArray(0));
-            GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-            GLCall(glBindVertexArray(0));
-        }
+		{
+			// Init Skybox
+			GLCall(glGenVertexArrays(1, &skybox_VAO));
+			GLCall(glGenBuffers(1, &skybox_VBO));
+			GLCall(glBindVertexArray(skybox_VAO));
+			GLCall(glBindBuffer(GL_ARRAY_BUFFER, skybox_VBO));
+			GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW));
+			GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void *>(nullptr)));
+			GLCall(glEnableVertexAttribArray(0));
+			GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+			GLCall(glBindVertexArray(0));
+		}
 
-        skybox_Shader = std::make_shared<Shader>(Path("./assets/shaders/skybox/cubemap/skybox_cubemap.vert"),
-                                                 Path("./assets/shaders/skybox/cubemap/skybox_cubemap.frag"));
-        skybox_Shader->Bind();
-        skybox_textureCube = std::make_shared<TextureCube>(texCube_Lake);
-        skybox_textureCube->Bind(4);
+		skybox_Shader = std::make_shared<Shader>(ShaderPath("skybox/cubemap.vert"), ShaderPath("skybox/cubemap.frag"));
+		skybox_Shader->Bind();
+		skybox_textureCube = std::make_shared<TextureCube>(texCube_Lake);
+		skybox_textureCube->Bind(4);
 
-        planeShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                               Path("./assets/shaders/plane/plane.frag"));
-        sphereShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                                Path("./assets/shaders/plane/plane.frag"));
-        clothShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                               Path("./assets/shaders/plane/plane.frag"));
+		planeShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane.frag"));
+		sphereShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane.frag"));
+		clothShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane.frag"));
 
-        auto data = ImportOBJ(Path("./assets/cloth/cloth.obj"));
-        clothObject = std::make_shared<Cloth>(glm::vec3(0), data);
-    }
+		auto data = ImportOBJ(AssetPath("cloth/cloth.obj"));
+		clothObject = std::make_shared<Cloth>(glm::vec3(0), data);
+	}
 
-    ~Scene_ClothSimulationSS1() override = default;
+	~Scene_ClothSimulationSS1() override = default;
 
-    void InitOpenGLFunctions() override {
-        // glEnable(GL_DEPTH_TEST);
-        // glEnable(GL_CULL_FACE); 
-        // glCullFace(GL_BACK);
-        // glFrontFace(GL_CCW);
-    }
+	void InitOpenGLFunctions() override
+	{
+		// glEnable(GL_DEPTH_TEST);
+		// glEnable(GL_CULL_FACE); 
+		// glCullFace(GL_BACK);
+		// glFrontFace(GL_CCW);
+	}
 
-    void OnUpdate(float _deltaTime = 1.0f / 24.0f) override {
-        // glfwGetTime is called only once, the first time this function is called
-        static double lastTime = glfwGetTime();
+	void OnUpdate(float _deltaTime = 1.0f / 24.0f) override
+	{
+		// glfwGetTime is called only once, the first time this function is called
+		static double lastTime = glfwGetTime();
 
-        // Compute time difference between current and last frame
-        double currentTime = glfwGetTime();
+		// Compute time difference between current and last frame
+		double currentTime = glfwGetTime();
 
-        auto deltaTime = float(currentTime - lastTime);
+		auto deltaTime = float(currentTime - lastTime);
 
-        if (deltaTime > 1.0f / 60.0f) {
-            processInput(m_WindowSystem->GetWindowHandle(), deltaTime);
-            mainCamera.UpdateCameraMatrix();
-            fn_wireframeMode(is_wireframe);
-        }
+		if (deltaTime > 1.0f / 60.0f)
+		{
+			Scene::ProcessInput(deltaTime);
+			mainCamera.UpdateCameraMatrix();
+			fn_wireframeMode(is_wireframe);
+		}
 
-        if (deltaTime > 1.0f / 24.0f) {
-            if (cloth_simulation) {
+		if (deltaTime > 1.0f / 24.0f)
+		{
+			if (cloth_simulation)
+			{
+				if (!corner_fixed)
+				{
+					clothObject->UpdateFixedPoint(1);
+					clothObject->UpdateFixedPoint(2);
+					clothObject->UpdateFixedPoint(3);
+					clothObject->UpdateFixedPoint(4);
+				}
 
-                if (!corner_fixed) {
-                    clothObject->UpdateFixedPoint(1);
-                    clothObject->UpdateFixedPoint(2);
-                    clothObject->UpdateFixedPoint(3);
-                    clothObject->UpdateFixedPoint(4);
-                }
+				clothObject->ComputeGravity();
+				clothObject->ComputeSpringsForce(1.0f / 24.0f);
+				clothObject->ComputeNodesForce(1.0f / 24.0f / 4.0f);
+				clothObject->ComputeAirForce();
+				clothObject->CollisionGround(-19.8);
+				if (renderSphere)
+					clothObject->CollisionSphere(glm::vec3(0.f, -18.0f, 0.f), 2.1f);
 
-                clothObject->ComputeGravity();
-                clothObject->ComputeSpringsForce(1.0f / 24.0f);
-                clothObject->ComputeNodesForce(1.0f / 24.0f / 4.0f);
-                clothObject->ComputeAirForce();
-                clothObject->CollisionGround(-19.8);
-                if (renderSphere)
-                    clothObject->CollisionSphere(glm::vec3(0.f, -18.0f, 0.f), 2.1f);
+				clothObject->UpdateNormal();
+			}
+		}
+	}
 
-                clothObject->UpdateNormal();
-            }
+	void OnRender() override
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        }
-    }
+		if (reloadShaders)
+		{
+			ReloadShader(planeShader);
+			ReloadShader(sphereShader);
+			reloadShaders = false;
+			SPW_INFO("Reload Shaders");
+		}
 
-    void OnRender() override {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
 
-        if (reloadShaders) {
-            planeShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                                   Path("./assets/shaders/plane/plane.frag"));
-            sphereShader = std::make_shared<Shader>(Path("./assets/shaders/plane/plane.vert"),
-                                                    Path("./assets/shaders/plane/plane.frag"));
-            reloadShaders = false;
-            std::cout << "[Reload Shader]" << std::endl;
-        }
+		glm::mat4 I = glm::mat4(1.0f);
+		if (renderSphere)
+		{
+			glm::mat4 S = glm::scale(I, glm::vec3(0.1));
+			glm::mat4 M = glm::translate(I, glm::vec3(0.f, -0.9f, 0.f)) * S;
+			sphereObject.Render(sphereShader, mainCamera, M, light);
+		}
 
-        glEnable(GL_DEPTH_TEST);
+		{
+			/* Draw plane */
+			glm::mat4 M = glm::translate(I, glm::vec3(0.0f, -1.0f, 0.0f));
+			planeObject.Render(planeShader, mainCamera, M, light);
+		}
 
-        glm::mat4 I = glm::mat4(1.0f);
-        if (renderSphere) {
-            glm::mat4 S = glm::scale(I, glm::vec3(0.1));
-            glm::mat4 M = glm::translate(I, glm::vec3(0.f, -0.9f, 0.f)) * S;
-            sphereObject.Render(sphereShader, mainCamera, M, light);
-        }
+		{
+			// Skybox
+			// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LEQUAL);
 
-        {
-            /* Draw plane */
-            glm::mat4 M = glm::translate(I, glm::vec3(0.0f, -1.0f, 0.0f));
-            planeObject.Render(planeShader, std::make_shared<Mesh>(), mainCamera, M, light);
-        }
+			skybox_Shader->Bind();
 
-        {
-            // Skybox
-            // Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
-            glEnable(GL_DEPTH_TEST);
-            glDepthFunc(GL_LEQUAL);
+			glm::mat3 v_mat3 = glm::mat3(mainCamera.viewMatrix);
+			glm::mat4 v_mat4 = glm::mat4(v_mat3);
+			skybox_Shader->SetUniformMat4f("V", v_mat4);
+			skybox_Shader->SetUniformMat4f("P", mainCamera.projMatrix);
 
-            skybox_Shader->Bind();
+			glBindVertexArray(skybox_VAO);
+			glActiveTexture(GL_TEXTURE4);
+			skybox_Shader->SetUniform1i("skybox", 4);
 
-            glm::mat3 v_mat3 = glm::mat3(mainCamera.viewMatrix);
-            glm::mat4 v_mat4 = glm::mat4(v_mat3);
-            skybox_Shader->SetUniformMat4f("V", v_mat4);
-            skybox_Shader->SetUniformMat4f("P", mainCamera.projMatrix);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glBindVertexArray(0);
+			// Switch back to the normal depth function
+			glDepthFunc(GL_LESS);
+		}
 
-            glBindVertexArray(skybox_VAO);
-            glActiveTexture(GL_TEXTURE4);
-            skybox_Shader->SetUniform1i("skybox", 4);
+		//render cloth
+		if (clothObject != nullptr)
+		{
+			clothShader->Bind();
+			glm::mat4 clothModelMatrix(1.0);
+			clothModelMatrix *= glm::scale(glm::mat4(1.0f), glm::vec3(0.05, 0.05, 0.05));
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            glBindVertexArray(0);
-            // Switch back to the normal depth function
-            glDepthFunc(GL_LESS);
-        }
+			//        glm::mat4 I = glm::mat4(1.0f);
+			clothShader->SetUniformMat4f("M", clothModelMatrix);
+			clothShader->SetUniformMat4f("V", mainCamera.viewMatrix);
+			clothShader->SetUniformMat4f("P", mainCamera.projMatrix);
 
-        //render cloth
-        if (clothObject != nullptr) {
-            clothShader->Bind();
-            glm::mat4 clothModelMatrix(1.0);
-            clothModelMatrix *= glm::scale(glm::mat4(1.0f), glm::vec3(0.05, 0.05, 0.05));
+			// Lighting Relevant
+			clothShader->SetUniform3f("light.diffuseColor", light.color);
+			clothShader->SetUniform3f("light.ambientColor", light.ambient_color);
+			clothShader->SetUniform3f("light.position", light.position);
+			clothShader->SetUniform3f("viewPos", mainCamera.cameraPos);
 
-//        glm::mat4 I = glm::mat4(1.0f);
-            clothShader->SetUniformMat4f("M", clothModelMatrix);
-            clothShader->SetUniformMat4f("V", mainCamera.viewMatrix);
-            clothShader->SetUniformMat4f("P", mainCamera.projMatrix);
+			// Setting Materials
+			clothShader->SetUniform1i("tex_Diffuse", 1);
+			clothShader->SetUniform4f("material.baseColor",
+			                          glm::vec4(157.0f / 255.0f, 230.0f / 255.0f, 110.0f / 255.0f, 1.0f));
 
-            // Lighting Relevant
-            clothShader->SetUniform3f("light.diffuseColor", light.color);
-            clothShader->SetUniform3f("light.ambientColor", light.ambient_color);
-            clothShader->SetUniform3f("light.position", light.position);
-            clothShader->SetUniform3f("viewPos", mainCamera.cameraPos);
+			std::shared_ptr<StaticMesh> mesh = std::make_shared<StaticMesh>();
+			mesh->vertices = clothObject->GetTriangles();
 
-            // Setting Materials
-            clothShader->SetUniform1i("tex_Diffuse", 1);
-            clothShader->SetUniform4f("material.baseColor",
-                                      glm::vec4(157.0f / 255.0f, 230.0f / 255.0f, 110.0f / 255.0f, 1.0f));
+			clothMeshRenderer = std::make_shared<MeshRenderer>(RenderMode::PerVertex, MeshType::TexturedMesh, mesh);
+			clothMeshRenderer->Render();
 
-            std::shared_ptr<StaticMesh> mesh = std::make_shared<StaticMesh>();
-            mesh->vertices = clothObject->GetTriangles();
+			clothShader->Unbind();
+		}
+	}
 
-            clothMeshRenderer = std::make_shared<MeshRenderer>(RenderMode::PerVertex, MeshType::TexturedMesh, mesh);
-            clothMeshRenderer->Render();
+	void OnImGuiRender() override
+	{
+		ImGui::Separator();
 
-            clothShader->Unbind();
-        }
+		ImGui::BeginChild("SS1");
+		if (ImGui::Button("Export OBJ File"))
+		{
+			auto path = FileSystem::NativeFileDialog();
+			ExportOBJ(path, clothObject);
+		}
 
+		ImGui::SameLine();
+		if (ImGui::Button("Import OBJ File"))
+		{
+			cloth_simulation = false;
+			auto path = FileSystem::NativeFileDialog();
 
-    }
+			auto data = ImportOBJ(path);
+			clothObject.reset();
+			clothObject = std::make_shared<Cloth>(glm::vec3(0), data);
+		};
 
-    void OnImGuiRender() override {
+		ImGui::Separator();
+		if (ImGui::Button("Start Cloth Simulation"))
+		{
+			corner_fixed = false;
+			cloth_simulation = true;
+		}
 
-        ImGui::Separator();
+		if (ImGui::Button("Reset"))
+		{
+			cloth_simulation = false;
+			clothObject.reset();
+			clothObject = std::make_shared<Cloth>(glm::vec3(0), 16, 16, 2);
+		};
 
-        ImGui::BeginChild("SS1");
-        if (ImGui::Button("Export OBJ File")) {
-            auto path = FileSystem::NativeFileDialog();
-            ExportOBJ(path, clothObject);
-        }
-
-        ImGui::SameLine();
-        if (ImGui::Button("Import OBJ File")) {
-            cloth_simulation = false;
-            auto path = FileSystem::NativeFileDialog();
-
-            auto data = ImportOBJ(path);
-            clothObject.reset();
-            clothObject = std::make_shared<Cloth>(glm::vec3(0), data);
-        };
-
-        ImGui::Separator();
-        if (ImGui::Button("Start Cloth Simulation")) {
-            corner_fixed = false;
-            cloth_simulation = true;
-        }
-
-        if (ImGui::Button("Reset")) {
-            cloth_simulation = false;
-            clothObject.reset();
-            clothObject = std::make_shared<Cloth>(glm::vec3(0), 16, 16, 2);
-        };
-
-        ImGui::Checkbox("Fix the Corner", &corner_fixed);
-        ImGui::Checkbox("Render Sphere", &renderSphere);
-        ImGui::EndChild();
-    }
-
-    void RegisterInputs() {
-        m_WindowSystem->RegisterOnMouseScrollFunc(
-                std::bind(&Scene_ClothSimulationSS1::OnMouseScrolling, this, std::placeholders::_1,
-                          std::placeholders::_2));
-        m_WindowSystem->RegisterOnMouseButtonFunc(
-                std::bind(&Scene_ClothSimulationSS1::onMouseButtonClicked, this, std::placeholders::_1,
-                          std::placeholders::_2));
-        m_WindowSystem->RegisterOnCursorPosFunc(
-                std::bind(&Scene_ClothSimulationSS1::onCursorPos, this, std::placeholders::_1, std::placeholders::_2));
-    }
-
-    inline void onCursorPos(double xpos, double ypos) {
-        if (is_dragging) {
-            curr_x = xpos;
-            curr_y = ypos;
-            double dx = curr_x - start_x;
-            double dy = curr_y - start_y;
-
-            spdlog::info("Record Mouse Offsets: dx = {0}, dy = {1}", dx, dy);
-
-            auto y_offset = dy;
-            auto x_offset = dx;
-            if (std::fabs(dx) > std::fabs(dy)) {
-                y_offset *= this->mainCamera.keySensitivity;
-            } else {
-                x_offset *= this->mainCamera.keySensitivity;
-            }
-            this->mainCamera.yaw -= x_offset * this->mainCamera.keySensitivity;
-            this->mainCamera.pitch -= y_offset * this->mainCamera.keySensitivity;
-
-            start_x = curr_x;
-            start_y = curr_y;
-        }
-    }
-
-    inline void onMouseButtonClicked(int button, int action) {
-
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-            is_dragging = true;
-            // double xpos, ypos;
-            glfwGetCursorPos(m_WindowSystem->GetWindowHandle(), &start_x, &start_y);
-            spdlog::info("Left Mouse Pressed: {0}, {1}", start_x, start_y);
-        } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-            is_dragging = false;
-            spdlog::info("Left Mouse Release");
-        }
-    }
-
-    inline void OnMouseScrolling(double xoffset, double yoffset) {
-        spdlog::info("Mouse Scrolled: {0}, {1}", xoffset, yoffset);
-        this->mainCamera.cameraPos -= (float) yoffset * 0.5f;
-    }
-
-    void processInput(GLFWwindow *window, float deltaTime) {
-        float cameraSpeed = 0.05f * deltaTime;
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(
-                    glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(
-                    glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS &&
-            glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS &&
-            glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV -= mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV += mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV *= -1.0f;
-    }
+		ImGui::Checkbox("Fix the Corner", &corner_fixed);
+		ImGui::Checkbox("Render Sphere", &renderSphere);
+		ImGui::EndChild();
+	}
 };

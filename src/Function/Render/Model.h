@@ -12,6 +12,7 @@ public:
     ~Model() = default;
 
 	static std::unique_ptr<Model> LoadModel(const std::string& filename);
+    static std::unique_ptr<Model> LoadModel(const std::filesystem::path &file_path);
     
     [[nodiscard]] const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const { return m_Meshes; }
     void AddMesh(std::shared_ptr<Mesh> mesh) { m_Meshes.emplace_back(mesh); }

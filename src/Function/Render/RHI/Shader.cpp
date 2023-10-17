@@ -182,7 +182,7 @@ void Shader::CheckShaderCompileErrors(unsigned int shaderId, Shader::ShaderType 
         GLCall(glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success))
         if (!success) {
             glGetShaderInfoLog(shaderId, 1024, nullptr, infoLog);
-            SPW_ERROR("SHADER_COMPILATION_ERROR of type: {} \n {} \n ", shaderType, infoLog)
+            SPW_ERROR("SHADER_COMPILATION_ERROR of type: {} \n {} \n ", shaderType, infoLog);
         }
     }
 }
@@ -194,13 +194,13 @@ void Shader::CheckShaderProgram(unsigned int shaderId, std::string type) {
         glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shaderId, 1024, nullptr, infoLog);
-            SPW_ERROR("SHADER_COMPILATION_ERROR of type: {} \n infoLog \n {}", type, infoLog)
+            SPW_ERROR("SHADER_COMPILATION_ERROR of type: {} \n infoLog \n {}", type, infoLog);
         }
     } else {
         glGetProgramiv(shaderId, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shaderId, 1024, nullptr, infoLog);
-            SPW_ERROR("SHADER_COMPILATION_ERROR of type: {} \n infoLog \n {}", type, infoLog)
+            SPW_ERROR("SHADER_COMPILATION_ERROR of type: {} \n infoLog \n {}", type, infoLog);
         }
     }
 }
