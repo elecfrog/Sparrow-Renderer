@@ -88,7 +88,6 @@ SET( PUBLIC_HEADERS
   ${HEADER_PATH}/texture.h
   ${HEADER_PATH}/types.h
   ${HEADER_PATH}/vector2.h
-  ${HEADER_PATH}/vector2.inl
   ${HEADER_PATH}/vector3.h
   ${HEADER_PATH}/vector3.inl
   ${HEADER_PATH}/version.h

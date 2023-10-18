@@ -18,9 +18,9 @@ namespace glm
 	{
 		// -- Implementation detail --
 
-		typedef T value_type;
-		typedef vec<2, T, Q> type;
-		typedef vec<2, bool, Q> bool_type;
+		using value_type = T;
+        using type = vec<2, T, Q>;
+        using bool_type = vec<2, bool, Q>;
 
 		// -- Data --
 

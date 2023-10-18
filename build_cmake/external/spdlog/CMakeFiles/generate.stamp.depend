@@ -1,0 +1,11 @@
+# CMake generation dependency list for this directory.
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckCSourceCompiles.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckIncludeFile.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckLibraryExists.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/FindPackageMessage.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/FindThreads.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/GNUInstallDirs.cmake
+D:/Sparrow-Renderer/external/spdlog/CMakeLists.txt
+D:/Sparrow-Renderer/external/spdlog/cmake/ide.cmake
+D:/Sparrow-Renderer/external/spdlog/cmake/utils.cmake

@@ -22,7 +22,8 @@
 #include "Tests/Scene08_PointShadow.hpp"
 #include "Tests/Scene_ClothSimulationSS1.hpp"
 #include "Tests/Scene_ClothSimulationSS2.hpp"
-#include "../Hello.h"
+#include <Hello.h>
+#include <T/test.h>
 
 
 class MenuPanel {
@@ -58,6 +59,7 @@ public:
     /* using builder pattern */
     void Run() {
         Hello::Print();
+        TestPrint();
         
         
         Init().

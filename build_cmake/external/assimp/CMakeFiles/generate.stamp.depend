@@ -1,0 +1,15 @@
+# CMake generation dependency list for this directory.
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/BasicConfigVersion-SameMajorVersion.cmake.in
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CMakePackageConfigHelpers.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckFunctionExists.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckIncludeFile.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckIncludeFileCXX.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckTypeSize.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/WriteBasicConfigVersionFile.cmake
+D:/Sparrow-Renderer/external/assimp/CMakeLists.txt
+D:/Sparrow-Renderer/external/assimp/assimp.pc.in
+D:/Sparrow-Renderer/external/assimp/cmake-modules/FindPkgMacros.cmake
+D:/Sparrow-Renderer/external/assimp/cmake-modules/PrecompiledHeader.cmake
+D:/Sparrow-Renderer/external/assimp/cmake-modules/assimp-plain-config.cmake.in
+D:/Sparrow-Renderer/external/assimp/include/assimp/config.h.in
+D:/Sparrow-Renderer/external/assimp/revision.h.in

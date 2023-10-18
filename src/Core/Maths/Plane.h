@@ -44,5 +44,5 @@ namespace Maths
 		float m_Distance;
 	};
 
-} // namespace Maths
+} // namespace maths
 

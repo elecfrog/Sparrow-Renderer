@@ -66,7 +66,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // ------------------------------------------------------------------------------------------------
 using namespace Assimp;
 
-namespace Assimp {
+namespace Assimp
+{
 // underlying structure for aiPropertyStore
 typedef BatchLoader::PropertyMap PropertyMap;
 
@@ -137,7 +138,7 @@ public:
         // might cause strange problems, but the chance is quite low.
 
         PredefLogStreamMap::iterator it = std::find(gPredefinedStreams.begin(),
-                gPredefinedStreams.end(), (Assimp::LogStream *)stream.user);
+                                                    gPredefinedStreams.end(), (Assimp::LogStream *) stream.user);
 
         if (it != gPredefinedStreams.end()) {
             delete *it;
@@ -175,43 +176,43 @@ const aiScene *aiImportFileEx(const char *pFile, unsigned int pFlags, aiFileIO *
 
 // ------------------------------------------------------------------------------------------------
 const aiScene *aiImportFileExWithProperties(const char *pFile, unsigned int pFlags,
-        aiFileIO *pFS, const aiPropertyStore *props) {
+                                            aiFileIO *pFS, const aiPropertyStore *props) {
     ai_assert(nullptr != pFile);
 
     const aiScene *scene = nullptr;
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
-    // create an Importer for this file
-    Assimp::Importer *imp = new Assimp::Importer();
+            // create an Importer for this file
+            Assimp::Importer *imp = new Assimp::Importer();
 
-    // copy properties
-    if (props) {
-        const PropertyMap *pp = reinterpret_cast<const PropertyMap *>(props);
-        ImporterPimpl *pimpl = imp->Pimpl();
-        pimpl->mIntProperties = pp->ints;
-        pimpl->mFloatProperties = pp->floats;
-        pimpl->mStringProperties = pp->strings;
-        pimpl->mMatrixProperties = pp->matrices;
-    }
-    // setup a custom IO system if necessary
-    if (pFS) {
-        imp->SetIOHandler(new CIOSystemWrapper(pFS));
-    }
+            // copy properties
+            if (props) {
+                const PropertyMap *pp = reinterpret_cast<const PropertyMap *>(props);
+                ImporterPimpl *pimpl = imp->Pimpl();
+                pimpl->mIntProperties = pp->ints;
+                pimpl->mFloatProperties = pp->floats;
+                pimpl->mStringProperties = pp->strings;
+                pimpl->mMatrixProperties = pp->matrices;
+            }
+            // setup a custom IO system if necessary
+            if (pFS) {
+                imp->SetIOHandler(new CIOSystemWrapper(pFS));
+            }
 
-    // and have it read the file
-    scene = imp->ReadFile(pFile, pFlags);
+            // and have it read the file
+            scene = imp->ReadFile(pFile, pFlags);
 
-    // if succeeded, store the importer in the scene and keep it alive
-    if (scene) {
-        ScenePrivateData *priv = const_cast<ScenePrivateData *>(ScenePriv(scene));
-        priv->mOrigImporter = imp;
-    } else {
-        // if failed, extract error code and destroy the import
-        gLastErrorString = imp->GetErrorString();
-        delete imp;
-    }
+            // if succeeded, store the importer in the scene and keep it alive
+            if (scene) {
+                ScenePrivateData *priv = const_cast<ScenePrivateData *>(ScenePriv(scene));
+                priv->mOrigImporter = imp;
+            } else {
+                // if failed, extract error code and destroy the import
+                gLastErrorString = imp->GetErrorString();
+                delete imp;
+            }
 
-    // return imported data. If the import failed the pointer is nullptr anyways
+            // return imported data. If the import failed the pointer is nullptr anyways
     ASSIMP_END_EXCEPTION_REGION(const aiScene *);
 
     return scene;
@@ -237,34 +238,34 @@ const aiScene *aiImportFileFromMemoryWithProperties(
     ai_assert(0 != pLength);
 
     const aiScene *scene = nullptr;
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
-    // create an Importer for this file
-    Assimp::Importer *imp = new Assimp::Importer();
+            // create an Importer for this file
+            Assimp::Importer *imp = new Assimp::Importer();
 
-    // copy properties
-    if (props) {
-        const PropertyMap *pp = reinterpret_cast<const PropertyMap *>(props);
-        ImporterPimpl *pimpl = imp->Pimpl();
-        pimpl->mIntProperties = pp->ints;
-        pimpl->mFloatProperties = pp->floats;
-        pimpl->mStringProperties = pp->strings;
-        pimpl->mMatrixProperties = pp->matrices;
-    }
+            // copy properties
+            if (props) {
+                const PropertyMap *pp = reinterpret_cast<const PropertyMap *>(props);
+                ImporterPimpl *pimpl = imp->Pimpl();
+                pimpl->mIntProperties = pp->ints;
+                pimpl->mFloatProperties = pp->floats;
+                pimpl->mStringProperties = pp->strings;
+                pimpl->mMatrixProperties = pp->matrices;
+            }
 
-    // and have it read the file from the memory buffer
-    scene = imp->ReadFileFromMemory(pBuffer, pLength, pFlags, pHint);
+            // and have it read the file from the memory buffer
+            scene = imp->ReadFileFromMemory(pBuffer, pLength, pFlags, pHint);
 
-    // if succeeded, store the importer in the scene and keep it alive
-    if (scene) {
-        ScenePrivateData *priv = const_cast<ScenePrivateData *>(ScenePriv(scene));
-        priv->mOrigImporter = imp;
-    } else {
-        // if failed, extract error code and destroy the import
-        gLastErrorString = imp->GetErrorString();
-        delete imp;
-    }
-    // return imported data. If the import failed the pointer is nullptr anyways
+            // if succeeded, store the importer in the scene and keep it alive
+            if (scene) {
+                ScenePrivateData *priv = const_cast<ScenePrivateData *>(ScenePriv(scene));
+                priv->mOrigImporter = imp;
+            } else {
+                // if failed, extract error code and destroy the import
+                gLastErrorString = imp->GetErrorString();
+                delete imp;
+            }
+            // return imported data. If the import failed the pointer is nullptr anyways
     ASSIMP_END_EXCEPTION_REGION(const aiScene *);
     return scene;
 }
@@ -276,43 +277,43 @@ void aiReleaseImport(const aiScene *pScene) {
         return;
     }
 
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
-    // find the importer associated with this data
-    const ScenePrivateData *priv = ScenePriv(pScene);
-    if (!priv || !priv->mOrigImporter) {
-        delete pScene;
-    } else {
-        // deleting the Importer also deletes the scene
-        // Note: the reason that this is not written as 'delete priv->mOrigImporter'
-        // is a suspected bug in gcc 4.4+ (http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52339)
-        Importer *importer = priv->mOrigImporter;
-        delete importer;
-    }
+            // find the importer associated with this data
+            const ScenePrivateData *priv = ScenePriv(pScene);
+            if (!priv || !priv->mOrigImporter) {
+                delete pScene;
+            } else {
+                // deleting the Importer also deletes the scene
+                // Note: the reason that this is not written as 'delete priv->mOrigImporter'
+                // is a suspected bug in gcc 4.4+ (http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52339)
+                Importer *importer = priv->mOrigImporter;
+                delete importer;
+            }
 
     ASSIMP_END_EXCEPTION_REGION(void);
 }
 
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API const aiScene *aiApplyPostProcessing(const aiScene *pScene,
-        unsigned int pFlags) {
+                                                unsigned int pFlags) {
     const aiScene *sc = nullptr;
 
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
-    // find the importer associated with this data
-    const ScenePrivateData *priv = ScenePriv(pScene);
-    if (!priv || !priv->mOrigImporter) {
-        ReportSceneNotFoundError();
-        return nullptr;
-    }
+            // find the importer associated with this data
+            const ScenePrivateData *priv = ScenePriv(pScene);
+            if (!priv || !priv->mOrigImporter) {
+                ReportSceneNotFoundError();
+                return nullptr;
+            }
 
-    sc = priv->mOrigImporter->ApplyPostProcessing(pFlags);
+            sc = priv->mOrigImporter->ApplyPostProcessing(pFlags);
 
-    if (!sc) {
-        aiReleaseImport(pScene);
-        return nullptr;
-    }
+            if (!sc) {
+                aiReleaseImport(pScene);
+                return nullptr;
+            }
 
     ASSIMP_END_EXCEPTION_REGION(const aiScene *);
     return sc;
@@ -320,25 +321,25 @@ ASSIMP_API const aiScene *aiApplyPostProcessing(const aiScene *pScene,
 
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API const aiScene *aiApplyCustomizedPostProcessing(const aiScene *scene,
-        BaseProcess *process,
-        bool requestValidation) {
+                                                          BaseProcess *process,
+                                                          bool requestValidation) {
     const aiScene *sc(nullptr);
 
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
-    // find the importer associated with this data
-    const ScenePrivateData *priv = ScenePriv(scene);
-    if (nullptr == priv || nullptr == priv->mOrigImporter) {
-        ReportSceneNotFoundError();
-        return nullptr;
-    }
+            // find the importer associated with this data
+            const ScenePrivateData *priv = ScenePriv(scene);
+            if (nullptr == priv || nullptr == priv->mOrigImporter) {
+                ReportSceneNotFoundError();
+                return nullptr;
+            }
 
-    sc = priv->mOrigImporter->ApplyCustomizedPostProcessing(process, requestValidation);
+            sc = priv->mOrigImporter->ApplyCustomizedPostProcessing(process, requestValidation);
 
-    if (!sc) {
-        aiReleaseImport(scene);
-        return nullptr;
-    }
+            if (!sc) {
+                aiReleaseImport(scene);
+                return nullptr;
+            }
 
     ASSIMP_END_EXCEPTION_REGION(const aiScene *);
 
@@ -349,7 +350,7 @@ ASSIMP_API const aiScene *aiApplyCustomizedPostProcessing(const aiScene *scene,
 void CallbackToLogRedirector(const char *msg, char *dt) {
     ai_assert(nullptr != msg);
     ai_assert(nullptr != dt);
-    LogStream *s = (LogStream *)dt;
+    LogStream *s = (LogStream *) dt;
 
     s->write(msg);
 }
@@ -358,80 +359,80 @@ void CallbackToLogRedirector(const char *msg, char *dt) {
 ASSIMP_API aiLogStream aiGetPredefinedLogStream(aiDefaultLogStream pStream, const char *file) {
     aiLogStream sout;
 
-    ASSIMP_BEGIN_EXCEPTION_REGION();
-    LogStream *stream = LogStream::createDefaultStream(pStream, file);
-    if (!stream) {
-        sout.callback = nullptr;
-        sout.user = nullptr;
-    } else {
-        sout.callback = &CallbackToLogRedirector;
-        sout.user = (char *)stream;
-    }
-    gPredefinedStreams.push_back(stream);
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
+            LogStream *stream = LogStream::createDefaultStream(pStream, file);
+            if (!stream) {
+                sout.callback = nullptr;
+                sout.user = nullptr;
+            } else {
+                sout.callback = &CallbackToLogRedirector;
+                sout.user = (char *) stream;
+            }
+            gPredefinedStreams.push_back(stream);
     ASSIMP_END_EXCEPTION_REGION(aiLogStream);
     return sout;
 }
 
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API void aiAttachLogStream(const aiLogStream *stream) {
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
 #ifndef ASSIMP_BUILD_SINGLETHREADED
-    std::lock_guard<std::mutex> lock(gLogStreamMutex);
+            std::lock_guard<std::mutex> lock(gLogStreamMutex);
 #endif
 
-    LogStream *lg = new LogToCallbackRedirector(*stream);
-    gActiveLogStreams[*stream] = lg;
+            LogStream *lg = new LogToCallbackRedirector(*stream);
+            gActiveLogStreams[*stream] = lg;
 
-    if (DefaultLogger::isNullLogger()) {
-        DefaultLogger::create(nullptr, (gVerboseLogging == AI_TRUE ? Logger::VERBOSE : Logger::NORMAL));
-    }
-    DefaultLogger::get()->attachStream(lg);
+            if (DefaultLogger::isNullLogger()) {
+                DefaultLogger::create(nullptr, (gVerboseLogging == AI_TRUE ? Logger::VERBOSE : Logger::NORMAL));
+            }
+            DefaultLogger::get()->attachStream(lg);
     ASSIMP_END_EXCEPTION_REGION(void);
 }
 
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API aiReturn aiDetachLogStream(const aiLogStream *stream) {
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
 #ifndef ASSIMP_BUILD_SINGLETHREADED
-    std::lock_guard<std::mutex> lock(gLogStreamMutex);
+            std::lock_guard<std::mutex> lock(gLogStreamMutex);
 #endif
-    // find the log-stream associated with this data
-    LogStreamMap::iterator it = gActiveLogStreams.find(*stream);
-    // it should be there... else the user is playing fools with us
-    if (it == gActiveLogStreams.end()) {
-        return AI_FAILURE;
-    }
-    DefaultLogger::get()->detachStream(it->second);
-    delete it->second;
+            // find the log-stream associated with this data
+            LogStreamMap::iterator it = gActiveLogStreams.find(*stream);
+            // it should be there... else the user is playing fools with us
+            if (it == gActiveLogStreams.end()) {
+                return AI_FAILURE;
+            }
+            DefaultLogger::get()->detachStream(it->second);
+            delete it->second;
 
-    gActiveLogStreams.erase(it);
+            gActiveLogStreams.erase(it);
 
-    if (gActiveLogStreams.empty()) {
-        DefaultLogger::kill();
-    }
+            if (gActiveLogStreams.empty()) {
+                DefaultLogger::kill();
+            }
     ASSIMP_END_EXCEPTION_REGION(aiReturn);
     return AI_SUCCESS;
 }
 
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API void aiDetachAllLogStreams(void) {
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 #ifndef ASSIMP_BUILD_SINGLETHREADED
-    std::lock_guard<std::mutex> lock(gLogStreamMutex);
+            std::lock_guard<std::mutex> lock(gLogStreamMutex);
 #endif
-    Logger *logger(DefaultLogger::get());
-    if (nullptr == logger) {
-        return;
-    }
+            Logger *logger(DefaultLogger::get());
+            if (nullptr == logger) {
+                return;
+            }
 
-    for (LogStreamMap::iterator it = gActiveLogStreams.begin(); it != gActiveLogStreams.end(); ++it) {
-        logger->detachStream(it->second);
-        delete it->second;
-    }
-    gActiveLogStreams.clear();
-    DefaultLogger::kill();
+            for (LogStreamMap::iterator it = gActiveLogStreams.begin(); it != gActiveLogStreams.end(); ++it) {
+                logger->detachStream(it->second);
+                delete it->second;
+            }
+            gActiveLogStreams.clear();
+            DefaultLogger::kill();
 
     ASSIMP_END_EXCEPTION_REGION(void);
 }
@@ -467,11 +468,11 @@ size_t aiGetImportFormatCount(void) {
 aiBool aiIsExtensionSupported(const char *szExtension) {
     ai_assert(nullptr != szExtension);
     aiBool candoit = AI_FALSE;
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
-    // FIXME: no need to create a temporary Importer instance just for that ..
-    Assimp::Importer tmp;
-    candoit = tmp.IsExtensionSupported(std::string(szExtension)) ? AI_TRUE : AI_FALSE;
+            // FIXME: no need to create a temporary Importer instance just for that ..
+            Assimp::Importer tmp;
+            candoit = tmp.IsExtensionSupported(std::string(szExtension)) ? AI_TRUE : AI_FALSE;
 
     ASSIMP_END_EXCEPTION_REGION(aiBool);
     return candoit;
@@ -481,11 +482,11 @@ aiBool aiIsExtensionSupported(const char *szExtension) {
 // Get a list of all file extensions supported by ASSIMP
 void aiGetExtensionList(aiString *szOut) {
     ai_assert(nullptr != szOut);
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
-    // FIXME: no need to create a temporary Importer instance just for that ..
-    Assimp::Importer tmp;
-    tmp.GetExtensionList(*szOut);
+            // FIXME: no need to create a temporary Importer instance just for that ..
+            Assimp::Importer tmp;
+            tmp.GetExtensionList(*szOut);
 
     ASSIMP_END_EXCEPTION_REGION(void);
 }
@@ -493,17 +494,17 @@ void aiGetExtensionList(aiString *szOut) {
 // ------------------------------------------------------------------------------------------------
 // Get the memory requirements for a particular import.
 void aiGetMemoryRequirements(const C_STRUCT aiScene *pIn,
-        C_STRUCT aiMemoryInfo *in) {
-    ASSIMP_BEGIN_EXCEPTION_REGION();
+                             C_STRUCT aiMemoryInfo *in) {
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
 
-    // find the importer associated with this data
-    const ScenePrivateData *priv = ScenePriv(pIn);
-    if (!priv || !priv->mOrigImporter) {
-        ReportSceneNotFoundError();
-        return;
-    }
+            // find the importer associated with this data
+            const ScenePrivateData *priv = ScenePriv(pIn);
+            if (!priv || !priv->mOrigImporter) {
+                ReportSceneNotFoundError();
+                return;
+            }
 
-    return priv->mOrigImporter->GetMemoryRequirements(*in);
+            return priv->mOrigImporter->GetMemoryRequirements(*in);
     ASSIMP_END_EXCEPTION_REGION(void);
 }
 
@@ -520,44 +521,44 @@ ASSIMP_API void aiReleasePropertyStore(aiPropertyStore *p) {
 // ------------------------------------------------------------------------------------------------
 // Importer::SetPropertyInteger
 ASSIMP_API void aiSetImportPropertyInteger(aiPropertyStore *p, const char *szName, int value) {
-    ASSIMP_BEGIN_EXCEPTION_REGION();
-    PropertyMap *pp = reinterpret_cast<PropertyMap *>(p);
-    SetGenericProperty<int>(pp->ints, szName, value);
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
+            PropertyMap *pp = reinterpret_cast<PropertyMap *>(p);
+            SetGenericProperty<int>(pp->ints, szName, value);
     ASSIMP_END_EXCEPTION_REGION(void);
 }
 
 // ------------------------------------------------------------------------------------------------
 // Importer::SetPropertyFloat
 ASSIMP_API void aiSetImportPropertyFloat(aiPropertyStore *p, const char *szName, ai_real value) {
-    ASSIMP_BEGIN_EXCEPTION_REGION();
-    PropertyMap *pp = reinterpret_cast<PropertyMap *>(p);
-    SetGenericProperty<ai_real>(pp->floats, szName, value);
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
+            PropertyMap *pp = reinterpret_cast<PropertyMap *>(p);
+            SetGenericProperty<ai_real>(pp->floats, szName, value);
     ASSIMP_END_EXCEPTION_REGION(void);
 }
 
 // ------------------------------------------------------------------------------------------------
 // Importer::SetPropertyString
 ASSIMP_API void aiSetImportPropertyString(aiPropertyStore *p, const char *szName,
-        const C_STRUCT aiString *st) {
+                                          const C_STRUCT aiString *st) {
     if (!st) {
         return;
     }
-    ASSIMP_BEGIN_EXCEPTION_REGION();
-    PropertyMap *pp = reinterpret_cast<PropertyMap *>(p);
-    SetGenericProperty<std::string>(pp->strings, szName, std::string(st->C_Str()));
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
+            PropertyMap *pp = reinterpret_cast<PropertyMap *>(p);
+            SetGenericProperty<std::string>(pp->strings, szName, std::string(st->C_Str()));
     ASSIMP_END_EXCEPTION_REGION(void);
 }
 
 // ------------------------------------------------------------------------------------------------
 // Importer::SetPropertyMatrix
 ASSIMP_API void aiSetImportPropertyMatrix(aiPropertyStore *p, const char *szName,
-        const C_STRUCT aiMatrix4x4 *mat) {
+                                          const C_STRUCT aiMatrix4x4 *mat) {
     if (!mat) {
         return;
     }
-    ASSIMP_BEGIN_EXCEPTION_REGION();
-    PropertyMap *pp = reinterpret_cast<PropertyMap *>(p);
-    SetGenericProperty<aiMatrix4x4>(pp->matrices, szName, *mat);
+    ASSIMP_BEGIN_EXCEPTION_REGION() ;
+            PropertyMap *pp = reinterpret_cast<PropertyMap *>(p);
+            SetGenericProperty<aiMatrix4x4>(pp->matrices, szName, *mat);
     ASSIMP_END_EXCEPTION_REGION(void);
 }
 
@@ -572,8 +573,8 @@ ASSIMP_API void aiCreateQuaternionFromMatrix(aiQuaternion *quat, const aiMatrix3
 // ------------------------------------------------------------------------------------------------
 // Matrix decomposition
 ASSIMP_API void aiDecomposeMatrix(const aiMatrix4x4 *mat, aiVector3D *scaling,
-        aiQuaternion *rotation,
-        aiVector3D *position) {
+                                  aiQuaternion *rotation,
+                                  aiVector3D *position) {
     ai_assert(nullptr != rotation);
     ai_assert(nullptr != position);
     ai_assert(nullptr != scaling);
@@ -597,7 +598,7 @@ ASSIMP_API void aiTransposeMatrix4(aiMatrix4x4 *mat) {
 // ------------------------------------------------------------------------------------------------
 // Vector transformation
 ASSIMP_API void aiTransformVecByMatrix3(aiVector3D *vec,
-        const aiMatrix3x3 *mat) {
+                                        const aiMatrix3x3 *mat) {
     ai_assert(nullptr != mat);
     ai_assert(nullptr != vec);
     *vec *= (*mat);
@@ -605,7 +606,7 @@ ASSIMP_API void aiTransformVecByMatrix3(aiVector3D *vec,
 
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API void aiTransformVecByMatrix4(aiVector3D *vec,
-        const aiMatrix4x4 *mat) {
+                                        const aiMatrix4x4 *mat) {
     ai_assert(nullptr != mat);
     ai_assert(nullptr != vec);
 
@@ -678,11 +679,10 @@ ASSIMP_API int aiVector2AreEqual(
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API int aiVector2AreEqualEpsilon(
         const C_STRUCT aiVector2D *a,
-        const C_STRUCT aiVector2D *b,
-        const float epsilon) {
+        const C_STRUCT aiVector2D *b) {
     ai_assert(nullptr != a);
     ai_assert(nullptr != b);
-    return a->Equal(*b, epsilon);
+    return *a == *b;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -717,7 +717,7 @@ ASSIMP_API void aiVector2SymMul(
         const C_STRUCT aiVector2D *other) {
     ai_assert(nullptr != dst);
     ai_assert(nullptr != other);
-    *dst = dst->SymMul(*other);
+    *dst = *dst * *other;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -741,14 +741,14 @@ ASSIMP_API void aiVector2DivideByVector(
 ASSIMP_API float aiVector2Length(
         const C_STRUCT aiVector2D *v) {
     ai_assert(nullptr != v);
-    return v->Length();
+    return glm::length(*v);
 }
 
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API float aiVector2SquareLength(
         const C_STRUCT aiVector2D *v) {
     ai_assert(nullptr != v);
-    return v->SquareLength();
+    return glm::dot(*v, *v);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -764,14 +764,14 @@ ASSIMP_API float aiVector2DotProduct(
         const C_STRUCT aiVector2D *b) {
     ai_assert(nullptr != a);
     ai_assert(nullptr != b);
-    return (*a) * (*b);
+    return glm::dot(*a, *b);
 }
 
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API void aiVector2Normalize(
         C_STRUCT aiVector2D *v) {
     ai_assert(nullptr != v);
-    v->Normalize();
+    glm::normalize(*v);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -1284,11 +1284,13 @@ ASSIMP_API void aiQuaternionInterpolate(
 
 // Ensure all symbols are linked correctly
 #if ASSIMP_NEEDS_STB_IMAGE
-    // Share stb_image's PNG loader with other importers/exporters instead of bringing our own copy.
+// Share stb_image's PNG loader with other importers/exporters instead of bringing our own copy.
 #   define STBI_ONLY_PNG
 #   ifdef ASSIMP_USE_STB_IMAGE_STATIC
 #       define STB_IMAGE_STATIC
 #   endif
 #   define STB_IMAGE_IMPLEMENTATION
+
 #   include "Common/StbCommon.h"
+
 #endif

@@ -528,7 +528,6 @@ struct aiMemoryInfo {
 #endif //!  __cplusplus
 
 // Include implementation files
-#include "vector2.inl"
 #include "vector3.inl"
 #include "color4.inl"
 #include "matrix3x3.inl"

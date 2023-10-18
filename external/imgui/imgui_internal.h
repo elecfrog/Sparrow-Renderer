@@ -299,7 +299,7 @@ namespace ImStb
 // - Helpers: Formatting
 // - Helpers: UTF-8 <> wchar conversions
 // - Helpers: ImVec2/ImVec4 operators
-// - Helpers: Maths
+// - Helpers: maths
 // - Helpers: Geometry
 // - Helper: ImVec1
 // - Helper: ImVec2ih
@@ -410,7 +410,7 @@ IMGUI_API ImU64             ImFileWrite(const void* data, ImU64 size, ImU64 coun
 #endif
 IMGUI_API void*             ImFileLoadToMemory(const char* filename, const char* mode, size_t* out_file_size = NULL, int padding_bytes = 0);
 
-// Helpers: Maths
+// Helpers: maths
 IM_MSVC_RUNTIME_CHECKS_OFF
 // - Wrapper for standard libs functions. (Note that imgui_demo.cpp does _not_ use them to keep the code easy to copy)
 #ifndef IMGUI_DISABLE_DEFAULT_MATH_FUNCTIONS

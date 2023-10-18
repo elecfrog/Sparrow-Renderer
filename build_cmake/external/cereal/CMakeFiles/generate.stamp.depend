@@ -1,0 +1,8 @@
+# CMake generation dependency list for this directory.
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckCXXCompilerFlag.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckCXXSourceCompiles.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/Internal/CheckCompilerFlag.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/Internal/CheckFlagCommonConfig.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/Internal/CheckSourceCompiles.cmake
+D:/Sparrow-Renderer/external/cereal/CMakeLists.txt

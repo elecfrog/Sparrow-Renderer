@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Sparrow-Renderer\build_cmake\CMakeFiles\de51091d8078fb58210de11e51258abb\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{7AC4B688-9B76-399B-B6FD-E75E242CD12B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

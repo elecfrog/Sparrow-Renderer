@@ -12,8 +12,6 @@
 namespace elf
 {
 
-
-
 	class ImGuiManager
 	{
 	public:

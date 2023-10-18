@@ -176,7 +176,7 @@ std::shared_ptr<Mesh> LoadMesh(const ofbx::Mesh* fbxMesh, int32_t triangleStart,
 	std::shared_ptr<Mesh> tmp = std::make_shared<Mesh>();
 
 	int indexCount = 0;
-    // SharedPtr<Maths::BoundingBox> boundingBox = CreateSharedPtr<Maths::BoundingBox>();
+    // SharedPtr<maths::BoundingBox> boundingBox = CreateSharedPtr<maths::BoundingBox>();
 
     auto indices = geom->getFaceIndices();
 

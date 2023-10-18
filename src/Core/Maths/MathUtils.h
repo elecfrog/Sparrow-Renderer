@@ -21,5 +21,5 @@ namespace Maths
 	static const float M_DEGTORAD_2    = M_PI / 360.0f; // M_DEGTORAD / 2.f
 	static const float M_RADTODEG      = 1.0f / M_DEGTORAD;
 
-} // namespace Maths
+} // namespace maths
 

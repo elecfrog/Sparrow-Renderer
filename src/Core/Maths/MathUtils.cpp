@@ -3,4 +3,4 @@
 namespace Maths
 {
 	
-} // namespace Maths
+} // namespace maths

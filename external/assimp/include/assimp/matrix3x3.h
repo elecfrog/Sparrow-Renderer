@@ -143,7 +143,7 @@ public:
      *  @param out Receives the output matrix
      *  @return Reference to the output matrix
      */
-    static aiMatrix3x3t& Translation( const aiVector2t<TReal>& v, aiMatrix3x3t& out);
+    static aiMatrix3x3t& Translation( const aiVector2D& v, aiMatrix3x3t& out);
 
     // -------------------------------------------------------------------
     /** @brief A function for creating a rotation matrix that rotates a

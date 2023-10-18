@@ -1,0 +1,9 @@
+# CMake generation dependency list for this directory.
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckCSourceCompiles.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckFunctionExists.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckIncludeFile.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckIncludeFileCXX.cmake
+C:/Users/elecfrog/scoop/apps/cmake/3.27.7/share/cmake-3.27/Modules/CheckTypeSize.cmake
+D:/Sparrow-Renderer/external/assimp/contrib/zlib/CMakeLists.txt
+D:/Sparrow-Renderer/external/assimp/contrib/zlib/zconf.h.cmakein
+D:/Sparrow-Renderer/external/assimp/contrib/zlib/zlib.pc.cmakein

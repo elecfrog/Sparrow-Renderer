@@ -3,8 +3,8 @@
 #include "ScenePreCompiled.h"
 #include "Function/Base/Transform.hpp"
 #include "Function/Animation/BVHAnim.hpp"
-#include "src/Function/Render/Prototype/Cone.hpp"
-#include "src/Function/Render/Prototype/Cylinder.hpp"
+#include "Function/Render/Prototype/Cone.hpp"
+#include "Function/Render/Prototype/Cylinder.hpp"
 #include "glm/ext.hpp"
 
 using namespace elf::anim;

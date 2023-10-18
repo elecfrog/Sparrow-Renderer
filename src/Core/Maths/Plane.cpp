@@ -125,4 +125,4 @@ namespace Maths
 		return Plane(glm::vec3(plane.x, plane.y, plane.z), plane.w);
 	}
 
-} // namespace Maths
+} // namespace maths

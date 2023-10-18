@@ -575,14 +575,13 @@ ASSIMP_API int aiVector2AreEqual(
 /** Check if 2D vectors are equal using epsilon.
  *  @param a First vector to compare
  *  @param b Second vector to compare
- *  @param epsilon Epsilon
  *  @return 1 if the vectors are equal
  *  @return 0 if the vectors are not equal
  */
 ASSIMP_API int aiVector2AreEqualEpsilon(
         const C_STRUCT aiVector2D *a,
-        const C_STRUCT aiVector2D *b,
-        const float epsilon);
+        const C_STRUCT aiVector2D *b
+        );
 
 // --------------------------------------------------------------------------------
 /** Add 2D vectors.

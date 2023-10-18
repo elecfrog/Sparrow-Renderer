@@ -55,4 +55,4 @@ constexpr glm::mat3 GaussianKernelMat3(double sigma = 1.0) {
     return res;
 }
 
-}  // namespace Maths
+}  // namespace maths

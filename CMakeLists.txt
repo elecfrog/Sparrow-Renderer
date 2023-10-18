@@ -1,21 +1,41 @@
+# 0.) Crate Source and CMakeFile
+# 1.) mkdir build
+# 2.) cd build
+# 3.) cmake ..  #Generating the Build Files / Configure the Project
+# 3.1) cmake -S ..  -B . #Alternative method from 3.) but more modern
+# 3.2) cmake [<options>] -S <path-to-source> -B <path-to-build>
+# 4.) cmake --build .
+# 4.1) cmake --build . --target <Sparrow-Library> # build single object
+# 5.) ./Sparrow-Renderer.exe
+
 cmake_minimum_required(VERSION 3.12)
 
 project(Sparrow-Renderer
-        VERSION 0.1.0
+        VERSION 0.5.0
         LANGUAGES C CXX
 )
 
-set(CMAKE_CXX_STANDARD          17)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS        OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Math Static Library
+option(COMPILE_MATH_LIB "Whether to compile math static library" ON)
+ 
+if (COMPILE_MATH_LIB)
+    add_subdirectory(maths)
+else ()
+    message("Not compiled math static library")
+endif ()
 
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_SOURCE_DIR}/src/*.hpp")
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_SOURCE_DIR}/src/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 # Setup own library path
-set(EXTERNAL_PATH ${CMAKE_SOURCE_DIR}/external/) 
+set(EXTERNAL_PATH ${CMAKE_SOURCE_DIR}/external/)
 
+# Second Target
 add_executable(${PROJECT_NAME}
         ${HEADER_FILES}
         ${SOURCE_FILES}
@@ -25,7 +45,7 @@ add_executable(${PROJECT_NAME}
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 
 # Adding opengl
-find_package(OpenGL REQUIRED)                   
+find_package(OpenGL REQUIRED)
 
 
 # cereal
@@ -130,13 +150,13 @@ target_link_libraries(${PROJECT_NAME}
         OpenGL::GL
         imgui
         OpenFBX
+        Sparrow-Maths # maths
 )
 
 # Setup Headers
-include_directories(
-        SYSTEM
-        ${CMAKE_SOURCE_DIR}/              # include All headers needed
-        ${CMAKE_SOURCE_DIR}/src/          # include All headers needed
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+        ${CMAKE_SOURCE_DIR}/src/          # include All headers in ./src folder
         ${EXTERNAL_PATH}/glad/include     # include glad.h as the loading header
         ${EXTERNAL_PATH}/tinyobjloader/   # include tiny_obj_loader.h
         ${EXTERNAL_PATH}/stb              # include stb
@@ -144,7 +164,7 @@ include_directories(
         ${EXTERNAL_PATH}/assimp/include   # include assimp
         ${EXTERNAL_PATH}/cereal/include   # include cereal
         ${EXTERNAL_PATH}/nativefiledialog-cmake/src/include   # include nfd
-        ${SPDLOG_INCLUDE_DIRS}
+#        ${SPDLOG_INCLUDE_DIRS}
 )
 
 # Deal with resource dependencies (of the executable)

@@ -254,7 +254,7 @@ aiMatrix3x3t<TReal>& aiMatrix3x3t<TReal>::Rotation( TReal a, const aiVector3t<TR
 // ------------------------------------------------------------------------------------------------
 template <typename TReal>
 AI_FORCE_INLINE
-aiMatrix3x3t<TReal>& aiMatrix3x3t<TReal>::Translation( const aiVector2t<TReal>& v, aiMatrix3x3t<TReal>& out) {
+aiMatrix3x3t<TReal>& aiMatrix3x3t<TReal>::Translation( const aiVector2D& v, aiMatrix3x3t<TReal>& out) {
     out = aiMatrix3x3t<TReal>();
     out.a3 = v.x;
     out.b3 = v.y;
