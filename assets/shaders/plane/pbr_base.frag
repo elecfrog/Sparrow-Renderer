@@ -131,7 +131,7 @@ void main()
 
 
     vec3 SpecularBRDF = (D * G  * F) / max(0.000001, 4.0 * NdotL * NdotV);
-    
+
     vec3 DiffuseBRDF = Lambertian(F, u_Roughness) * (vec3(material.baseColor)/ PI);
 
     vec3 LightContribution = (SpecularBRDF + DiffuseBRDF) * vec3(1.f) * NdotL /** falloff()*/;

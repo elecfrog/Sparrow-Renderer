@@ -13,7 +13,7 @@ class Scene_PBRTest : public Scene {
     // GUI Variables
     bool is_wireframe = false;
     bool reloadShaders = false;
-    
+
     // sphere
     UVSphere lightSphere;
     std::shared_ptr<Shader> sphereShader;
@@ -23,7 +23,7 @@ class Scene_PBRTest : public Scene {
     std::shared_ptr<Shader> PBRSphereShader;
 
     float roughness = 1.f;
-    
+
 public:
     Scene_PBRTest(WindowSystem *windowSystem)
             : Scene(windowSystem) {
@@ -72,11 +72,11 @@ public:
             M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
             lightSphere.Render(sphereShader, mainCamera, M, light);
         }
-        
+
         PBRSphereShader->Bind();
         PBRSphereShader->SetUniform1f("u_Roughness", roughness);
         PBRSphereShader->Unbind();
-        
+
         PBRSphereObject.Render(PBRSphereShader, mainCamera, glm::mat4(1.f), light);
     }
 

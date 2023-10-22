@@ -21,7 +21,7 @@ void main()
     vec3 Diffuse = texture(gAlbedo, TexCoords).rgb;
     float AmbientOcclusion = texture(ssao, TexCoords).r;
     vec3 ambient;
-    
+
     if (ibl)
         ambient = Diffuse* irradiance;
     else

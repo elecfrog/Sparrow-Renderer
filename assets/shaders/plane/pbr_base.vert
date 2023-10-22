@@ -5,11 +5,11 @@ layout (location = 2) in vec2 aTexCoords;
 
 out VERTEX_OUT
 {
-	vec3 view_Normal;
-	vec2 fragTexCoords;
+    vec3 view_Normal;
+    vec2 fragTexCoords;
 
-	vec3 world_Position;
-	vec3 world_Normals;
+    vec3 world_Position;
+    vec3 world_Normals;
 } vertex_out;
 
 uniform mat4 M; // Model Matrix
@@ -19,11 +19,11 @@ uniform mat4 P; // Proj  Matrix
 
 void main()
 {
-	// World Position of Vertices
-	vertex_out.world_Position 	= vec3(M * vec4(aPos, 1.0));
-	vertex_out.world_Normals	= mat3(transpose(inverse(M))) * aNormals;
-	// UV Per Vertex
-	vertex_out.fragTexCoords = aTexCoords;
+    // World Position of Vertices
+    vertex_out.world_Position 	= vec3(M * vec4(aPos, 1.0));
+    vertex_out.world_Normals	= mat3(transpose(inverse(M))) * aNormals;
+    // UV Per Vertex
+    vertex_out.fragTexCoords = aTexCoords;
 
-	gl_Position = P * V * vec4(vertex_out.world_Position, 1.0);
+    gl_Position = P * V * vec4(vertex_out.world_Position, 1.0);
 }
