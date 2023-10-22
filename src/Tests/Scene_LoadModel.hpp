@@ -1,13 +1,12 @@
 #pragma once
 
 #include "ScenePreCompiled.h"
-#include "src/Function/Render/Prototype/Cylinder.hpp"
+#include "Function/Render/Prototype/Cylinder.hpp"
 #include "Function/Base/Transform.hpp"
 #include "Core/Maths/GaussianKernel.hpp"
 
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
-
 
 glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 glm::mat4 captureViews[] =
@@ -113,15 +112,10 @@ class Scene_LoadModel : public Scene {
     std::shared_ptr<Shader> SceneShader;
 
 
-    // plane
-    Plane planeObject;
-    // std::shared_ptr<Mesh> planeMesh;
-
-    // sphere
-    UVSphere sphereObject;
-
-    // sphere
-    std::shared_ptr<Cylinder> cylinderObject;
+    // Objects
+    Plane planeObject; /* Plane */
+    UVSphere sphereObject; /* UVSphere */
+    std::shared_ptr<Cylinder> cylinderObject; /* Cylinder */
 
     // MRT
     std::shared_ptr<FrameBuffer> mrtFBO;
@@ -133,7 +127,8 @@ class Scene_LoadModel : public Scene {
     // Bloom Effects
     std::shared_ptr<FrameBuffer> BlurHFBO;
     std::shared_ptr<FrameBuffer> BlurVFBO;
-    glm::mat3 BlurKernel = Maths::GaussianKernelMat3(1.5);
+    glm::mat3 BlurKernel = Maths::GaussianKernel1DMat3(1.5);
+    std::array<double, 9> BlurKernel1 = Maths::GaussianKernel1D<9>(1.0);
     float BlurScaleKernel = 1.5f;
     float PreScaleKernel = 1.5f;
     float BlurScaleSampling = 0.5f;
@@ -366,7 +361,7 @@ public:
          * */
         {
             if (std::fabs(BlurScaleKernel - PreScaleKernel) > 0.1) {
-                BlurKernel = Maths::GaussianKernelMat3(BlurScaleKernel);
+                BlurKernel = Maths::GaussianKernel1DMat3(BlurScaleKernel);
                 PreScaleKernel = BlurScaleKernel;
             }
 
@@ -532,7 +527,7 @@ public:
         if (ImGui::CollapsingHeader("Bloom Effects", ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::Checkbox("Enable Bloom", &bEnableBloom);
             ImGui::SliderFloat("Blur Scale (kernel, effects strength)", &BlurScaleKernel, 0.001f, 3.0f);
-            ImGui::SliderFloat("Blur Scale (sampling, effects area)", &BlurScaleSampling, 0.0f, 2.0f);
+            ImGui::SliderFloat("Blur Scale (sampling, effects area)", &BlurScaleSampling, 0.0f, 10.0f);
             // 滑动条，范围从 0.0 到 2.0
             ImGui::SliderFloat("Blur Strength", &BlurStrength, 0.0f, 2.0f); // 滑动条，范围从 0.0 到 2.0
         }

@@ -24,18 +24,18 @@ in vec2 TexCoords;
 const int LOOPS = 3;
 
 float k_weights[9] = float[](
-    uBlurKernel[0][0], uBlurKernel[0][1], uBlurKernel[0][2], 
-    uBlurKernel[1][0], uBlurKernel[1][1], uBlurKernel[1][2], 
-    uBlurKernel[2][0], uBlurKernel[2][1], uBlurKernel[2][2]
+uBlurKernel[0][0], uBlurKernel[0][1], uBlurKernel[0][2],
+uBlurKernel[1][0], uBlurKernel[1][1], uBlurKernel[1][2],
+uBlurKernel[2][0], uBlurKernel[2][1], uBlurKernel[2][2]
 );
 
 
-void main() 
+void main()
 {
     vec3 color = texture(uBlurSourceImage, TexCoords).rgb;
 
-    vec2 tex_offset = 1.0 / textureSize(uBlurSourceImage, 0) * uBlurSamplingScale; // gets size of single texel
-    vec3 result = texture(uBlurSourceImage, TexCoords).rgb * k_weights[4]; // current fragment's contribution
+    vec2 tex_offset = 1.0 / textureSize(uBlurSourceImage, 0) * uBlurSamplingScale;// gets size of single texel
+    vec3 result = texture(uBlurSourceImage, TexCoords).rgb * k_weights[4];// current fragment's contribution
 
     for (int j = 1; j <= 4; ++j)
     {
@@ -45,17 +45,22 @@ void main()
             if (uBlurDirection)
             {
                 // H
-                result += texture(uBlurSourceImage, TexCoords + vec2(offset.x, 0.0)).rgb * k_weights[4 - j] * uBlurStrength;
-                result += texture(uBlurSourceImage, TexCoords - vec2(offset.x, 0.0)).rgb * k_weights[4 - j] * uBlurStrength;
+                result += texture(uBlurSourceImage, TexCoords + vec2(offset.x,  - offset.y / 2.f)).rgb * k_weights[4 - j] * uBlurStrength / 2.f;
+                result += texture(uBlurSourceImage, TexCoords + vec2(offset.x,  offset.y / 2.f)).rgb * k_weights[4 - j] * uBlurStrength  / 2.f;
+                result += texture(uBlurSourceImage, TexCoords - vec2(offset.x,  - offset.y / 2.f)).rgb * k_weights[4 - j] * uBlurStrength  / 2.f;
+                result += texture(uBlurSourceImage, TexCoords - vec2(offset.x,  offset.y / 2.f)).rgb * k_weights[4 - j] * uBlurStrength  / 2.f;
             }
             else
             {
                 // V
-                result += texture(uBlurSourceImage, TexCoords + vec2(0.0, offset.y)).rgb * k_weights[4 - j] * uBlurStrength;
-                result += texture(uBlurSourceImage, TexCoords - vec2(0.0, offset.y)).rgb * k_weights[4 - j] * uBlurStrength;
+                result += texture(uBlurSourceImage, TexCoords + vec2(- offset.x/2.f, offset.y)).rgb * k_weights[4 - j] * uBlurStrength /2.f;
+                result += texture(uBlurSourceImage, TexCoords + vec2(offset.x/2.f, offset.y)).rgb * k_weights[4 - j] * uBlurStrength /2.f;
+                result += texture(uBlurSourceImage, TexCoords - vec2( - offset.x/2.f, offset.y)).rgb * k_weights[4 - j] * uBlurStrength /2.f;
+                result += texture(uBlurSourceImage, TexCoords - vec2( offset.x/2.f, offset.y)).rgb * k_weights[4 - j] * uBlurStrength /2.f;
+                
             }
         }
     }
 
-    outFragColor = vec4(result , 1.0);
+    outFragColor = vec4(result, 1.0);
 }

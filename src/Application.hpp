@@ -16,13 +16,13 @@
 
 // Scences Followed by https://learnopengl.com/
 #include "Tests/Scene_BVHViewer.hpp"
+#include "Tests/Scene_PBRTest.hpp"
 #include "Tests/Scene_LoadModel.hpp"
 // #include "Tests/Scene_Terrain.hpp"
 #include "Tests/Scene06_ShadowMapping.hpp"
 #include "Tests/Scene08_PointShadow.hpp"
 #include "Tests/Scene_ClothSimulationSS1.hpp"
 #include "Tests/Scene_ClothSimulationSS2.hpp"
-#include "../Hello.h"
 
 
 class MenuPanel {
@@ -57,9 +57,6 @@ public:
 
     /* using builder pattern */
     void Run() {
-        Hello::Print();
-        
-        
         Init().
                 MainLoop().
                 CleanUp();
@@ -76,7 +73,7 @@ public:
 
     Application &MainLoop() {
         while (!m_WindowSystem->ShouldClose()) {
-            GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f))
+            GLCall(glClearColor(50.0f / 255.f, 50.0f / 255.f, 50.0f / 255.f, 1.0f))
             GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
 
             m_ImguiManager->Begin();
@@ -142,6 +139,7 @@ public:
         m_SceneManager = std::make_unique<SceneManager>(m_WindowSystem.get());
         // m_SceneManager->RegisterScene<Scene01_Triangle>("OpenGL Triangle");
         m_SceneManager->RegisterScene<Scene_BVHViewer>("BVH Animation Viewer");
+        m_SceneManager->RegisterScene<Scene_PBRTest>("PBR Test");
         m_SceneManager->RegisterScene<Scene_LoadModel>("Forward+");
         // m_SceneManager->RegisterScene<Scene_Terrain>("Terrain");
         m_SceneManager->RegisterScene<Scene06_ShadowMapping>("Shadow Mapping");

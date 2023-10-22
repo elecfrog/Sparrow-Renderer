@@ -15,20 +15,21 @@ out vec4 FragColor;
 void main()
 {
     // retrieve data from gbuffer
-    vec3 normal = texture(gNormal, TexCoords).rgb;
-    vec3 irradiance = texture(irradianceMap, normal).rgb;
+    vec3 N = texture(gNormal, TexCoords).rgb;
+    vec3 irradiance = texture(irradianceMap, N).rgb;
     vec3 color = texture(gColor, TexCoords).rgb;
     vec3 Diffuse = texture(gAlbedo, TexCoords).rgb;
     float AmbientOcclusion = texture(ssao, TexCoords).r;
     vec3 ambient;
+    
     if (ibl)
-    ambient = Diffuse* irradiance;
+        ambient = Diffuse* irradiance;
     else
-    ambient = Diffuse;
+        ambient = Diffuse;
 
     // then calculate lighting as usual
     if (isSsao)
-    ambient *= 0.3 * AmbientOcclusion;
+        ambient *= 0.3 * AmbientOcclusion;
 
     vec3 finalColor = ambient + color;
     vec3 bloomColor = texture(bloomBlur, TexCoords).rgb;
