@@ -19,6 +19,7 @@ using FilePath = fs::path;
 #define Path(x) FileSystem::CheckedPath(x)
 #define ShaderPath(x) FileSystem::CheckedPath("./assets/shaders/" x)
 #define AssetPath(x) FileSystem::CheckedPath("./assets/" x)
+#define ModelPath(x) FileSystem::CheckedPath("./assets/models/" x)
 
 class FileSystem
 {

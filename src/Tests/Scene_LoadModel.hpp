@@ -164,7 +164,8 @@ public:
         CylinderShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
 
         //load model
-        scene_Model = Model::LoadModel(AssetPath("DamagedHelmet/DamagedHelmet.gltf"));
+        scene_Model = Model::LoadModel(ModelPath("DamagedHelmet/DamagedHelmet.gltf"));
+//        scene_Model = Model::LoadModel(ModelPath("WaterBottle/WaterBottle.gltf"));
         scene_Transform.position = glm::vec3(0.f, 1.1f, 0.f);
         scene_Transform.rotation = Rotation{glm::vec3(89.43f, .0f, 0.f)};
 
@@ -194,11 +195,21 @@ public:
             // Mesh
             mesh->BuildMeshes();
             // Material
-            auto &&textures = mesh->GetMaterialTextures();
-            textureManager.Include(textures.albedo->GetTextureId());
-            textureManager.Include(textures.normal->GetTextureId());
-            textureManager.Include(textures.metallic->GetTextureId());
-            textureManager.Include(textures.emissive->GetTextureId());
+            auto &material_props = mesh->m_Material->m_MaterialProperties;
+            auto &&mr_textures = mesh->m_Material->m_MaterialProperties.mrTextures;
+            auto &&common_textures = mesh->m_Material->m_MaterialProperties.cmTextures;
+
+            textureManager.Include(common_textures.albedo->GetTextureId());
+            textureManager.Include(common_textures.normal->GetTextureId());
+            if(common_textures.emissive)
+                textureManager.Include(common_textures.emissive->GetTextureId());
+
+            if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_MR) {
+                textureManager.Include(mr_textures.metallic->GetTextureId());
+            } else if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_SG) {
+                textureManager.Include(material_props.sgTextures.specularGlossiness->GetTextureId());
+                textureManager.Include(material_props.sgTextures.ao->GetTextureId());
+            }
         }
 
         // Load Shader
@@ -334,16 +345,30 @@ public:
                 // Setting Materials
 
                 // Material
-                auto albedo = mesh->GetMaterialTextures().albedo;
-                auto normal = mesh->GetMaterialTextures().normal;
-                auto metallic = mesh->GetMaterialTextures().metallic;
-                auto emissive = mesh->GetMaterialTextures().emissive;
+                auto &material_props = mesh->m_Material->m_MaterialProperties;
 
+                auto albedo = material_props.cmTextures.albedo;
+                auto normal = material_props.cmTextures.normal;
                 MrtShader->SetUniform1u("material.albedoTexture", textureManager.GetSlot(albedo->GetTextureId()));
                 MrtShader->SetUniform1u("material.normalTexture", textureManager.GetSlot(normal->GetTextureId()));
-                MrtShader->SetUniform1u("material.metallicRoughnessTexture",
-                                        textureManager.GetSlot(metallic->GetTextureId()));
-                MrtShader->SetUniform1u("material.emissiveTexture", textureManager.GetSlot(emissive->GetTextureId()));
+
+                if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_MR) {
+                    auto metallic = material_props.mrTextures.metallic;
+                    MrtShader->SetUniform1u("material.metallicRoughnessTexture",textureManager.GetSlot(metallic->GetTextureId()));
+                } else if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_SG) {
+                    auto specularGlossiness = material_props.sgTextures.specularGlossiness;
+                    MrtShader->SetUniform1u("material.sgTex",textureManager.GetSlot(specularGlossiness->GetTextureId()));
+                    auto ao = material_props.sgTextures.ao;
+                    MrtShader->SetUniform1u("material.aoTex",textureManager.GetSlot(ao->GetTextureId()));
+                }
+                MrtShader->SetUniform1ui("material.WORKFLOW", static_cast<uint32_t>(material_props.workFlow));
+//                MrtShader->SetUniform1u("material.WORKFLOW", 0);
+                    
+                if(material_props.cmTextures.emissive!= nullptr)
+                {
+                    auto emissive = material_props.cmTextures.emissive;
+                    MrtShader->SetUniform1u("material.emissiveTexture", textureManager.GetSlot(emissive->GetTextureId()));
+                }
 
                 auto mat_props = mesh->m_Material->GetMaterialProperites();
                 MrtShader->SetUniform3f("material.specular", mat_props.specularColor);

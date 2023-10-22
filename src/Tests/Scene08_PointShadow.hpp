@@ -63,7 +63,7 @@ public:
         for (const auto& submesh : cp_cube->GetMeshes())
         {
             submesh->BuildMeshFilter();
-            submesh->m_Material->GetMaterialProperites().textures.albedo->Bind(0);
+            submesh->m_Material->GetMaterialProperites().cmTextures.albedo->Bind(0);
         }
 
         // Load Shader

@@ -31,34 +31,34 @@ MaterialProperties Material::GetMaterialProperites() const
 }
 
 std::shared_ptr<Texture2D> Material::GetAlbedoTexture() const
-{ return m_MaterialProperties.textures.albedo; }
+{ return m_MaterialProperties.cmTextures.albedo; }
 
 std::shared_ptr<Texture2D> Material::GetNormalTexture() const
-{ return m_MaterialProperties.textures.normal; }
+{ return m_MaterialProperties.cmTextures.normal; }
 
 std::shared_ptr<Texture2D> Material::GetMetallicTexture() const
-{ return m_MaterialProperties.textures.metallic; }
+{ return m_MaterialProperties.mrTextures.metallic; }
 
 std::shared_ptr<Texture2D> Material::GetRoughnessTexture() const
-{ return m_MaterialProperties.textures.roughness; }
+{ return m_MaterialProperties.mrTextures.roughness; }
 
 std::shared_ptr<Texture2D> Material::GetAOTexture() const
-{ return m_MaterialProperties.textures.ao; }
+{ return m_MaterialProperties.sgTextures.ao; }
 
 void Material::SetAlbedoTexture(const std::shared_ptr<Texture2D>& texture)
-{ m_MaterialProperties.textures.albedo = texture; }
+{ m_MaterialProperties.cmTextures.albedo = texture; }
 
 void Material::SetNormalTexture(const std::shared_ptr<Texture2D>& texture)
-{ m_MaterialProperties.textures.normal = texture; }
+{ m_MaterialProperties.cmTextures.normal = texture; }
 
 void Material::SetMetallicTexture(const std::shared_ptr<Texture2D>& texture)
-{ m_MaterialProperties.textures.metallic = texture; }
+{ m_MaterialProperties.mrTextures.metallic = texture; }
 
 void Material::SetRoughnessTexture(const std::shared_ptr<Texture2D>& texture)
-{ m_MaterialProperties.textures.roughness = texture; }
+{ m_MaterialProperties.mrTextures.roughness = texture; }
 
 void Material::SetAOTexture(const std::shared_ptr<Texture2D>& texture)
-{ m_MaterialProperties.textures.ao = texture; }
+{ m_MaterialProperties.sgTextures.ao = texture; }
 
 void Material::SetEmssiveTexture(const std::shared_ptr<Texture2D>& texture)
-{ m_MaterialProperties.textures.emissive = texture; }
+{ m_MaterialProperties.cmTextures.emissive = texture; }

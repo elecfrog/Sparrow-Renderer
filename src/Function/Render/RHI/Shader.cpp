@@ -32,6 +32,11 @@ Shader &Shader::SetUniform1u(const std::string &name, uint32_t value) {
     return *this;
 }
 
+Shader &Shader::SetUniform1ui(const std::string &name, uint32_t value) {
+    GLCall(glUniform1ui(GetUniformLocation(name), value))
+    return *this;
+}
+
 Shader &Shader::SetUniform4f(const std::string &name, float v0, float v1, float v2, float v3) {
     GLCall(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3))
     return *this;
@@ -163,7 +168,7 @@ int Shader::GetUniformLocation(const std::string &name) const {
     m_locationCache[name] = location;
 
     if (location == -1) {
-        SPW_WARN("Shader: {0}, {1} \n \t Uniform {2} doesn't used!", vertPath.string(), fragPath.string(), name);
+        SPW_WARN("Shader: {0}, {1} \n \t Uniform {2} doesn't used!", vertPath.filename().string(), vertPath.filename().string(), name);
     }
 
     return location;

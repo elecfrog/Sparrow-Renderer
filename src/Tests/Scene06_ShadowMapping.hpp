@@ -132,7 +132,7 @@ public:
             // Mesh
             submesh->BuildMeshFilter();
             // Material
-            submesh->m_Material->GetMaterialProperites().textures.albedo->Bind(0);
+            submesh->m_Material->GetMaterialProperites().cmTextures.albedo->Bind(0);
             // submesh->m_Material->GetAlbedoTexture()->Bind(0);
         }
 

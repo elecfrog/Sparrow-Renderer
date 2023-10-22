@@ -15,16 +15,26 @@ uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
+// uniform uint WORKFLOW;
+
 const float PI = 3.14159265359;
 const vec3 dielectric_constant = vec3(0.04);
+
+const uint PBR_MR_WORKFLOW = 0;
+const uint PBR_SG_WORKFLOW = 1;
 
 // Textures
 struct Material
 {
+    // PBR Workflow Option
+    uint WORKFLOW;
+
     sampler2D albedoTexture;
     sampler2D normalTexture;
     sampler2D metallicRoughnessTexture;
     sampler2D emissiveTexture;
+    sampler2D aoTex;
+    sampler2D sgTex;
 
     vec3 diffuse;
     vec3 specular;
@@ -154,28 +164,66 @@ vec3 point_lighting()
     return lightContribution + ambientContribution * ao + emissive;
 }
 
-void main()
+vec3 calulate_MR_BRDF(float HdotV, float NdotH, float NdotV, float NdotL, float VdotH, vec3 albedoColor)
 {
-    // Material properties
-    vec3 albedoColor  = texture(material.albedoTexture, vec2(fragTexCoords.x, fragTexCoords.y)).rgb;
-
     // [ref](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html section 3.9.2)
     // In gltf, metallic and roughness are stored in the same texture with R and G channels respectively
     float roughness = texture(material.metallicRoughnessTexture, fragTexCoords).g;
     float metallic  = texture(material.metallicRoughnessTexture, fragTexCoords).b;
     float ao = texture(material.metallicRoughnessTexture, fragTexCoords).r;
 
-    vec3 emissive = texture(material.emissiveTexture, fragTexCoords).rgb;
+    float alpha_p = shininess(roughness);
+    
+    vec3  F0 = (1 - metallic) * dielectric_constant + metallic * albedoColor;
 
-    // normal read from texture sampler, which is in tangent space, and which in [-1, 1], and we need to convert it to [0, 1]
-    vec3 n = calulateNormals();
-    // n = normalize(TBN * n);		 // convert to world space
+    // F = k_s in the reflection equation
+    vec3  F = Frensel_Term(F0, albedoColor, metallic, HdotV);
 
+    float D = Distribution_ndfGGX(NdotH, roughness);
+
+    float G = GaSchlickGGX_Item(NdotH, NdotV, VdotH, NdotL);
+    
+    vec3 specularBRDF = (F * D * G) / max(0.000001, 4.0 * NdotL * NdotV);
+
+    vec3 diffuseBRDF = Lambertian(F, metallic) * (albedoColor/ PI);
+    
+    return specularBRDF + diffuseBRDF;
+}
+
+vec3 calulate_SG_BRDF(float HdotV, float NdotH, float NdotV, float NdotL, float VdotH, vec3 albedoColor)
+{
+    // [ref](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html section 3.9.2)
+    // In gltf, metallic and roughness are stored in the same texture with R and G channels respectively
+    vec3 specularGlossiness = texture(material.sgTex, fragTexCoords).rgb;
+    float roughness  = 0.f;
+    float ao = texture(material.aoTex, fragTexCoords).r;
 
     float alpha_p = shininess(roughness);
 
-    //	vec3 MaterialSpecularColor = vec3(1,1,1);
+    vec3 F0 = specularGlossiness;
 
+    // F = k_s in the reflection equation
+    vec3  F = Frensel_Term(F0, albedoColor, roughness, HdotV);
+
+    float D = Distribution_ndfGGX(NdotH, roughness);
+
+    float G = GaSchlickGGX_Item(NdotH, NdotV, VdotH, NdotL);
+
+    vec3 specularBRDF = (F * D * G) / max(0.000001, 4.0 * NdotL * NdotV);
+
+    vec3 diffuseBRDF = Lambertian(F, roughness) * (albedoColor/ PI);
+    
+//    return specularBRDF + diffuseBRDF;
+    return vec3(specularGlossiness);
+}
+
+void main()
+{
+    // Material properties
+    vec3 albedoColor  = texture(material.albedoTexture, vec2(fragTexCoords.x, fragTexCoords.y)).rgb;
+
+    // normal read from texture sampler, which is in tangent space, and which in [-1, 1], and we need to convert it to [0, 1]
+    vec3 n = calulateNormals();
     // view direction, point to the camera
     vec3 v = normalize(viewPos.xyz - vert_worldPos);
     vec3 l = normalize(lightPos.xyz - vert_worldPos);
@@ -186,31 +234,29 @@ void main()
     float NdotV = max(dot(n, v), 0.0);
     float NdotL = max(dot(n, l), 0.0);
     float VdotH = dot(v, h);
-
-    vec3  F0 = (1 - metallic) * dielectric_constant + metallic * albedoColor;
-
-    // F = k_s in the reflection equation
-    vec3  F = Frensel_Term(F0, albedoColor, metallic, HdotV);
-
-
-    float D = Distribution_ndfGGX(NdotH, roughness);
-
-    float G = GaSchlickGGX_Item(NdotH, NdotV, VdotH, NdotL);
-
-
-    vec3 specularBRDF = (F * D * G) / max(0.000001, 4.0 * NdotL * NdotV);
-
-
-    vec3 diffuseBRDF = Lambertian(F, metallic) * (albedoColor/ PI);
-
-    vec3 lightContribution = (specularBRDF + diffuseBRDF) * vec3(lightColor) * NdotL * falloff();
+    
+    // BRDF
+    vec3 LightBRDF = vec3(0.f);
+    if(material.WORKFLOW == PBR_MR_WORKFLOW)
+    {
+        LightBRDF = calulate_MR_BRDF(HdotV, NdotH, NdotV, NdotL, VdotH, albedoColor) * vec3(lightColor) * NdotL * falloff();
+    }
+    else if(material.WORKFLOW == PBR_SG_WORKFLOW)
+    {
+        LightBRDF = calulate_SG_BRDF(HdotV, NdotH, NdotV, NdotL, VdotH, albedoColor) * vec3(lightColor) * NdotL * falloff();
+    }
+    
     vec3 ambientContribution = albedoColor;
 
-    vec3 oColor = lightContribution + emissive;//+ ambientContribution * ao ;
+    vec3 emissive = texture(material.emissiveTexture, fragTexCoords).rgb;
+
+
+    vec3 oColor = LightBRDF + emissive;//+ ambientContribution * ao ;
     //	vec3 n = calulateNormals();
     FragColor = vec4(oColor, 1.0f);
     BrightColor = vec4(emissive, 1.0f);
     PositionColor = vec4(vert_worldPos, 1.0f);
     NormalColor = vec4(n, 1.0f);
+//    AmbientColor  = vec4(vec3(0.f), 1.0f);
     AmbientColor  = vec4(albedoColor, 1.0f);
 }

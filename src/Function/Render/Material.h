@@ -15,14 +15,32 @@ enum class PBRTextureType
     Unknown = 18,
 };
 
-struct MaterialTextures
+struct PBR_CM_TEXTURES
 {
     std::shared_ptr<Texture2D> albedo;
     std::shared_ptr<Texture2D> normal;
+    std::shared_ptr<Texture2D> emissive;
+};
+
+        
+struct PBR_MR_TEXTURES
+{
     std::shared_ptr<Texture2D> metallic;
     std::shared_ptr<Texture2D> roughness;
+};
+
+struct PBR_SG_TEXTURES
+{
+    std::shared_ptr<Texture2D> specularGlossiness;
     std::shared_ptr<Texture2D> ao;
-    std::shared_ptr<Texture2D> emissive;
+};
+
+// PBR Material Workflow
+enum class PBRWorkFlow : uint8_t
+{
+    PBR_WORKFLOW_MR = 0,
+    PBR_WORKFLOW_SG = 1,
+    PBR_WORKFLOW_SEPARATE_TEXTURES = 2,
 };
 
 struct MaterialProperties
@@ -37,14 +55,9 @@ struct MaterialProperties
     glm::vec4 transportColor;
     glm::vec4 refectiveColor;
 
-	enum class WorkFlow
-    {
-        PBR_WORKFLOW_SEPARATE_TEXTURES,
-        PBR_WORKFLOW_METALLIC_ROUGHNESS,
-        PBR_WORKFLOW_SPECULAR_GLOSINESS,
-    } workflow{};
+    PBRWorkFlow workFlow;
 
-    /* PBR workflow of Metallic & Roughness */
+    // Factors for PBR_WORKFLOW_MR
     struct MetallicRoughnessFactors_
     {
         float baseColorFactor;
@@ -53,6 +66,7 @@ struct MaterialProperties
         float anisotropyFactor;
     } metallicRoughnessFactors{};
 
+    // Factors for PBR_WORKFLOW_SG
 	struct SpecularGlossinessFactors_
     {
         float specularFactor;
@@ -88,9 +102,11 @@ struct MaterialProperties
     float shininessStrength;
     float refracti;
 
-    MaterialTextures textures{};
+    PBR_CM_TEXTURES cmTextures{};
+    PBR_MR_TEXTURES mrTextures{};
+    PBR_SG_TEXTURES sgTextures{};
 };
-
+    
 class Material : public Asset
 {
 public:
@@ -111,10 +127,11 @@ public:
     void SetMaterialProperites(const MaterialProperties& properties);
     void SetMaterialProperites(MaterialProperties&& properties);
 
-    MaterialTextures GetTextures() const
+    [[nodiscard]] PBR_SG_TEXTURES GetPBRSGTextures() const
     {
-        return { m_MaterialProperties.textures };
+        return { m_MaterialProperties.sgTextures };
     }
+
 	[[nodiscard]] std::shared_ptr<Texture2D> GetAlbedoTexture() const;
     [[nodiscard]] std::shared_ptr<Texture2D> GetNormalTexture() const;
     [[nodiscard]] std::shared_ptr<Texture2D> GetMetallicTexture() const;

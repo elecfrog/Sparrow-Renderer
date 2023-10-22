@@ -193,6 +193,7 @@ public:
     Shader &SetUniform1i(const std::string &name, int value);
 
     Shader &SetUniform1u(const std::string &name, uint32_t value);
+    Shader &SetUniform1ui(const std::string &name, uint32_t value);
 
     Shader &SetUniform4f(const std::string &name, float v0, float v1, float v2, float v3);
 

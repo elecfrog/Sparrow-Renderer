@@ -53,5 +53,4 @@ public:
 	void UpdateModelMatrix(const glm::mat4& _newModelMatrix);
 
     [[nodiscard]] MaterialProperties GetMaterialProperties() const {return m_Material->GetMaterialProperites();}
-    [[nodiscard]] MaterialTextures GetMaterialTextures() const {return m_Material->GetTextures(); } 
 };
