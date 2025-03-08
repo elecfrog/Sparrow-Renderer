@@ -1,171 +1,45 @@
-# 0.) Crate Source and CMakeFile
-# 1.) mkdir build
-# 2.) cd build
-# 3.) cmake ..  #Generating the Build Files / Configure the Project
-# 3.1) cmake -S ..  -B . #Alternative method from 3.) but more modern
-# 3.2) cmake [<options>] -S <path-to-source> -B <path-to-build>
-# 4.) cmake --build .
-# 4.1) cmake --build . --target <Sparrow-Library> # build single object
-# 5.) ./Sparrow-Renderer.exe
-
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.20)
 
 project(Sparrow-Renderer
         VERSION 0.5.0
         LANGUAGES C CXX
 )
 
-set(CMAKE_CXX_STANDARD 17)
+# 设置C++标准
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Math Static Library
-option(COMPILE_MATH_LIB "Whether to compile math static library" ON)
- 
-if (COMPILE_MATH_LIB)
-    add_subdirectory(maths)
-else ()
-    message("Not compiled math static library")
-endif ()
+# 设置CMake策略
+cmake_policy(SET CMP0079 NEW)
 
-file(GLOB_RECURSE HEADER_FILES "${CMAKE_SOURCE_DIR}/src/*.hpp")
-file(GLOB_RECURSE HEADER_FILES "${CMAKE_SOURCE_DIR}/src/*.h")
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+# 设置外部依赖路径
+set(EXTERNAL_PATH ${CMAKE_SOURCE_DIR}/_external/)
 
-# Setup own library path
-set(EXTERNAL_PATH ${CMAKE_SOURCE_DIR}/external/)
+# 创建虚拟文件夹
+source_group("External Libraries" FILES ${EXTERNAL_PATH}/*)
+source_group("External Libraries\\cereal" FILES ${EXTERNAL_PATH}/cereal/*)
+source_group("External Libraries\\glfw" FILES ${EXTERNAL_PATH}/glfw/*)
+source_group("External Libraries\\glm" FILES ${EXTERNAL_PATH}/glm/*)
+source_group("External Libraries\\nativefiledialog" FILES ${EXTERNAL_PATH}/nativefiledialog-cmake/*)
+source_group("External Libraries\\spdlog" FILES ${EXTERNAL_PATH}/spdlog/*)
+source_group("External Libraries\\assimp" FILES ${EXTERNAL_PATH}/assimp/*)
+source_group("External Libraries\\imgui" FILES ${EXTERNAL_PATH}/imgui/*)
+source_group("External Libraries\\OpenFBX" FILES ${EXTERNAL_PATH}/OpenFBX/*)
 
-# Second Target
-add_executable(${PROJECT_NAME}
-        ${HEADER_FILES}
-        ${SOURCE_FILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/src/glad.c
-)
+# 添加外部依赖
+add_subdirectory(_external)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+# 添加基础库
+add_subdirectory(_source/Base)
+add_subdirectory(_source/Log)
+add_subdirectory(_source/FbxConverterModule)
+add_subdirectory(_source/FbxConverter)
 
-# Adding opengl
-find_package(OpenGL REQUIRED)
+# 设置输出目录
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-
-# cereal
-if (NOT TARGET cereal)
-    option(BUILD_DOC "Build documentation" OFF)
-    option(BUILD_SANDBOX "Build sandbox examples" OFF)
-    option(SKIP_PERFORMANCE_COMPARISON "Skip building performance sandbox comparison (requires boost)" ON)
-    add_subdirectory(${EXTERNAL_PATH}/cereal)
-    target_link_libraries(${PROJECT_NAME} PRIVATE cereal)
-endif ()
-
-# glfw
-if (NOT TARGET glfw)
-    option(GLFW_BUILD_EXAMPLES "" OFF)
-    option(GLFW_BUILD_TESTS "" OFF)
-    option(GLFW_BUILD_DOCS "" OFF)
-    option(GLFW_INSTALL "" OFF)
-    add_subdirectory(${EXTERNAL_PATH}/glfw)
-    target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
-endif ()
-
-# glm
-if (NOT TARGET glm)
-    option(BUILD_STATIC_LIBS "" ON)
-    option(BUILD_TESTING "" OFF)
-    option(GLM_TEST_ENABLE "" OFF)
-    add_subdirectory(${EXTERNAL_PATH}/glm)
-    target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
-endif ()
-
-# nfd
-if (NOT TARGET nativefiledialog)
-    add_subdirectory(${EXTERNAL_PATH}/nativefiledialog-cmake)
-    target_link_libraries(${PROJECT_NAME} PRIVATE nativefiledialog)
-endif ()
-
-# spdlog
-if (NOT TARGET spdlog)
-    option(SPDLOG_BUILD_EXAMPLE "" OFF)
-    option(SPDLOG_INSTALL "" OFF)
-    add_subdirectory(${EXTERNAL_PATH}/spdlog)
-    target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
-endif ()
-
-set(ASSIMP_BUILD_ZLIB ON)
-# assimp
-if (NOT TARGET assimp)
-    option(BUILD_SHARED_LIBS OFF)
-    option(ASSIMP_BUILD_FRAMEWORK OFF)
-    option(ASSIMP_DOUBLE_PRECISION OFF)
-    option(ASSIMP_OPT_BUILD_PACKAGES OFF)
-    option(ASSIMP_ANDROID_JNIIOSYSTEM OFF)
-    option(ASSIMP_NO_EXPORT OFF)
-    option(ASSIMP_BUILD_ZLIB OFF)
-    option(ASSIMP_COVERALLS OFF)
-    option(ASSIMP_INSTALL OFF)
-    option(ASSIMP_ERROR_MAX OFF)
-    option(ASSIMP_ASAN OFF)
-    option(ASSIMP_UBSAN OFF)
-    option(ASSIMP_INJECT_DEBUG_POSTFIX OFF)
-    option(ASSIMP_IGNORE_GIT_HASH OFF)
-    add_subdirectory(${EXTERNAL_PATH}/assimp)
-    target_link_libraries(${PROJECT_NAME} PRIVATE assimp::assimp)
-endif ()
-
-# Adding imgui
-add_library(imgui
-        # static library source
-        STATIC
-        ${EXTERNAL_PATH}/imgui/imgui.cpp
-        ${EXTERNAL_PATH}/imgui/imgui_demo.cpp
-        ${EXTERNAL_PATH}/imgui/imgui_draw.cpp
-        ${EXTERNAL_PATH}/imgui/imgui_widgets.cpp
-        ${EXTERNAL_PATH}/imgui/imgui_tables.cpp
-        ${EXTERNAL_PATH}/imgui/backends/imgui_impl_opengl3.cpp
-        ${EXTERNAL_PATH}/imgui/backends/imgui_impl_glfw.cpp
-)
-
-target_include_directories(imgui
-        # static library headers
-        PRIVATE
-        ${EXTERNAL_PATH}/imgui
-        ${EXTERNAL_PATH}/glfw/include/        # glfw-binding needs to include glfw codes
-)
-
-# Setup OpenFBX
-add_library(OpenFBX                             # static library source
-        STATIC
-        ${EXTERNAL_PATH}/OpenFBX/miniz.c
-        ${EXTERNAL_PATH}/OpenFBX/ofbx.cpp
-)
-
-target_include_directories(OpenFBX
-        PUBLIC
-        ${EXTERNAL_PATH}/
-)
-
-
-# Apply dependencies
-target_link_libraries(${PROJECT_NAME}
-        PRIVATE
-        OpenGL::GL
-        imgui
-        OpenFBX
-        Sparrow-Maths # maths
-)
-
-# Setup Headers
-target_include_directories(${PROJECT_NAME}
-        PUBLIC
-        ${CMAKE_SOURCE_DIR}/src/          # include All headers in ./src folder
-        ${EXTERNAL_PATH}/glad/include     # include glad.h as the loading header
-        ${EXTERNAL_PATH}/tinyobjloader/   # include tiny_obj_loader.h
-        ${EXTERNAL_PATH}/stb              # include stb
-        ${EXTERNAL_PATH}/imgui            # include imgui
-        ${EXTERNAL_PATH}/assimp/include   # include assimp
-        ${EXTERNAL_PATH}/cereal/include   # include cereal
-        ${EXTERNAL_PATH}/nativefiledialog-cmake/src/include   # include nfd
-#        ${SPDLOG_INCLUDE_DIRS}
-)
-
-# Deal with resource dependencies (of the executable)
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}") # Not the best practice, but it works for now
+# 设置IDE中的文件夹
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
