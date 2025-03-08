@@ -33,6 +33,10 @@ add_subdirectory(_external)
 # 添加基础库
 add_subdirectory(_source/Base)
 add_subdirectory(_source/Log)
+add_subdirectory(_source/Math)
+add_subdirectory(_source/Client)
+add_subdirectory(_source/Application)
+add_subdirectory(_source/Pattern)
 add_subdirectory(_source/FbxConverterModule)
 add_subdirectory(_source/FbxConverter)
 

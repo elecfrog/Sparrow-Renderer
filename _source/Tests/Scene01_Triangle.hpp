@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ScenePreCompiled.h"
-#include "Resource/ResourceManager.h"
+#include "Render/ResourceManager.h"
 
 class Scene01_Triangle final : public Scene
 {

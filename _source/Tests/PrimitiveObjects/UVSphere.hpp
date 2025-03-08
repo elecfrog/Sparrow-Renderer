@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "Resource/StaticMesh.h"
+#include "Render/StaticMesh.h"
 #include "Function/Render/MeshRenderer.h"
 
 struct UVSphere {

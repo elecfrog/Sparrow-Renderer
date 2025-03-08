@@ -1,5 +1,10 @@
 # 添加子目录
+add_subdirectory(Base)
+add_subdirectory(Math)
+add_subdirectory(Core)
+add_subdirectory(Client)
 add_subdirectory(Log)
+add_subdirectory(Application)
 add_subdirectory(FbxConverterModule)
 add_subdirectory(FbxConverter)
 
@@ -59,14 +64,15 @@ target_include_directories(${PROJECT_NAME}
 # 链接依赖库
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-    OpenGL::GL
-    imgui
     OpenFBX
     FbxConverterModule
     Log
-    cereal
-    glfw
+    Pattern
     glm::glm
+    OpenGL::GL
+    glfw
+    cereal
+    imgui
     nativefiledialog
     spdlog::spdlog
     assimp::assimp

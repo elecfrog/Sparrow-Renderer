@@ -61,19 +61,19 @@ public:
     Scene06_ShadowMapping(WindowSystem* windowSystem)
             : Scene(windowSystem)
     {
-        m_GameObjects.emplace_back(std::make_shared<elf::GameObject>("Renderer", std::vector<elf::GameOjbectComponent> {
+        m_GameObjects.emplace_back(std::make_shared<Sparrow::GameObject>("Renderer", std::vector<Sparrow::GameOjbectComponent> {
                 {
-                        elf::GameOjbectComponentType::Transform,
-                        elf::ComponentData<elf::GameOjbectComponentType::Transform>(glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1)),
+                        Sparrow::GameOjbectComponentType::Transform,
+                        Sparrow::ComponentData<Sparrow::GameOjbectComponentType::Transform>(glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1)),
                         [] {}
                 }
         }));
-        m_GameObjects.emplace_back(std::make_shared<elf::GameObject>("Light", std::vector<elf::GameOjbectComponent> {
+        m_GameObjects.emplace_back(std::make_shared<Sparrow::GameObject>("Light", std::vector<Sparrow::GameOjbectComponent> {
                 {
-                        elf::GameOjbectComponentType::Transform, elf::ComponentData<elf::GameOjbectComponentType::Transform>(), [] {}
+                        Sparrow::GameOjbectComponentType::Transform, Sparrow::ComponentData<Sparrow::GameOjbectComponentType::Transform>(), [] {}
                 },
                 {
-                        elf::GameOjbectComponentType::Light, elf::ComponentData<elf::GameOjbectComponentType::Light>(glm::vec3(0.0f, 0.836f, 2.889f)), [] {}
+                        Sparrow::GameOjbectComponentType::Light, elf::ComponentData<elf::GameOjbectComponentType::Light>(glm::vec3(0.0f, 0.836f, 2.889f)), [] {}
                 }
         }));
 

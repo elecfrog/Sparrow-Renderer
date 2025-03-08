@@ -7,7 +7,7 @@
 #include "Function/Render/Prototype/Cylinder.hpp"
 #include "glm/ext.hpp"
 
-using namespace elf::anim;
+using namespace Sparrow::anim;
 
 class Scene_BVHViewer : public Scene {
 
@@ -186,7 +186,7 @@ public:
     }
 
 
-    void DrawHierarchyNode(std::shared_ptr<elf::anim::BVHJoint> node) const {
+    void DrawHierarchyNode(std::shared_ptr<Sparrow::anim::BVHJoint> node) const {
         std::string name = node->name + " " + glm::to_string(node->globalLocation);
         bool node_open = ImGui::TreeNode(name.c_str());
 
@@ -198,7 +198,7 @@ public:
         }
     }
 
-    void DrawHierarchyNode2(elf::anim::BonePositions node) const {
+    void DrawHierarchyNode2(Sparrow::anim::BonePositions node) const {
         std::string name = glm::to_string(node.current) /*+ " "*/ /*+  glm::to_string(node->globalLocation)*/;
         bool node_open = ImGui::TreeNode(name.c_str());
 
