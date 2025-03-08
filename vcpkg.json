@@ -1,0 +1,21 @@
+{
+    "name": "sparrow-renderer",
+    "version": "0.5.0",
+    "dependencies": [
+        "zlib",
+        "assimp",
+        "glfw3",
+        "glm",
+        "spdlog",
+        "cereal",
+        "imgui",
+        "nativefiledialog"
+    ],
+    "builtin-baseline": "2024-03-07",
+    "overrides": [
+        {
+            "name": "assimp",
+            "version": "5.2.5"
+        }
+    ]
+} 
