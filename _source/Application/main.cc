@@ -3,8 +3,8 @@
 * Copyright (c) 2025 East10 All rights reserved.
 ------------------------------------------------------------------------------------------------------------ */
 
-#include "Client/Engine/Engine.h"
-#include "Log/LogSystem.h"
+#include "Runtime/Engine/Engine.h"
+#include "Core/Log/LogSystem.h"
 
 int main() try {
 

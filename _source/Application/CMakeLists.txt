@@ -23,7 +23,7 @@ target_link_libraries(${APP_NAME}
         Log
         Math
         Pattern
-        Client
+        Runtime
         nfd::nfd
         glfw
 )

@@ -13,27 +13,16 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 cmake_policy(SET CMP0079 NEW)
 
-
 set(EXTERNAL_PATH ${CMAKE_SOURCE_DIR}/_external/)
 
 find_package(assimp CONFIG REQUIRED)
-
 find_package(nfd CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 
-
 add_subdirectory(_external)
-add_subdirectory(_source/Base)
-add_subdirectory(_source/Log)
-add_subdirectory(_source/Math)
-add_subdirectory(_source/Client)
-add_subdirectory(_source/Application)
-add_subdirectory(_source/Pattern)
-add_subdirectory(_source/FbxConverterModule)
-add_subdirectory(_source/FbxConverter)
-
+add_subdirectory(_source)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin$<CONFIG>)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib$<CONFIG>)
