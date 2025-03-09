@@ -17,6 +17,11 @@ add_executable(${APP_NAME}
     ScenePreCompiled.h
 )
 
+find_package(nfd CONFIG REQUIRED)
+#find_package(cereal CONFIG REQUIRED)
+
+
+
 # 链接FbxConverterModule和FBX SDK
 target_link_libraries(${APP_NAME}
     PRIVATE
@@ -25,8 +30,9 @@ target_link_libraries(${APP_NAME}
     Math
     Pattern
     Client
+    nfd::nfd
+#    cereal::cereal
 )
-
 
 # 设置输出目录
 set_target_properties(${APP_NAME} PROPERTIES

@@ -1,14 +1,18 @@
 {
-  "name" : "sparrow",
-  "version" : "1.0.0",
-  "dependencies" : [ "zlib", "assimp", "fmt", {
-    "name" : "spdlog",
-    "version>=" : "1.15.1"
-  }, {
-    "name" : "cereal",
-    "version>=" : "1.3.2#1"
-  }, {
-    "name" : "stb",
-    "version>=" : "2024-07-29#1"
-  } ]
+  "name": "sparrow",
+  "version": "1.0.0",
+  "dependencies": [
+    "assimp",
+    "fmt",
+    {
+      "name": "spdlog",
+      "version>=": "1.15.1"
+    },
+    {
+      "name": "stb",
+      "version>=": "2024-07-29#1"
+    },
+    "zlib",
+    "nativefiledialog-extended"
+  ]
 }

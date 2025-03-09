@@ -1,4 +1,3 @@
-#include <OpenFBX/ofbx.h>
 
 #include "Core/Maths/Maths.h"
 #include "Core/Maths/Transform.h"
@@ -253,86 +252,6 @@ std::shared_ptr<Mesh> LoadMesh(const ofbx::Mesh* fbxMesh, int32_t triangleStart,
 
 void Model::LoadFBX(const std::string& _filePath)
 {
-    std::ifstream file(_filePath, std::ios::binary);
-    if (!file) 
-    {
-        // TODO lOG
-        std::cerr << "Failed to open file\n";
-    }
 
-    std::vector<uint8_t> buffer(1024); // Read 1024 bytes at a time
-    std::size_t read_size = 0;
-    std::vector<uint8_t> file_data;
-
-    while (file.read(reinterpret_cast<char*>(buffer.data()), buffer.size())) {
-        read_size = static_cast<std::size_t>(file.gcount());
-        file_data.insert(file_data.end(), buffer.begin(), buffer.begin() + read_size);
-    }
-
-    // Read the remainder of the file
-    read_size = static_cast<std::size_t>(file.gcount());
-    file_data.insert(file_data.end(), buffer.begin(), buffer.begin() + read_size);
-
-    // Pass the file data to OpenFBX for parsing, and do triangleuate
-    ofbx::IScene* scene = ofbx::load(file_data.data(), (int)file_data.size(), static_cast<ofbx::u64>(ofbx::LoadFlags::TRIANGULATE));
-    if (!scene) {
-        std::cerr << "Failed to parse FBX file\n";
-        // TODO lOG
-    }
-
-    const ofbx::GlobalSettings* settings = scene->getGlobalSettings();
-    switch (settings->UpAxis)
-    {
-    case ofbx::UpVector_AxisX: orientation = Orientation::X_UP;
-	    break;
-    case ofbx::UpVector_AxisY: orientation = Orientation::Y_UP;
-	    break;
-    case ofbx::UpVector_AxisZ: orientation = Orientation::Z_UP;
-	    break;
-    }
-
-    // const int c = scene->getGeometryCount();
-    // for (int i = 0; i < c; ++i) {
-    //     ImportGeometry& geom = m_geometries.emplace(m_allocator);
-    //     geom.fbx = scene->getGeometry(i);
-    // }
-
-
-    int meshCount = scene->getMeshCount();
-
-    for (int i = 0; i < meshCount; ++i)
-    {
-        const ofbx::Mesh* fbxMesh = (const ofbx::Mesh*)scene->getMesh(i);
-        const auto geometry = fbxMesh->getGeometry();
-        const auto trianglesCount = geometry->getVertexCount() / 3;
-
-        if (IsMeshInvalid(fbxMesh))
-            continue;
-
-        if (fbxMesh->getMaterialCount() < 2 || !geometry->getMaterials())
-        {
-            m_Meshes.push_back(LoadMesh(fbxMesh, 0, trianglesCount - 1));
-        }
-        else
-        {
-            // Create mesh for each material
-
-            const auto materials = geometry->getMaterials();
-            int32_t rangeStart = 0;
-            int32_t rangeStartMaterial = materials[rangeStart];
-            for (int32_t triangleIndex = 1; triangleIndex < trianglesCount; triangleIndex++)
-            {
-                if (rangeStartMaterial != materials[triangleIndex])
-                {
-                    m_Meshes.push_back(LoadMesh(fbxMesh, rangeStart, triangleIndex - 1));
-
-                    // Start a new range
-                    rangeStart = triangleIndex;
-                    rangeStartMaterial = materials[triangleIndex];
-                }
-            }
-            m_Meshes.push_back(LoadMesh(fbxMesh, rangeStart, trianglesCount - 1));
-        }
-    }
 }
 

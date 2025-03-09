@@ -164,14 +164,14 @@ using FilePath = fs::path;
 
         static fs::path NativeFileDialog()
         {
-            nfdchar_t* outPath = NULL;
-            nfdresult_t result = NFD_OpenDialog(NULL, NULL, &outPath);
+            nfdu8char_t* outPath = nullptr;
+            nfdresult_t result = NFD_OpenDialogU8(&outPath, nullptr, 0, nullptr);
 
             if (result == NFD_OKAY)
             {
                 LOG_INFO(LogModule::Asset, "Success! Path: {0}", outPath);
                 fs::path path = outPath;
-                free(outPath);
+                NFD_FreePathU8(outPath); // 使用新的释放函数
                 return path;
             }
             else if (result == NFD_CANCEL)

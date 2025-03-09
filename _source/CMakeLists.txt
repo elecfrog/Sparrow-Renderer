@@ -56,9 +56,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_SOURCE_DIR}/_external/tinyobjloader
         ${Stb_INCLUDE_DIR}
         ${CMAKE_SOURCE_DIR}/_external/imgui
-        #    ${CMAKE_SOURCE_DIR}/_external/assimp/include
-        #    ${CMAKE_SOURCE_DIR}/_external/cereal/include
-        ${CMAKE_SOURCE_DIR}/_external/nativefiledialog-cmake/src/include
+
 )
 
 # 链接依赖库
@@ -71,11 +69,10 @@ target_link_libraries(${PROJECT_NAME}
         glm::glm
         OpenGL::GL
         glfw
-        cereal::cereal
+        cereal
         imgui
-        nativefiledialog
+        nfd::nfd
         spdlog::spdlog
-        #    ZLIB::ZLIB
         assimp::assimp
 )
 

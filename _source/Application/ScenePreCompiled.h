@@ -23,6 +23,7 @@
 
 #include "Math/Maths.h"
 #include "Client/FileSystem/FileSystem.h"
+#include <cereal/cereal.hpp>
 
 namespace Sparrow
 {
@@ -37,14 +38,14 @@ namespace Sparrow
     //     ar(cereal::make_nvp("clothObject", nodes));
     // }
 
-    static std::vector<AttribVertex> ImportOBJ(fs::path path)
-    {
-        std::vector<AttribVertex> ret;
-        std::ifstream inputAsset(path);
-        cereal::BinaryInputArchive ar(inputAsset);
-        ar(cereal::make_nvp("clothObject", ret));
-        return std::move(ret);
-    }
+    // static std::vector<AttribVertex> ImportOBJ(fs::path path)
+    // {
+    //     std::vector<AttribVertex> ret;
+    //     std::ifstream inputAsset(path);
+    //     cereal::BinaryInputArchive ar(inputAsset);
+    //     ar(cereal::make_nvp("clothObject", ret));
+    //     return std::move(ret);
+    // }
 
     // Scene 01 : Triangle
     inline const char* simple_vertexShaderSource =
