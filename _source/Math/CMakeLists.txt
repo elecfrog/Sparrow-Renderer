@@ -23,6 +23,8 @@ target_include_directories(${LIB_NAME}
     ${CMAKE_SOURCE_DIR}/_external/glm
 )
 
+find_package(glm CONFIG REQUIRED)
+
 target_link_libraries(${LIB_NAME}
     PUBLIC 
     glm::glm

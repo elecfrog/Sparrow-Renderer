@@ -16,7 +16,6 @@ CmakeSettings.json
 # big Model files
 _assets/
 _build/
-_external/
 _scripts/
 
 CMakeLists.txt.user

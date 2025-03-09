@@ -63,6 +63,7 @@ add_library(${LIB_NAME} STATIC
 
 find_package(OpenGL REQUIRED)
 find_package(nfd CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
 target_include_directories(${LIB_NAME}
         PUBLIC

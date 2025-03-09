@@ -18,9 +18,7 @@ add_executable(${APP_NAME}
 )
 
 find_package(nfd CONFIG REQUIRED)
-#find_package(cereal CONFIG REQUIRED)
-
-
+find_package(glfw3 CONFIG REQUIRED)
 
 # 链接FbxConverterModule和FBX SDK
 target_link_libraries(${APP_NAME}
@@ -31,7 +29,7 @@ target_link_libraries(${APP_NAME}
     Pattern
     Client
     nfd::nfd
-#    cereal::cereal
+    glfw
 )
 
 # 设置输出目录

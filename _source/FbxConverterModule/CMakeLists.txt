@@ -72,17 +72,16 @@ target_include_directories(${LIB_NAME}
 # 链接FBX SDK
 target_link_libraries(${LIB_NAME}
     PRIVATE
-    glm::glm
-    fbxsdk${FBX_FILESDK_LIB_SUFFX}
-    Log
     Base
+    Log
+    fbxsdk${FBX_FILESDK_LIB_SUFFX}
 )
 
 # 设置输出目录
 set_target_properties(${LIB_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/"
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/$<CONFIG>"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/$<CONFIG>"
 )
 
 # 设置IDE中的文件夹

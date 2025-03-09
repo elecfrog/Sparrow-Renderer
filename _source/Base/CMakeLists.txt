@@ -11,8 +11,10 @@ add_library(${LIB_NAME} STATIC
 target_include_directories(${LIB_NAME} 
     PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/_external/glm
+#    ${CMAKE_SOURCE_DIR}/_external/glm
 )
+
+find_package(glm CONFIG REQUIRED)
 
 target_link_libraries(${LIB_NAME}
     PUBLIC 
