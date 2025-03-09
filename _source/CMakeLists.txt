@@ -29,20 +29,20 @@ source_group("Header Files\\Tests" FILES ${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.hpp
 
 # 创建主程序
 add_executable(${PROJECT_NAME}
-    ${HEADER_FILES}
-    ${SOURCE_FILES}
-    ${CMAKE_SOURCE_DIR}/_external/glad/src/glad.c
+        ${HEADER_FILES}
+        ${SOURCE_FILES}
+        ${CMAKE_SOURCE_DIR}/_external/glad/src/glad.c
 )
 
 # 设置C++标准
-set_target_properties(${PROJECT_NAME} PROPERTIES 
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED ON
 )
 
 # 设置源文件的虚拟文件夹
-set_target_properties(${PROJECT_NAME} PROPERTIES 
-    FOLDER "Source"
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        FOLDER "Source"
 )
 
 # 查找OpenGL
@@ -50,32 +50,33 @@ find_package(OpenGL REQUIRED)
 
 # 设置包含目录
 target_include_directories(${PROJECT_NAME}
-    PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/
-    ${CMAKE_SOURCE_DIR}/_external/glad/include
-    ${CMAKE_SOURCE_DIR}/_external/tinyobjloader
-    ${CMAKE_SOURCE_DIR}/_external/stb
-    ${CMAKE_SOURCE_DIR}/_external/imgui
-    ${CMAKE_SOURCE_DIR}/_external/assimp/include
-    ${CMAKE_SOURCE_DIR}/_external/cereal/include
-    ${CMAKE_SOURCE_DIR}/_external/nativefiledialog-cmake/src/include
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/
+        ${CMAKE_SOURCE_DIR}/_external/glad/include
+        ${CMAKE_SOURCE_DIR}/_external/tinyobjloader
+        ${Stb_INCLUDE_DIR}
+        ${CMAKE_SOURCE_DIR}/_external/imgui
+        #    ${CMAKE_SOURCE_DIR}/_external/assimp/include
+        #    ${CMAKE_SOURCE_DIR}/_external/cereal/include
+        ${CMAKE_SOURCE_DIR}/_external/nativefiledialog-cmake/src/include
 )
 
 # 链接依赖库
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE
-    OpenFBX
-    FbxConverterModule
-    Log
-    Pattern
-    glm::glm
-    OpenGL::GL
-    glfw
-    cereal
-    imgui
-    nativefiledialog
-    spdlog::spdlog
-    assimp::assimp
+        PRIVATE
+        OpenFBX
+        FbxConverterModule
+        Log
+        Pattern
+        glm::glm
+        OpenGL::GL
+        glfw
+        cereal::cereal
+        imgui
+        nativefiledialog
+        spdlog::spdlog
+        #    ZLIB::ZLIB
+        assimp::assimp
 )
 
 set_target_properties(FbxConverterModule PROPERTIES FOLDER "Source")

@@ -18,14 +18,21 @@ set(EXTERNAL_PATH ${CMAKE_SOURCE_DIR}/_external/)
 
 # 创建虚拟文件夹
 source_group("External Libraries" FILES ${EXTERNAL_PATH}/*)
-source_group("External Libraries\\cereal" FILES ${EXTERNAL_PATH}/cereal/*)
+#source_group("External Libraries\\cereal" FILES ${EXTERNAL_PATH}/cereal/*)
 source_group("External Libraries\\glfw" FILES ${EXTERNAL_PATH}/glfw/*)
 source_group("External Libraries\\glm" FILES ${EXTERNAL_PATH}/glm/*)
 source_group("External Libraries\\nativefiledialog" FILES ${EXTERNAL_PATH}/nativefiledialog-cmake/*)
-source_group("External Libraries\\spdlog" FILES ${EXTERNAL_PATH}/spdlog/*)
-source_group("External Libraries\\assimp" FILES ${EXTERNAL_PATH}/assimp/*)
+#source_group("External Libraries\\spdlog" FILES ${EXTERNAL_PATH}/spdlog/*)
+
 source_group("External Libraries\\imgui" FILES ${EXTERNAL_PATH}/imgui/*)
 source_group("External Libraries\\OpenFBX" FILES ${EXTERNAL_PATH}/OpenFBX/*)
+
+#find_package(zlib REQUIRED)
+find_package(assimp CONFIG REQUIRED)
+#find_package(cereal CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_package(Stb REQUIRED)
 
 # 添加外部依赖
 add_subdirectory(_external)

@@ -87,6 +87,7 @@ target_link_libraries(${LIB_NAME}
     cereal
     imgui
     nativefiledialog
+    cereal::cereal
 ) 
 
 set_target_properties(${LIB_NAME} PROPERTIES
