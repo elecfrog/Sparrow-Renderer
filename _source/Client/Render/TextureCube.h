@@ -18,7 +18,7 @@ namespace Sparrow
         void Bind(UInt slot) const 
         {
             GLCall(glActiveTexture(GL_TEXTURE0 + slot));
-            GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, rendererId));
+            GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererId));
             // also there are a term - "Bindless Texture"
         }
 
@@ -30,10 +30,10 @@ namespace Sparrow
         [[nodiscard]] Int GetWidth() const;
         [[nodiscard]] Int GetHeight() const;
         [[nodiscard]] std::array<std::string, 6> GetFileName() const;
-        [[nodiscard]] UInt GetRenderId() const { return rendererId; }
+        [[nodiscard]] UInt GetRenderId() const { return m_RendererId; }
 
-    private:
-        UInt rendererId{0};
+    public:
+        UInt m_RendererId{0};
         UInt slotId{0};
         TextureData imageData;
         std::array<std::filesystem::path, 6> filePaths;

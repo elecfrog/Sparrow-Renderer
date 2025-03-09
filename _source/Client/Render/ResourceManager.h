@@ -2,9 +2,8 @@
 
 #include "Render/Model.h"
 #include "Render/Texture2D.h"
-#include "Render/RHI/Shader.h"
 #include "Asset.h"
-#include "Platform/FileSystem/FileSystem.h"
+#include "FileSystem/FileSystem.h"
 
 namespace Sparrow
 {
@@ -30,7 +29,7 @@ namespace Sparrow
             if (extension == ".obj")
                 return Model::LoadModel(filename);
             if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
-                return Texture2D::LoadTextur2D(filename);
+                return Texture2D::LoadTexture2D(filename);
 
             throw std::runtime_error("Unsupported file extension: " + extension);
         }

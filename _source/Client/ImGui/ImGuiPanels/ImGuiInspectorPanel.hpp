@@ -1,5 +1,6 @@
 #pragma once
 #include "ImGuiPanel.hpp"
+#include "Log/LogSystem.h"
 
 namespace Sparrow
 {
@@ -124,7 +125,7 @@ namespace Sparrow
 					break;
 					// ... Handle other component types
 				default:
-					spdlog::error("Unknown component type");
+					LOG_ERROR(LogModule::App, "Unknown component type");
 					break;
 				}
 			}

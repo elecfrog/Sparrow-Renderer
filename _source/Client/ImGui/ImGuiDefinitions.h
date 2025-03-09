@@ -33,11 +33,11 @@ namespace Sparrow
 	template <>
 	struct ComponentData<GameOjbectComponentType::Transform>
 	{
-		glm::vec3 position;
-		glm::vec3 rotation;
-		glm::vec3 scale;
+		Vector3f position;
+		Vector3f rotation;
+		Vector3f scale;
 		ComponentData() = default;
-		ComponentData(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
+		ComponentData(Vector3f position, Vector3f rotation, Vector3f scale)
 			: position(std::move(position)), rotation(std::move(rotation)), scale(std::move(scale))
 		{ }
 	};
@@ -45,10 +45,10 @@ namespace Sparrow
 	template <>
 	struct ComponentData<GameOjbectComponentType::Light>
 	{
-		glm::vec3 position;
+		Vector3f position;
 		// TODO Add more attributes, and move position to transform
 		ComponentData() = default;
-		ComponentData(glm::vec3 position)
+		ComponentData(Vector3f position)
 			: position(std::move(position))
 		{ }
 
@@ -57,17 +57,17 @@ namespace Sparrow
 	template <>
 	struct ComponentData<GameOjbectComponentType::Camera>
 	{
-		glm::vec3 position;
-		glm::vec3 rotation;
-		glm::vec3 scale;
+		Vector3f position;
+		Vector3f rotation;
+		Vector3f scale;
 	};
 
 	template <>
 	struct ComponentData<GameOjbectComponentType::Renderer>
 	{
-		glm::vec3 position;
-		glm::vec3 rotation;
-		glm::vec3 scale;
+		Vector3f position;
+		Vector3f rotation;
+		Vector3f scale;
 	};
 
 	// Continue with other component types

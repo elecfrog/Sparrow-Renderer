@@ -5,6 +5,7 @@
 #include "Component/MouseComponent.h"
 #include "ImGui/ImGuiDefinitions.h"
 #include "WindowSystem/WindowSystem.h"
+#include "Engine/Engine.h"
 
 
 namespace Sparrow
@@ -12,8 +13,7 @@ namespace Sparrow
     class Scene
     {
     public:
-        Scene(WindowSystem* windowSystem)
-            : m_WindowSystem(windowSystem)
+        Scene()
         {
         }
 
@@ -41,12 +41,12 @@ namespace Sparrow
 
         virtual void RegisterInputs()
         {
-            m_WindowSystem->RegisterOnMouseScrollFunc(std::bind(&Scene::OnMouseScrolling, this, std::placeholders::_1, std::placeholders::_2));
-            m_WindowSystem->RegisterOnMouseButtonFunc(std::bind(&Scene::onMouseButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
-            m_WindowSystem->RegisterOnCursorPosFunc(std::bind(&Scene::onCursorPos, this, std::placeholders::_1, std::placeholders::_2));
+            g_Engine.m_WindowSystem->RegisterOnMouseScrollFunc(std::bind(&Scene::OnMouseScrolling, this, std::placeholders::_1, std::placeholders::_2));
+            g_Engine.m_WindowSystem->RegisterOnMouseButtonFunc(std::bind(&Scene::onMouseButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
+            g_Engine.m_WindowSystem->RegisterOnCursorPosFunc(std::bind(&Scene::onCursorPos, this, std::placeholders::_1, std::placeholders::_2));
         }
 
-        const std::vector<std::shared_ptr<Sparrow::GameObject>>& GetGameObjects() const
+        const std::vector<SharedPtr<GameObject>>& GetGameObjects() const
         {
             return m_GameObjects;
         }
@@ -70,7 +70,7 @@ namespace Sparrow
             if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
             {
                 m_MouseCursor.bIsDragging = true;
-                glfwGetCursorPos(m_WindowSystem->GetWindowHandle(), &m_MouseCursor.start.x, &m_MouseCursor.start.y);
+                glfwGetCursorPos(g_Engine.m_WindowSystem->GetWindowHandle(), &m_MouseCursor.start.x, &m_MouseCursor.start.y);
                 // SPW_INFO("Drag Pressed : {0}, {1}", start_x, start_y);
             }
             else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
@@ -109,7 +109,7 @@ namespace Sparrow
 
         virtual void ProcessInput(float deltaTime)
         {
-            GLFWwindow* window = m_WindowSystem->GetWindowHandle();
+            GLFWwindow* window = g_Engine.m_WindowSystem->GetWindowHandle();
             float cameraSpeed = 0.10f * deltaTime; // adjust accordingly
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
                 mainCamera.cameraPos += mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
@@ -144,12 +144,7 @@ namespace Sparrow
         }
 
     protected:
-        // bool is_dragging = false;
-        // double start_x = 0, start_y = 0;
-        // double curr_x = 0, curr_y = 0;
-
         MouseComponent m_MouseCursor;
-        WindowSystem* m_WindowSystem;
         CameraComponent mainCamera{glm::vec3(1.45, 0.348, 2.021), 240.f, -11.45f, 45.0f, 0.01f};
         std::vector<std::shared_ptr<Sparrow::GameObject>> m_GameObjects;
     };

@@ -194,7 +194,7 @@ namespace Sparrow
 
         Shader& SetUniform4f(const std::string& name, glm::vec4 _vec);
 
-        Shader& SetUniform3f(const std::string& name, glm::vec3 _vec);
+        Shader& SetUniform3f(const std::string& name, Vector3f _vec);
 
         Shader& SetUniform3f(const std::string& name, glm::vec4 _vec);
 

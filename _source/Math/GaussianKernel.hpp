@@ -8,7 +8,7 @@
 namespace Maths
 {
 // Function to compute Gaussian density in 2D
-double gaussian2D(double x, double y, double sigma, double mean) {
+inline double gaussian2D(double x, double y, double sigma, double mean) {
     // Compute the exponent part of the Gaussian formula
     double exponent = -0.5 * (Pow2((x - mean) / sigma) + Pow2((y - mean) / sigma));
     // Return the Gaussian value

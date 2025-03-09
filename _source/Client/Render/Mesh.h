@@ -19,9 +19,9 @@ namespace Sparrow
 		Matrix4f transformLocalToWorld{}; // transform itself in local space -> Model Matrix
 
 		/*  Rendering Structure*/
-		std::vector<AttribVertex>  vertices;
-		std::vector<SkinnedVertex> skinnedVertices;
-		std::vector<unsigned int> indices;
+		std::vector<AttribVertex>  m_Vertices;
+		std::vector<SkinnedVertex> m_SkinnedVertices;
+		std::vector<unsigned int> m_Indices;
 
 		/*  Basic Rendering Data  */
 		std::shared_ptr<VAO> vao;
@@ -29,7 +29,7 @@ namespace Sparrow
 		std::shared_ptr<IBO> ibo;
 
 		/*  One Mesh pair to one material */
-		std::shared_ptr<Material> material;
+		std::shared_ptr<Material> m_Material;
 
 		void BuildMeshes();
 		void BuildMeshFilter();
@@ -49,7 +49,7 @@ namespace Sparrow
 		void SetLocalPosition(const Vector3f& newLocalPosition);
 		void UpdateModelMatrix(const Matrix4f& newModelMatrix);
 
-		[[nodiscard]] MaterialProperties GetMaterialProperties() const { return material->GetMaterialProperites(); }
-		[[nodiscard]] MaterialTextures GetMaterialTextures() const { return material->GetTextures(); }
+		[[nodiscard]] MaterialProperties GetMaterialProperties() const { return m_Material->GetMaterialProperites(); }
+		[[nodiscard]] MaterialTextures GetMaterialTextures() const { return m_Material->GetTextures(); }
 	};
 }

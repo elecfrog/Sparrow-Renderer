@@ -1,27 +1,27 @@
 #pragma once
 
-struct KeyFrame
+namespace Sparrow
 {
-    double time;
-    glm::vec3 position;
-    glm::quat rotation;
-    glm::vec3 sacling;
-};
+    struct KeyFrame
+    {
+        double time;
+        glm::vec3 position;
+        glm::quat rotation;
+        glm::vec3 sacling;
+    };
 
-struct AnimationNode
-{
-    std::string nodeName;
-    std::vector<KeyFrame> keyFrames;
-};
+    struct AnimationNode
+    {
+        std::string nodeName;
+        std::vector<KeyFrame> keyFrames;
+    };
 
-struct Animation : Asset
-{
-    std::string name;
-    double duration;
-    double FPS;
-    uint32_t frameCount;
-    std::vector<AnimationNode> nodeAnimations;
-};
-
-
-
+    struct Animation : Asset
+    {
+        std::string name;
+        double duration;
+        double FPS;
+        uint32_t frameCount;
+        std::vector<AnimationNode> nodeAnimations;
+    };
+}

@@ -15,7 +15,7 @@ namespace Sparrow
 
     void CameraComponent::UpdateCameraMatrix()
     {
-        glm::vec3 direction;
+        Vector3f direction;
         direction.x = cos(glm::radians(yaw)) *
             cos(glm::radians(pitch)); // Note that we convert the angle to radians first
         direction.y = sin(glm::radians(pitch)); // Note that we convert the angle to radians first

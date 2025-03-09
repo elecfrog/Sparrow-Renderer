@@ -53,7 +53,7 @@ namespace Sparrow
         return *this;
     }
 
-    Shader& Shader::SetUniform3f(const std::string& name, glm::vec3 _vec)
+    Shader& Shader::SetUniform3f(const std::string& name, Vector3f _vec)
     {
         GLCall(glUniform3f(GetUniformLocation(name), _vec.x, _vec.y, _vec.z))
         return *this;

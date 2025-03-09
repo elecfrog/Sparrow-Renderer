@@ -47,6 +47,8 @@ namespace Sparrow
 
         WindowExt GetWindowSize() const;
 
+        // [[nodiscard]] GLFWwindow* GetWindow() const { return GetWindowHandle(); }
+
         [[nodiscard]] inline int GetWindowWidth() const
         {
             return m_WindowExt.width;

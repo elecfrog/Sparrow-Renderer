@@ -4,22 +4,22 @@ namespace Sparrow
 {
 	Mesh::Mesh(std::vector<AttribVertex>& attribVertices, std::vector<unsigned>& indices)
 		: transformLocalToWorld(Matrix4f(1.0f))
-		, vertices(attribVertices)
-		, indices(indices)
+		, m_Vertices(attribVertices)
+		, m_Indices(indices)
 	{
 	}
 
 	Mesh::Mesh(std::vector<SkinnedVertex>& attribVertices, std::vector<unsigned>& indices)
 		: transformLocalToWorld(Matrix4f(1.0f))
-		, skinnedVertices(attribVertices)
-		, indices(indices)
+		, m_SkinnedVertices(attribVertices)
+		, m_Indices(indices)
 	{
 	}
 
 	void Mesh::Translate(const Vector3f& translate)
 	{
 		worldPosition += translate;
-		for (auto& v : vertices)
+		for (auto& v : m_Vertices)
 		{
 			v.position += translate;
 		}
@@ -28,7 +28,7 @@ namespace Sparrow
 	void Mesh::BuildMeshes()
 	{
 		// Mesh
-		if (skinnedVertices.empty())
+		if (m_SkinnedVertices.empty())
 			BuildMeshFilter();
 		else
 			BuildSkinnedMeshFilter();
@@ -40,8 +40,8 @@ namespace Sparrow
 		vao = std::make_shared<VAO>();
 		vao->Bind();
 
-		vbo = std::make_shared<VBO>(vertices);
-		ibo = std::make_shared<IBO>(indices);
+		vbo = std::make_shared<VBO>(m_Vertices);
+		ibo = std::make_shared<IBO>(m_Indices);
 		vao->Bind();
 
 		// Linking Vertex Attributes
@@ -61,8 +61,8 @@ namespace Sparrow
 		vao = std::make_shared<VAO>();
 		vao->Bind();
 
-		vbo = std::make_shared<VBO>(skinnedVertices);
-		ibo = std::make_shared<IBO>(indices);
+		vbo = std::make_shared<VBO>(m_SkinnedVertices);
+		ibo = std::make_shared<IBO>(m_Indices);
 		vao->Bind();
 
 		// Vector3f position; // position
@@ -89,7 +89,7 @@ namespace Sparrow
 	{
 		vao->Bind();
 		if(drawType == DrawCallType::ELE_TRIANGLE)
-			GLCall(glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, (const void*)nullptr));
+			GLCall(glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(m_Indices.size()), GL_UNSIGNED_INT, (const void*)nullptr));
 		vao->Unbind();
 	}
 

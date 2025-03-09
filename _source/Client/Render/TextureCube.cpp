@@ -6,8 +6,8 @@ namespace Sparrow
 	TextureCube::TextureCube(std::array<std::filesystem::path, 6>& paths)
 	{
 		// Creates the cubemap texture object
-		glGenTextures(1, &rendererId);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, rendererId);
+		glGenTextures(1, &m_RendererId);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererId);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		// These are very important to prevent seams
@@ -49,7 +49,7 @@ namespace Sparrow
 
 	TextureCube::~TextureCube()
 	{
-		GLCall(glDeleteTextures(1, &rendererId));
+		GLCall(glDeleteTextures(1, &m_RendererId));
 	}
 
 	Int TextureCube::GetWidth() const

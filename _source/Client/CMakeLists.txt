@@ -30,10 +30,31 @@ add_library(${LIB_NAME} STATIC
         Render/RHI/FrameBuffer.cpp
         Render/RHI/FrameBuffer.h
         Render/RHI/VertexArray.hpp
+        Render/RHI/IndexBuffer.cpp
+        Render/RHI/IndexBuffer.h
         Render/RHI/VertexBuffer.cpp
         Render/RHI/VertexBuffer.h
         Render/RHI/VertexBufferLayout.cpp
         Render/RHI/VertexBufferLayout.h
+        Render/PrimitiveObjects/Plane.hpp
+        Render/PrimitiveObjects/UVSphere.hpp
+        Render/Prototype/Cone.cpp
+        Render/Prototype/Cone.hpp
+        Render/Prototype/Cylinder.cpp
+        Render/Prototype/Cylinder.hpp
+        Render/Prototype/Prototype.cpp
+        Render/Prototype/Prototype.hpp
+
+        Engine/Engine.cpp
+        Engine/Engine.h
+
+        Scene/Scene.hpp
+        Scene/SceneManager.hpp
+        Scene/ScenePreCompiled.h
+        Scene/Scene_LoadModel.hpp
+        Scene/MenuPanel.cpp
+        Scene/MenuPanel.h
+
 
         Component/TransformComponent.cpp
         Component/TransformComponent.h
@@ -48,6 +69,8 @@ add_library(${LIB_NAME} STATIC
 
         WindowSystem/WindowSystem.cpp
         WindowSystem/WindowSystem.h
+
+        Render/ModelLoader/AssimpLoader.cpp
 
         ImGui/ImGuiManager.h
         ImGui/ImGuiDockSpace.h
@@ -64,6 +87,7 @@ add_library(${LIB_NAME} STATIC
 find_package(OpenGL REQUIRED)
 find_package(nfd CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
 
 target_include_directories(${LIB_NAME}
         PUBLIC
@@ -85,6 +109,7 @@ target_link_libraries(${LIB_NAME}
         cereal
         imgui
         nfd::nfd
+        assimp::assimp
 )
 
 set_target_properties(${LIB_NAME} PROPERTIES

@@ -2,22 +2,13 @@
 
 #include "Base/BaseDefinition.h"
 
-// Include RHI
-#include "Render/Model.h"
-
-// Include GLM for Math computing
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include "WindowSystem/WindowSystem.h"
-
 // LIGHT
 #include "Render/Light.h"
 
 
 
-#include "PrimitiveObjects/UVSphere.hpp"
-#include "PrimitiveObjects/Plane.hpp"
+#include "Render/PrimitiveObjects/UVSphere.hpp"
+#include "Render/PrimitiveObjects/Plane.hpp"
 // #include "Physics/Cloth.h"
 #include "Render/TextureCube.h"
 
@@ -27,8 +18,8 @@
 
 namespace Sparrow
 {
-    Light light;
-    inline glm::mat4 model_matrix = glm::mat4(1.0f);
+    static inline Light light;
+    static inline glm::mat4 model_matrix = glm::mat4(1.0f);
 
     // static void ExportOBJ(fs::path path, std::shared_ptr<Cloth>& cloth)
     // {
@@ -48,7 +39,7 @@ namespace Sparrow
     // }
 
     // Scene 01 : Triangle
-    inline const char* simple_vertexShaderSource =
+    static inline  const char* simple_vertexShaderSource =
         "#version 450 core\n"
         "layout (location = 0) in vec3 aPos;\n"
         "void main()\n"
@@ -56,7 +47,7 @@ namespace Sparrow
         "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
         "}\0";
 
-    inline const char* simple_fragmentShaderSource =
+    static inline  const char* simple_fragmentShaderSource =
         "#version 450 core\n"
         "out vec4 color;\n"
         "uniform vec3 editColorRGB;\n"
@@ -65,25 +56,25 @@ namespace Sparrow
         "   color = vec4(editColorRGB.x, editColorRGB.y, editColorRGB.z, 1.0);\n"
         "}\0";
 
-    inline float simple_triangleVertices[9]{
+    static inline  float simple_triangleVertices[9]{
         -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
         0.0f, 0.5f, 0.0f
     };
 
-    inline uint32_t simple_triangleIndices[3] = {
+    static inline  uint32_t simple_triangleIndices[3] = {
         // note that we start from 0!
         0, 1, 2, // first Triangle
     };
 
-    inline float simple_rectangleVertices[12] = {
+    static inline  float simple_rectangleVertices[12] = {
         0.5f, 0.5f, 0.0f, // top right
         0.5f, -0.5f, 0.0f, // bottom right
         -0.5f, -0.5f, 0.0f, // bottom left
         -0.5f, 0.5f, 0.0f // top left 
     };
 
-    inline uint32_t simple_rectangleIndices[6] = {
+    static inline  uint32_t simple_rectangleIndices[6] = {
         // note that we start from 0!
         0, 1, 3, // first triangle
         1, 2, 3 // second triangle
@@ -180,7 +171,7 @@ namespace Sparrow
         1.0f, 1.0f, 1.0f, 1.0f
     };
 
-    float rectangleVertices[] =
+    static inline float rectangleVertices[] =
     {
         //  Coords   // texCoords
         1.0f, -1.0f, 1.0f, 0.0f,
@@ -238,7 +229,7 @@ namespace Sparrow
     };
 
     // All the faces of the cubemap (make sure they are in this exact order)
-    std::array<std::filesystem::path, 6> texCube_Cloud =
+    static inline std::array<std::filesystem::path, 6> texCube_Cloud =
     {
         "./assets/Skybox/Cloud/right.jpg",
         "./assets/Skybox/Cloud/left.jpg",
@@ -249,7 +240,7 @@ namespace Sparrow
     };
 
     // All the faces of the cubemap (make sure they are in this exact order)
-    std::array<std::filesystem::path, 6> texCube_Stormy =
+    static inline std::array<std::filesystem::path, 6> texCube_Stormy =
     {
         "./assets/Skybox/Stormy/right.jpeg",
         "./assets/Skybox/Stormy/left.jpeg",
@@ -260,7 +251,7 @@ namespace Sparrow
     };
 
     // All the faces of the cubemap (make sure they are in this exact order)
-    std::array<std::filesystem::path, 6> texCube_Lake =
+    static inline std::array<std::filesystem::path, 6> texCube_Lake =
     {
         "./assets/skybox/lake/right.jpg",
         "./assets/skybox/lake/left.jpg",

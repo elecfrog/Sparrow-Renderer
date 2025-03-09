@@ -16,6 +16,8 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 
+#include "Scene/MenuPanel.h"
+
 namespace Sparrow
 {
 
@@ -44,6 +46,11 @@ namespace Sparrow
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
+		}
+
+		void Render()
+		{
+			m_SceneMenu->Render();
 		}
 
 		void End()
@@ -95,13 +102,19 @@ namespace Sparrow
 
 
 	private:
-
 		void InitLayout()
 		{
+			InitScenePanel();
+
 			InitMenuBar();
 			InitProfilingPanel();
 			InitSceneHierarchy();
 			InitInspectorPanel();
+		}
+
+		void InitScenePanel()
+		{
+			m_SceneMenu = std::make_shared<MenuPanel>("Scene Menu");
 		}
 
 		void InitMenuBar()
@@ -141,6 +154,8 @@ namespace Sparrow
 		}
 
 	private:
+		SharedPtr<MenuPanel> m_SceneMenu { nullptr };
+
 		std::shared_ptr<ImGuiMenuBar>					m_MainMenuBar;
 		std::shared_ptr<ImGuiObjectPanel>				m_ObjectPanel;
 		std::shared_ptr<ImGuiTreeNodePanel>				m_HierarchyPanel;
