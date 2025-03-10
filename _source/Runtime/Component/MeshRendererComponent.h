@@ -10,7 +10,8 @@ namespace Sparrow
 {
     struct MeshRendererComponentCreationInfo
     {
-        MeshComponent* meshComponent {nullptr};
+        MeshComponent*    meshComponent {nullptr};
+        SharedPtr<Shader> shader        {nullptr};
     };
 
     struct MeshRendererComponent
@@ -19,6 +20,7 @@ namespace Sparrow
 
         explicit MeshRendererComponent(MeshRendererComponentCreationInfo& creationInfo)
         {
+            m_Shader        = creationInfo.shader;
             m_MeshComponent = creationInfo.meshComponent;
             m_PositionVBO   = std::make_unique<VBO>(m_MeshComponent->m_PositionBuffer);
             m_NormalsVBO    = std::make_unique<VBO>(m_MeshComponent->m_NormalsBuffer);
@@ -33,8 +35,9 @@ namespace Sparrow
             m_VAO->Unbind();
         }
 
-        explicit MeshRendererComponent(MeshComponent& mesh_component)
+        explicit MeshRendererComponent(MeshComponent& mesh_component, SharedPtr<Shader> shader)
         {
+            m_Shader        = shader;
             m_MeshComponent = &mesh_component;
             m_PositionVBO   = std::make_unique<VBO>(m_MeshComponent->m_PositionBuffer);
             m_NormalsVBO    = std::make_unique<VBO>(m_MeshComponent->m_NormalsBuffer);
@@ -49,33 +52,36 @@ namespace Sparrow
             m_VAO->Unbind();
         }
 
-        void Render()
-        {
-            m_VAO->Bind();
-            switch (m_RenderMode)
-            {
-            case RenderMode::PerTriangle:
-                m_EBO->Bind();
-                GLCall(glDrawElements(GL_TRIANGLES, m_MeshComponent->m_IndexCount, GL_UNSIGNED_INT, NULL));
-                m_EBO->Unbind();
-                break;
-            case RenderMode::PerTriangle_Strip:
-                GLCall(glDrawElements(GL_TRIANGLE_STRIP, m_MeshComponent->m_IndexCount, GL_UNSIGNED_INT, 0));
-                break;
-            case RenderMode::PerVertex:
-                GLCall(glDrawArrays(GL_TRIANGLES, 0, m_MeshComponent->m_VertexCount));
-                break;
-            }
-            m_VAO->Unbind();
-        }
+        // void Render()
+        // {
+        //     m_Shader.lock()->Bind();
+        //     m_VAO->Bind();
+        //     switch (m_RenderMode)
+        //     {
+        //     case RenderMode::PerTriangle:
+        //         m_EBO->Bind();
+        //         GLCall(glDrawElements(GL_TRIANGLES, m_MeshComponent->m_IndexCount, GL_UNSIGNED_INT, NULL));
+        //         m_EBO->Unbind();
+        //         break;
+        //     case RenderMode::PerTriangle_Strip:
+        //         GLCall(glDrawElements(GL_TRIANGLE_STRIP, m_MeshComponent->m_IndexCount, GL_UNSIGNED_INT, 0));
+        //         break;
+        //     case RenderMode::PerVertex:
+        //         GLCall(glDrawArrays(GL_TRIANGLES, 0, m_MeshComponent->m_VertexCount));
+        //         break;
+        //     }
+        //     m_VAO->Unbind();
+        //     m_Shader.lock()->Unbind();
+        // }
 
     public:
         MeshComponent* m_MeshComponent {        nullptr        };
-        RenderMode     m_RenderMode    { RenderMode::PerTriangle };
+        RenderMode     m_RenderMode    { RenderMode::PerVertex };
         UniquePtr<VAO> m_VAO;
         UniquePtr<EBO> m_EBO;
         UniquePtr<VBO> m_PositionVBO;
         UniquePtr<VBO> m_NormalsVBO;
         UniquePtr<VBO> m_TexCoord0VBO;
+        std::weak_ptr<Shader> m_Shader;
     };
 } // Sparrow

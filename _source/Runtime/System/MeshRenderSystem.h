@@ -27,8 +27,10 @@ namespace Sparrow
             Render(component);
         }
 
-        void AddComponent(MeshRendererComponentCreationInfo)
+        void AddComponent(MeshRendererComponentCreationInfo& creationInfo)
         {
+            MeshRendererComponent component = MeshRendererComponent(creationInfo);
+            m_MeshRendererComponents.emplace(10, std::move(component));
         }
 
     private:
@@ -44,7 +46,9 @@ namespace Sparrow
             switch (component.m_RenderMode)
             {
             case RenderMode::PerTriangle:
+                component.m_EBO->Bind();
                 GLCall(glDrawElements(GL_TRIANGLES, mesh_component->m_IndexCount * sizeof(GLuint), GL_UNSIGNED_INT, 0));
+                component.m_EBO->Unbind();
                 break;
             case RenderMode::PerTriangle_Strip:
                 GLCall(

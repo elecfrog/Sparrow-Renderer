@@ -7,6 +7,7 @@
 #include "Scene/SceneManager.hpp"
 #include "ImGui/ImGuiManager.h"
 #include "Render/RenderManager.h"
+#include "System/MeshRenderSystem.h"
 
 namespace Sparrow
 {
@@ -41,6 +42,8 @@ namespace Sparrow
 
         m_RenderManager = new RenderManager();
         m_RenderManager->Initialize();
+
+        m_MeshRenderSystem = new MeshRenderSystem();
 
         LOG_INFO(LogModule::App, "Engine::Initialize End");
 

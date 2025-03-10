@@ -11,6 +11,7 @@
 #include "Render/PrimitiveObjects/Plane.hpp"
 #include "Render/PrimitiveObjects/UVSphere.hpp"
 #include "Render/RHI/FrameBuffer.h"
+#include "System/MeshRenderSystem.h"
 
 namespace Sparrow
 {
@@ -272,6 +273,12 @@ namespace Sparrow
             equirectangularToCubemapShader = std::make_shared<Shader>(ShaderPath("ibl/cubemap.vert"),
                                                                       ShaderPath(
                                                                           "ibl/equirectangular_to_cubemap.frag"));
+
+
+            MeshRendererComponentCreationInfo creationInfo;
+            creationInfo.meshComponent = &planeObject.m_MeshComponent;
+            creationInfo.shader        = PlaneShader;
+            g_Engine.m_MeshRenderSystem->AddComponent(creationInfo);
         }
 
         ~Scene_LoadModel() override = default;
@@ -496,7 +503,11 @@ namespace Sparrow
 
             /* Draw plane*/
             auto I = glm::mat4(1.0f);
-            planeObject.Render(PlaneShader, mainCamera, I, light);
+            planeObject.PreRender(PlaneShader, mainCamera, I, light);
+
+            g_Engine.m_MeshRenderSystem->Tick(0.f);
+
+            // PlaneShader->Unbind();
 
             /* Draw cylinder*/
             auto cylinderM = glm::mat4(0.5f);

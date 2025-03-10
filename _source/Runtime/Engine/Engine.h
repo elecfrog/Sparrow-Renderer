@@ -19,6 +19,8 @@ namespace Sparrow
         class ImGuiManager*   m_ImguiManager;
         class SceneManager*   m_SceneManager;
         class RenderManager*  m_RenderManager;
+
+        class MeshRenderSystem * m_MeshRenderSystem;
     };
 
     extern Engine g_Engine;
