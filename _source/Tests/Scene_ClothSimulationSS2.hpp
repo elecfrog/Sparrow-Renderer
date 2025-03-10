@@ -4,12 +4,11 @@
  */
 #pragma once
 
-#include <spdlog/spdlog.h>
+#include <Core/Core.h>
 #include <random>
 #include <functional>
 #include "ScenePreCompiled.h"
 #include "Function/Render/TextureCube.h"
-#include "Core/Maths/Maths.h"
 
 class Scene_ClothSimulationSS2 : public Scene {
 

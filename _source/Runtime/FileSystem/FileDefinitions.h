@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
-
 namespace Sparrow
 {
     enum class FileOpenFlags

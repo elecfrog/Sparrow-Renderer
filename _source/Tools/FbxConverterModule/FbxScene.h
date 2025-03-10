@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "Core/Base/BaseDefinition.h"
+#include <Core/Core.h>
 
 namespace Sparrow::Tools
 {

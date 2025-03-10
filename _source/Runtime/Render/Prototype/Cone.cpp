@@ -1,8 +1,5 @@
 #include "Cone.hpp"
-
-#include "Maths.h"
-#include "MathUtils.h"
-
+#include <Core/Core.h>
 
 namespace Sparrow
 {

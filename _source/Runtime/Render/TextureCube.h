@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
+#include <Core/Core.h>
 #include "RenderDefinitions.h"
 #include "Render/Asset.h"
 

@@ -4,7 +4,8 @@
  */
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
+#include <Core/Core.h>
+
 #include "Render/StaticMesh.h"
 #include "Render/MeshRenderer.h"
 

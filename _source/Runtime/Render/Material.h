@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
+#include <Core/Core.h>
 #include "RHI/Shader.h"
 #include "Texture2D.h"
 

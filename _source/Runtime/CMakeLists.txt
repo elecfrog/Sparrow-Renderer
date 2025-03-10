@@ -52,9 +52,6 @@ add_library(${LIB_NAME} STATIC
         Scene/SceneManager.hpp
         Scene/ScenePreCompiled.h
         Scene/Scene_LoadModel.hpp
-        Scene/MenuPanel.cpp
-        Scene/MenuPanel.h
-
 
         Component/TransformComponent.cpp
         Component/TransformComponent.h
@@ -80,6 +77,8 @@ add_library(${LIB_NAME} STATIC
         ImGui/ImGuiPanels/ImGuiObjectPanel.hpp
         ImGui/ImGuiPanels/ImGuiPanel.hpp
         ImGui/ImGuiPanels/ImGuiTreeNodePanel.hpp
+        ImGui/ImGuiPanels/ImGuiSceneMenu.cpp
+        ImGui/ImGuiPanels/ImGuiSceneMenu.h
 
         ${CMAKE_SOURCE_DIR}/_external/glad/src/glad.c
 )

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
-// #include <GL/glew.h>
-// #include <GL/gl.h>
+#include <Core/Core.h>
 #include <glad/glad.h>
 
 namespace Sparrow

@@ -1,5 +1,4 @@
 #include "CameraComponent.h"
-#include "Core/Base/BaseDefinition.h"
 
 namespace Sparrow
 {

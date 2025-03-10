@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
-#include "Core/Math/Maths.h"
+#include <Core/Core.h>
 
 // LIGHT
 #include "Render/Light.h"

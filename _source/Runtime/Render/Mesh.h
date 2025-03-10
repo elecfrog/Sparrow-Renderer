@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
+#include <Core/Core.h>
 #include "Vertex.h"
 #include "RHI/IndexBuffer.h"
 #include "RHI/VertexBuffer.h"

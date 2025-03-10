@@ -1,8 +1,7 @@
 
-#include "Core/Maths/Maths.h"
-#include "Core/Maths/Transform.h"
-#include "Function/Render/Mesh.h"
-#include "Function/Render/Model.h"
+#include <Core/Core.h>
+#include "Render/Mesh.h"
+#include "Render/Model.h"
 
 // std::string m_FBXModelDirectory;
 

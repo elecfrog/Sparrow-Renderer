@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
+#include <Core/Core.h>
 #include "Component/CameraComponent.h"
 #include "Render/Light.h"
 #include "Render/MeshRenderer.h"

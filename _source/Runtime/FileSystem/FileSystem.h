@@ -1,8 +1,7 @@
 #pragma once
 
 #include "FileDefinitions.h"
-#include "Core/Log/LogSystem.h"
-#include "Core/Base/BaseDefinition.h"
+#include <Core/Core.h>
 
 #include <nfd.h>
 #include "imgui.h"

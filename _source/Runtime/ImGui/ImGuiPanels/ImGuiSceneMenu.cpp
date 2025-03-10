@@ -1,10 +1,10 @@
-#include "MenuPanel.h"
-#include "SceneManager.hpp"
-#include "Engine/Engine.h"
+#include "ImGuiSceneMenu.h"
+#include "Runtime/Scene/SceneManager.hpp"
+#include "Runtime/Engine/Engine.h"
 
 namespace Sparrow
 {
-    void MenuPanel::Draw()
+    void ImGuiSceneMenu::Draw()
     {
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                     ImGui::GetIO().Framerate,
@@ -19,5 +19,4 @@ namespace Sparrow
             }
         }
     }
-}
-
+} 

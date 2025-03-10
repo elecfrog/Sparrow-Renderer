@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "Core/Base/BaseDefinition.h"
+#include <Core/Core.h>
 #include "Animation/AnimClip.h"
 
 

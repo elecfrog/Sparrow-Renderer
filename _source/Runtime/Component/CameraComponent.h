@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
-#include "Core/Log/LogSystem.h"
+#include <Core/Core.h>
 
 namespace Sparrow
 {

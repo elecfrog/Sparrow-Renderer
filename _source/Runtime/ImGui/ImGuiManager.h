@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Base/BaseDefinition.h"
+#include <Core/Core.h>
 
 #include <imgui.h>
 
@@ -10,13 +10,12 @@
 #include "ImGui/ImGuiPanels/ImGuiMenuBar.hpp"
 #include "ImGui/ImGuiPanels/ImGuiObjectPanel.hpp"
 #include "ImGui/ImGuiPanels/ImGuiTreeNodePanel.hpp"
+#include "ImGui/ImGuiPanels/ImGuiSceneMenu.h"
 #include "ImGuiDefinitions.h"
 #include "WindowSystem/WindowSystem.h"
 #include <memory>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-
-#include "Scene/MenuPanel.h"
 
 namespace Sparrow
 {
@@ -114,7 +113,7 @@ namespace Sparrow
 
 		void InitScenePanel()
 		{
-			m_SceneMenu = std::make_shared<MenuPanel>("Scene Menu");
+			m_SceneMenu = std::make_shared<ImGuiSceneMenu>("Scene Menu");
 		}
 
 		void InitMenuBar()
@@ -154,7 +153,7 @@ namespace Sparrow
 		}
 
 	private:
-		SharedPtr<MenuPanel> m_SceneMenu { nullptr };
+		SharedPtr<ImGuiSceneMenu> m_SceneMenu { nullptr };
 
 		std::shared_ptr<ImGuiMenuBar>					m_MainMenuBar;
 		std::shared_ptr<ImGuiObjectPanel>				m_ObjectPanel;

@@ -1,7 +1,6 @@
 #include "Cylinder.hpp"
 
-#include "Maths.h"
-#include "MathUtils.h"
+#include <Core/Core.h>
 #include "Render/MeshRenderer.h"
 
 
