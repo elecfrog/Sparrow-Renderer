@@ -1,20 +1,14 @@
 {
-  "name": "sparrow",
-  "version": "1.0.0",
-  "dependencies": [
-    "assimp",
-    "glm",
-    "glfw3",
-    "fmt",
-    {
-      "name": "spdlog",
-      "version>=": "1.15.1"
-    },
-    {
-      "name": "stb",
-      "version>=": "2024-07-29#1"
-    },
-    "zlib",
-    "nativefiledialog-extended"
-  ]
+  "name" : "sparrow",
+  "version" : "1.0.0",
+  "dependencies" : [ "assimp", "glm", "glfw3", "fmt", {
+    "name" : "spdlog",
+    "version>=" : "1.15.1"
+  }, {
+    "name" : "stb",
+    "version>=" : "2024-07-29#1"
+  }, "zlib", "nativefiledialog-extended", {
+    "name" : "nlohmann-json",
+    "version>=" : "3.11.3#1"
+  } ]
 }

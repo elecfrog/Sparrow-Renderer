@@ -1,8 +1,12 @@
 #include "Engine.h"
+
+#include <Config/ConfigManager.h>
+
 #include "Core/Log/LogSystem.h"
 #include "WindowSystem/WindowSystem.h"
 #include "Scene/SceneManager.hpp"
 #include "ImGui/ImGuiManager.h"
+#include "Render/RenderManager.h"
 
 namespace Sparrow
 {
@@ -19,8 +23,11 @@ namespace Sparrow
     {
         LOG_INFO(LogModule::App, "Engine::Initialize Start");
 
-        // g_Engine = *this;
-        
+        LOG_INFO(LogModule::App, "Engine::Initialize Config Start");
+        m_ConfigManager = new ConfigManager();
+        m_ConfigManager->Initialize();
+        LOG_INFO(LogModule::App, "Engine::Initialize Config End");
+
         m_WindowSystem = new WindowSystem();
         m_WindowSystem->Init(WindowCreateInfo{960, 540, "Sparrow Renderer", false});
 
@@ -31,6 +38,9 @@ namespace Sparrow
 
         m_SceneManager = new SceneManager();
         m_SceneManager->RegisterScenes();
+
+        m_RenderManager = new RenderManager();
+        m_RenderManager->Initialize();
 
         LOG_INFO(LogModule::App, "Engine::Initialize End");
 
@@ -71,7 +81,12 @@ namespace Sparrow
 
     Engine& Engine::CleanUp()
     {
+        delete m_RenderManager;
+
         m_ImguiManager->CleanUp();
+        delete m_ImguiManager;
+
+        delete m_WindowSystem;
 
         return *this;
     }

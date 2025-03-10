@@ -1,0 +1,23 @@
+{
+    "directories": {
+        "config": {
+            "path": "C:/Dev/Sparrow-Renderer/_config",
+            "description": "Configuration files directory"
+        },
+        "assemble": {
+            "path": "${WORKSPACE_ROOT}/assemble",
+            "description": "Installed files directory"
+        },
+        "asset": {
+            "path": "C:/Dev/Sparrow-Renderer/_assets",
+            "description": "Asset files directory"
+        },
+        "shader": {
+            "path": "C:/Dev/Sparrow-Renderer/_assets/shaders",
+            "description": "Shader files directory",
+            "parent": "asset"
+        }
+    },
+    "version": "1.0",
+    "lastModified": "2024-03-10"
+}

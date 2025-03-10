@@ -64,6 +64,8 @@ add_library(${LIB_NAME} STATIC
         FileSystem/FileSystem.cpp
         FileSystem/FileSystem.h
 
+        Config/ConfigManager.cpp
+
         WindowSystem/WindowSystem.cpp
         WindowSystem/WindowSystem.h
 
@@ -81,12 +83,17 @@ add_library(${LIB_NAME} STATIC
         ImGui/ImGuiPanels/ImGuiSceneMenu.h
 
         ${CMAKE_SOURCE_DIR}/_external/glad/src/glad.c
+        Render/RenderManager.cpp
+        Render/RenderManager.h
+        Render/Shader/ShaderManager.cpp
+        Render/Shader/ShaderManager.h
 )
 
 find_package(OpenGL REQUIRED)
 find_package(nfd CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 target_include_directories(${LIB_NAME}
         PUBLIC
@@ -109,6 +116,7 @@ target_link_libraries(${LIB_NAME}
         imgui
         nfd::nfd
         assimp::assimp
+        nlohmann_json::nlohmann_json
 )
 
 set_target_properties(${LIB_NAME} PROPERTIES

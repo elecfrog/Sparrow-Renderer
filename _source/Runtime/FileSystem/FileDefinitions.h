@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Core/Core.h>
+#include <filesystem>
+
 namespace Sparrow
 {
     enum class FileOpenFlags
@@ -17,6 +20,7 @@ namespace Sparrow
         FBX,
         PNG,
         BVH,
+        JSON,
         // ...
     };
 
@@ -29,27 +33,28 @@ namespace Sparrow
         DEFAULT
     };
 
-    const std::map<FileExtensions, std::string> k_FileExtensionsMap =
+    const std::map<FileExtensions, String> k_FileExtensionsMap =
     {
         {FileExtensions::GLTF, ".gltf"},
         {FileExtensions::FBX, ".fbx"},
         {FileExtensions::PNG, ".png"},
         {FileExtensions::BVH, ".bvh"},
+        {FileExtensions::JSON, ".json"},
         // ...
     };
 
     struct FileMetaInfo
     {
-        std::string name{};
-        std::string fullPath{};
+        String name;
+        String fullPath;
     };
 
     struct DirectoryMetaInfo
     {
-        std::string name{};
-        std::string fullPath{};
-        std::vector<DirectoryMetaInfo> subDirectories{};
-        std::vector<FileMetaInfo> files{};
+        String name;
+        String fullPath;
+        Vector<DirectoryMetaInfo> subDirectories;
+        Vector<FileMetaInfo> files;
     };
 
     struct FileTree
