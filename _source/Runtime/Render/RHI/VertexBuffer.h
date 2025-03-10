@@ -22,6 +22,10 @@ namespace Sparrow
 
 		VertexBuffer(std::vector<AttribVertex>& _attribVertices);
 
+		VertexBuffer(std::vector<Vector3f>& _attribVertices);
+
+		VertexBuffer(std::vector<Vector2f>& _attribVertices);
+
 		VertexBuffer(std::vector<SkinnedVertex>& _attribVertices);
 
         ~VertexBuffer();

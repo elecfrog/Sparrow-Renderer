@@ -16,7 +16,7 @@ namespace Sparrow
     }
 
     IndexBuffer::IndexBuffer(std::vector<GLuint>& indices)
-        : m_count((unsigned int)indices.size())
+        : m_count(indices.size())
     {
         ASSERT(sizeof(m_count) == sizeof(GLuint));
 

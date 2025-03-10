@@ -87,6 +87,12 @@ add_library(${LIB_NAME} STATIC
         Render/RenderManager.h
         Render/Shader/ShaderManager.cpp
         Render/Shader/ShaderManager.h
+        Component/MeshComponent.cpp
+        Component/MeshComponent.h
+        Component/MeshRendererComponent.cpp
+        Component/MeshRendererComponent.h
+        System/MeshRenderSystem.cpp
+        System/MeshRenderSystem.h
 )
 
 find_package(OpenGL REQUIRED)

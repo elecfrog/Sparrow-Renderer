@@ -31,6 +31,20 @@ namespace Sparrow
 		glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(AttribVertex), _attribVertices.data(),GL_STATIC_DRAW);
 	}
 
+	VertexBuffer::VertexBuffer(std::vector<Vector3f>& _attribVertices)
+	{
+		glGenBuffers(1, &m_RenderID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+		glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(Vector3f), _attribVertices.data(),GL_STATIC_DRAW);
+	}
+
+	VertexBuffer::VertexBuffer(std::vector<Vector2f>& _attribVertices)
+	{
+		glGenBuffers(1, &m_RenderID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+		glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(Vector2f), _attribVertices.data(),GL_STATIC_DRAW);
+	}
+
 
 	VertexBuffer::VertexBuffer(std::vector<SkinnedVertex>& _attribVertices)
 	{

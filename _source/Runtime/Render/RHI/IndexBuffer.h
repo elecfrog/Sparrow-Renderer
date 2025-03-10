@@ -9,7 +9,7 @@ namespace Sparrow
     {
     private:
         unsigned int m_rendererId;
-        unsigned int m_count;
+        GLuint m_count;
 
     public:
         IndexBuffer() = default;
@@ -26,7 +26,7 @@ namespace Sparrow
         // Unbinds the IndexBuffer
         void Unbind() const;
 
-        unsigned int GetCount() const { return m_count; }
+        GLuint GetCount() const { return m_count; }
 
     protected:
     };
