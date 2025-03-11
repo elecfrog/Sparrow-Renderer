@@ -19,6 +19,8 @@
 #include <iomanip>
 #include <array>
 #include <functional>
+#include <atomic>
+#include <thread>
 
 #include <stdio.h>
 #include <stdlib.h>

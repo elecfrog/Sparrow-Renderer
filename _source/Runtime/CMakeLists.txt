@@ -93,6 +93,13 @@ add_library(${LIB_NAME} STATIC
         Component/MeshRendererComponent.h
         System/MeshRenderSystem.cpp
         System/MeshRenderSystem.h
+        Entity/EntityIdGenerator.cpp
+        Entity/EntityIdGenerator.h
+        Entity/Entity.h
+        System/MeshSystem.cpp
+        System/MeshSystem.h
+        Render/PrimitiveObjects/Plane.cpp
+        Entity/EntityId.h
 )
 
 find_package(OpenGL REQUIRED)

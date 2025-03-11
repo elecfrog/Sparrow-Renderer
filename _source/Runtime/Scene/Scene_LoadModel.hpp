@@ -12,6 +12,7 @@
 #include "Render/PrimitiveObjects/UVSphere.hpp"
 #include "Render/RHI/FrameBuffer.h"
 #include "System/MeshRenderSystem.h"
+#include "System/MeshSystem.h"
 
 namespace Sparrow
 {
@@ -90,7 +91,7 @@ namespace Sparrow
 
 
         // plane
-        Plane planeObject;
+        Plane m_Plane;
         // std::shared_ptr<Mesh> planeMesh;
 
         // sphere
@@ -275,10 +276,8 @@ namespace Sparrow
                                                                           "ibl/equirectangular_to_cubemap.frag"));
 
 
-            MeshRendererComponentCreationInfo creationInfo;
-            creationInfo.meshComponent = &planeObject.m_MeshComponent;
-            creationInfo.shader        = PlaneShader;
-            g_Engine.m_MeshRenderSystem->AddComponent(creationInfo);
+            m_Plane.BuildMeshComponent();
+            m_Plane.BuildMeshRendererComponent(PlaneShader);
         }
 
         ~Scene_LoadModel() override = default;
@@ -300,6 +299,7 @@ namespace Sparrow
             double currentTime = glfwGetTime();
             float deltaTime = float(currentTime - lastTime);
 
+            g_Engine.m_MeshSystem->Tick(_deltaTime);
 
             model_matrix
                 = glm::translate(glm::mat4(1.0f), scene_Transform.position)
@@ -503,7 +503,7 @@ namespace Sparrow
 
             /* Draw plane*/
             auto I = glm::mat4(1.0f);
-            planeObject.PreRender(PlaneShader, mainCamera, I, light);
+            m_Plane.PreRender(PlaneShader, mainCamera, I, light);
 
             g_Engine.m_MeshRenderSystem->Tick(0.f);
 

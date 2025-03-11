@@ -52,28 +52,6 @@ namespace Sparrow
             m_VAO->Unbind();
         }
 
-        // void Render()
-        // {
-        //     m_Shader.lock()->Bind();
-        //     m_VAO->Bind();
-        //     switch (m_RenderMode)
-        //     {
-        //     case RenderMode::PerTriangle:
-        //         m_EBO->Bind();
-        //         GLCall(glDrawElements(GL_TRIANGLES, m_MeshComponent->m_IndexCount, GL_UNSIGNED_INT, NULL));
-        //         m_EBO->Unbind();
-        //         break;
-        //     case RenderMode::PerTriangle_Strip:
-        //         GLCall(glDrawElements(GL_TRIANGLE_STRIP, m_MeshComponent->m_IndexCount, GL_UNSIGNED_INT, 0));
-        //         break;
-        //     case RenderMode::PerVertex:
-        //         GLCall(glDrawArrays(GL_TRIANGLES, 0, m_MeshComponent->m_VertexCount));
-        //         break;
-        //     }
-        //     m_VAO->Unbind();
-        //     m_Shader.lock()->Unbind();
-        // }
-
     public:
         MeshComponent* m_MeshComponent {        nullptr        };
         RenderMode     m_RenderMode    { RenderMode::PerVertex };

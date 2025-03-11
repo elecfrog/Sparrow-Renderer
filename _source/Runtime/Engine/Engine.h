@@ -20,7 +20,9 @@ namespace Sparrow
         class SceneManager*   m_SceneManager;
         class RenderManager*  m_RenderManager;
 
-        class MeshRenderSystem * m_MeshRenderSystem;
+        class MeshSystem*       m_MeshSystem;
+        class MeshRenderSystem* m_MeshRenderSystem;
+
     };
 
     extern Engine g_Engine;
