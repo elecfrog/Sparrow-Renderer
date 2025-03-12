@@ -4,20 +4,15 @@
 
 namespace Sparrow
 {
-    struct Rotation
-    {
-        Quaternion quaternion{};
-        Vector3f euler{};
-    };
-
     struct TransformComponent
     {
-        Vector3f position {};
-        Rotation rotation {};
-        Vector3f scaling  {};
+        Vector3 position {Vector3::Zero()};
+        QuaternionW rotation {QuaternionW::Identity()};
+        Vector3 scaling  {Vector3::One()};
 
-        TransformComponent() : position(Vector3f(0.f)), rotation(Vector3f(0.f)), scaling(Vector3f(1.f))
+        Matrix4x4 GetTransformMatrix()
         {
+            return Matrix4x4::CreateTRS(position, rotation, scaling);
         }
     };
 }

@@ -81,6 +81,8 @@ add_library(${LIB_NAME} STATIC
         ImGui/ImGuiPanels/ImGuiTreeNodePanel.hpp
         ImGui/ImGuiPanels/ImGuiSceneMenu.cpp
         ImGui/ImGuiPanels/ImGuiSceneMenu.h
+        ImGui/FlexComponentView/TransformComponentView.cpp
+        ImGui/FlexComponentView/TransformComponentView.h
 
         ${CMAKE_SOURCE_DIR}/_external/glad/src/glad.c
         Render/RenderManager.cpp

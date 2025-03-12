@@ -15,6 +15,11 @@ add_library(${LIB_NAME} STATIC
         Pow.hpp
         Transform.cpp
         Transform.h
+        Vector2.h
+        Vector3.h
+        Vector4.h
+        QuaternionW.h
+        Matrix4x4.h
 )
 
 target_include_directories(${LIB_NAME}

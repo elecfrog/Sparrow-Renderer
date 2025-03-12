@@ -16,12 +16,15 @@ namespace Sparrow
     {
         Plane() = default;
 
-        void PreRender(const SharedPtr<Shader>& shader, CameraComponent& camera, glm::mat4& model_matrix, const Light& light)
+        void PreRender(const SharedPtr<Shader>& shader, CameraComponent& camera, const Light& light)
         {
             shader->Bind();
+
+            auto i = m_TransformComponent.GetTransformMatrix();
+
             // m_MeshRendererComponent.m_VAO->Bind();
             //        glm::mat4 I = glm::mat4(1.0f);
-            shader->SetUniformMat4f("M", model_matrix);
+            shader->SetUniformMat4f("M", i);
             shader->SetUniformMat4f("V", camera.viewMatrix);
             shader->SetUniformMat4f("P", camera.projMatrix);
 

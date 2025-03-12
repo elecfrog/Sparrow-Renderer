@@ -203,6 +203,7 @@ namespace Sparrow
         Shader& SetUniform3f(const std::string& name, float _x, float _y, float _z);
 
         Shader& SetUniformMat4f(const std::string& name, glm::mat4& matrix);
+        Shader& SetUniformMat4f(const std::string& name, Matrix4x4& matrix);
 
         Shader& SetUniformMat3f(const std::string& name, glm::mat3& matrix);
 

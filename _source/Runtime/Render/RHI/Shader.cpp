@@ -83,6 +83,12 @@ namespace Sparrow
         return *this;
     }
 
+    Shader& Shader::SetUniformMat4f(const std::string& name, Matrix4x4& matrix)
+    {
+        GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, matrix.GetPtr()))
+        return *this;
+    }
+
     Shader& Shader::SetUniformMat3f(const std::string& name, glm::mat3& matrix)
     {
         GLCall(glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]))

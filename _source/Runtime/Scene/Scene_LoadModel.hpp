@@ -7,6 +7,7 @@
 #include "Component/TransformComponent.h"
 #include "FileSystem/FileSystem.h"
 #include "Core/Math/GaussianKernel.hpp"
+#include "ImGui/FlexComponentView/TransformComponentView.h"
 #include "Render/Model.h"
 #include "Render/PrimitiveObjects/Plane.hpp"
 #include "Render/PrimitiveObjects/UVSphere.hpp"
@@ -88,6 +89,8 @@ namespace Sparrow
 
         // blur shader
         std::shared_ptr<Shader> SceneShader;
+
+        UniquePtr<TransformComponentView> m_TransformComponentView;
 
 
         // plane
@@ -188,8 +191,7 @@ namespace Sparrow
             //load model
             scene_Model = Model::LoadModel(AssetPath("DamagedHelmet/DamagedHelmet.gltf"));
             scene_Transform.position = glm::vec3(0.f, 1.1f, 0.f);
-            scene_Transform.rotation = Rotation{glm::vec3(89.43f, .0f, 0.f)};
-
+            scene_Transform.rotation = QuaternionW::FromEuler(glm::vec3(89.43f, .0f, 0.f));
 
             // Framebuffers
             auto w_width = g_Engine.m_WindowSystem->GetWindowWidth();
@@ -278,6 +280,8 @@ namespace Sparrow
 
             m_Plane.BuildMeshComponent();
             m_Plane.BuildMeshRendererComponent(PlaneShader);
+
+            m_TransformComponentView = MakeUnique<TransformComponentView>();
         }
 
         ~Scene_LoadModel() override = default;
@@ -301,10 +305,7 @@ namespace Sparrow
 
             g_Engine.m_MeshSystem->Tick(_deltaTime);
 
-            model_matrix
-                = glm::translate(glm::mat4(1.0f), scene_Transform.position)
-                * glm::mat4_cast(scene_Transform.rotation.quaternion)
-                * glm::scale(glm::mat4(1.0f), scene_Transform.scaling);
+            model_matrix = scene_Transform.GetTransformMatrix();
 
             for (const auto& subMesh : scene_Model->GetMeshes())
             {
@@ -359,7 +360,7 @@ namespace Sparrow
                     MrtShader->SetUniform3f("lightPos", light.position);
                     MrtShader->SetUniform3f("viewPos", mainCamera.cameraPos);
 
-                    glm::vec3 lightDirection = glm::normalize(light.position - scene_Transform.position);
+                    glm::vec3 lightDirection = glm::normalize(light.position - scene_Transform.position.GetGLMVec3());
 
                     MrtShader->SetUniform3f("lit.direction", lightDirection);
                     MrtShader->SetUniform1f("lit.innerCutOff", glm::cos(glm::radians(innerCutOff)));
@@ -502,8 +503,7 @@ namespace Sparrow
             }
 
             /* Draw plane*/
-            auto I = glm::mat4(1.0f);
-            m_Plane.PreRender(PlaneShader, mainCamera, I, light);
+            m_Plane.PreRender(PlaneShader, mainCamera, light);
 
             g_Engine.m_MeshRenderSystem->Tick(0.f);
 
@@ -545,15 +545,8 @@ namespace Sparrow
             ImGui::Checkbox("Wireframe Mode", &is_wireframe);
             if (ImGui::Button("ReloadShader") || ImGui::IsKeyPressed('F')) reloadShaders = true;
 
-            ImGui::BeginChild("Transform", ImVec2(0, 90));
-            if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                ImGui::DragFloat3("Position", glm::value_ptr(scene_Transform.position), 0.01f);
-                ImGui::DragFloat3("Scale", glm::value_ptr(scene_Transform.scaling), 0.01f);
-                ImGui::DragFloat3("Rotation", glm::value_ptr(scene_Transform.rotation.euler), 0.01f);
-                scene_Transform.rotation.quaternion = glm::quat(scene_Transform.rotation.euler);
-            }
-            ImGui::EndChild();
+            m_TransformComponentView->SetTransformComponent(&m_Plane.m_TransformComponent);
+            m_TransformComponentView->OnImGuiRender();
 
             ImGui::Separator();
 
