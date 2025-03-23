@@ -44,6 +44,14 @@ add_library(${LIB_NAME} STATIC
         Render/Prototype/Cylinder.hpp
         Render/Prototype/Prototype.cpp
         Render/Prototype/Prototype.hpp
+        Render/UBO.h
+        Render/UBOManager.cpp
+        Render/UBOManager.h
+        Render/PipelineLayout.cpp
+        Render/PipelineLayout.h
+        Render/PipelineLayoutManager.cpp
+        Render/PipelineLayoutManager.h
+
 
         Engine/Engine.cpp
         Engine/Engine.h
@@ -102,6 +110,7 @@ add_library(${LIB_NAME} STATIC
         System/MeshSystem.h
         Render/PrimitiveObjects/Plane.cpp
         Entity/EntityId.h
+        Scene/Scene.cpp
 )
 
 find_package(OpenGL REQUIRED)

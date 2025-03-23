@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Vector3.h"
-#include <cereal/cereal.hpp>
+
 
 namespace Sparrow
 {
@@ -124,14 +124,6 @@ namespace Sparrow
 
         // 类型转换
         operator glm::vec4() const { return m_Value; }
-
-        template <class Archive>
-        void serialize(Archive& ar)
-        {
-            ar(
-                cereal::make_nvp("vector4", m_Value)
-            );
-        }
 
     private:
         glm::vec4 m_Value;

@@ -182,7 +182,7 @@ namespace Sparrow
             RegisterInputs();
 
             // Init Plane
-            PlaneShader  = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
+            PlaneShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
             SphereShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
 
             cylinderObject = std::make_shared<Cylinder>(glm::vec3(0, 0.5f, 0.f), glm::vec3(0.f, 0.001f, 0.f));
@@ -282,9 +282,13 @@ namespace Sparrow
             m_Plane.BuildMeshRendererComponent(PlaneShader);
 
             m_TransformComponentView = MakeUnique<TransformComponentView>();
+
+            InitSceneRenderPipelineLayouts();
         }
 
         ~Scene_LoadModel() override = default;
+
+        void InitSceneRenderPipelineLayouts();
 
         void InitOpenGLFunctions() override
         {
@@ -462,7 +466,9 @@ namespace Sparrow
                 GLCall(glActiveTexture(GL_TEXTURE0 + textureManager.GetSlot(skybox_textureCube->GetRenderId())))
                 //            textureManager.Update(skybox_textureCube->GetRenderId());
                 GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_textureCube->GetRenderId()));
-                GLCall(glViewport(0, 0, g_Engine.m_WindowSystem->GetWindowWidth(), g_Engine.m_WindowSystem->GetWindowHeight()))
+                GLCall(
+                    glViewport(0, 0, g_Engine.m_WindowSystem->GetWindowWidth(), g_Engine.m_WindowSystem->GetWindowHeight
+                        ()))
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 SceneShader->Bind();
@@ -496,11 +502,11 @@ namespace Sparrow
              * Normal Single Render Pass
              * */
 
-            {
-                glm::mat4 M = glm::translate(glm::mat4(1.0f), light.position);
-                M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
-                sphereObject.Render(SphereShader, mainCamera, M, light);
-            }
+            // {
+            //     glm::mat4 M = glm::translate(glm::mat4(1.0f), light.position);
+            //     M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
+            //     sphereObject.Render(SphereShader, mainCamera, M, light);
+            // }
 
             /* Draw plane*/
             m_Plane.PreRender(PlaneShader, mainCamera, light);

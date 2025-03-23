@@ -14,6 +14,7 @@ namespace Sparrow
         ~RenderManager();
         void Initialize();
     public:
+        class PipelineLayoutManager* m_PipelineLayoutManager;
         class ShaderManager* m_ShaderManager { nullptr };
     };
 } // Sparrow

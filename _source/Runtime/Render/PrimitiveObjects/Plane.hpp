@@ -5,10 +5,14 @@
 #pragma once
 
 #include "Component/CameraComponent.h"
+#include "Engine/Engine.h"
 #include "Entity/Entity.h"
 #include "Render/Light.h"
 #include "Render/MeshRenderer.h"
 #include "System/MeshRenderSystem.h"
+#include "Render/UBOManager.h"
+#include "Render/PipelineLayoutManager.h"
+#include "Render/RenderManager.h"
 
 namespace Sparrow
 {
@@ -20,19 +24,28 @@ namespace Sparrow
         {
             shader->Bind();
 
-            auto i = m_TransformComponent.GetTransformMatrix();
+            // 获取或创建PipelineLayout
+            PipelineLayoutManager*    pipeline_layout_manager = g_Engine.m_RenderManager->m_PipelineLayoutManager;
+            SharedPtr<PipelineLayout> layout = pipeline_layout_manager->GetPipelineLayout("DefaultPipeline");
 
-            // m_MeshRendererComponent.m_VAO->Bind();
-            //        glm::mat4 I = glm::mat4(1.0f);
-            shader->SetUniformMat4f("M", i);
-            shader->SetUniformMat4f("V", camera.viewMatrix);
-            shader->SetUniformMat4f("P", camera.projMatrix);
+            // 更新Matrices UBO
+            MatricesUBO matrices;
+            matrices.model = m_TransformComponent.GetTransformMatrix();
+            matrices.view = camera.viewMatrix;
+            matrices.projection = camera.projMatrix;
+            layout->UpdateUBO("Matrices", &matrices);
 
-            // Lighting Relevant
-            shader->SetUniform3f("light.diffuseColor", light.color);
-            shader->SetUniform3f("light.ambientColor", light.ambient_color);
-            shader->SetUniform3f("light.position", light.position);
-            shader->SetUniform3f("viewPos", camera.cameraPos);
+            // 更新Camera UBO
+            CameraUBO cameraData;
+            cameraData.cameraPos = camera.cameraPos;
+            layout->UpdateUBO("Camera", &cameraData);
+
+            // 更新Light UBO
+            LightUBO lightData;
+            lightData.position = light.position;
+            lightData.color = light.color;
+            lightData.ambient = light.ambient_color;
+            layout->UpdateUBO("Light", &lightData);
 
             // Setting Materials
             shader->SetUniform1i("tex_Diffuse", 1);

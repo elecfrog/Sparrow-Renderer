@@ -14,7 +14,13 @@ CmakeSettings.json
 *.dll
 *.manifest
 # big Model files
-_assets/
+_assets/DamagedHelmet/
+_assets/textures/
+_assets/animations/
+_assets/cloth/
+_assets/skybox/
+
+
 _build/
 _scripts/
 

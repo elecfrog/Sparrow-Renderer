@@ -3,10 +3,9 @@
 * Copyright (c) 2025 East10 All rights reserved.
 ------------------------------------------------------------------------------------------------------------ */
 
-#pragma once
-
 #include "RenderManager.h"
 
+#include "PipelineLayoutManager.h"
 #include "Shader/ShaderManager.h"
 
 namespace Sparrow
@@ -14,10 +13,12 @@ namespace Sparrow
     RenderManager::~RenderManager()
     {
         delete m_ShaderManager;
+        delete m_PipelineLayoutManager;
     }
 
     void RenderManager::Initialize()
     {
-        m_ShaderManager = new ShaderManager();
+        m_PipelineLayoutManager = new PipelineLayoutManager();
+        m_ShaderManager         = new ShaderManager();
     }
 } // Sparrow
