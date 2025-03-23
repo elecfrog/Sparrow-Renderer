@@ -4,6 +4,9 @@
 ------------------------------------------------------------------------------------------------------------ */
 
 #include "Scene_LoadModel.hpp"
+#include "Render/PipelineLayoutManager.h"
+#include "Render/RenderManager.h"
+#include "Render/UBO.h"
 
 namespace Sparrow
 {
@@ -29,6 +32,6 @@ namespace Sparrow
         m_RenderPass.SetShader(m_PlaneShader);
         m_RenderPass.SetPipelineLayout(layout);
         m_RenderPass.SetMainCameraComponent(&mainCamera);
-        m_RenderPass.SetLightComponent(&light);
+        m_RenderPass.SetLightComponent(&m_Light);
     }
 }

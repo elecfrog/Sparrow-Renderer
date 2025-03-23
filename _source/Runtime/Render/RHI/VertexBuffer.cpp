@@ -3,68 +3,83 @@
 
 namespace Sparrow
 {
-	VertexBuffer::VertexBuffer(const void* data, uint32_t size)
-	{
-		GLCall(glGenBuffers(1, &m_RenderID));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RenderID));
-		GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
-	}
+    VertexBuffer::VertexBuffer(const void* data, uint32_t size)
+    {
+        GLCall(glGenBuffers(1, &m_RenderID));
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RenderID));
+        GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
+    }
 
-	VertexBuffer::VertexBuffer(std::vector<float>& _vertices)
-	{
-		GLCall(glGenBuffers(1, &m_RenderID));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RenderID));
-		GLCall(glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(float), _vertices.data(), GL_STATIC_DRAW));
-	}
+    VertexBuffer::VertexBuffer(std::vector<float>& _vertices)
+    {
+        GLCall(glGenBuffers(1, &m_RenderID));
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RenderID));
+        GLCall(glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(float), _vertices.data(), GL_STATIC_DRAW));
+    }
 
-	VertexBuffer::VertexBuffer(const std::vector<float>& _vertices)
-	{
-		GLCall(glGenBuffers(1, &m_RenderID));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RenderID));
-		GLCall(glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(float), _vertices.data(), GL_STATIC_DRAW));
-	}
+    VertexBuffer::VertexBuffer(const std::vector<float>& _vertices)
+    {
+        GLCall(glGenBuffers(1, &m_RenderID));
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RenderID));
+        GLCall(glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(float), _vertices.data(), GL_STATIC_DRAW));
+    }
 
-	VertexBuffer::VertexBuffer(std::vector<AttribVertex>& _attribVertices)
-	{
-		glGenBuffers(1, &m_RenderID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
-		glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(AttribVertex), _attribVertices.data(),GL_STATIC_DRAW);
-	}
+    VertexBuffer::VertexBuffer(std::vector<AttribVertex>& _attribVertices)
+    {
+        glGenBuffers(1, &m_RenderID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+        glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(AttribVertex), _attribVertices.data(),
+                     GL_STATIC_DRAW);
+    }
 
-	VertexBuffer::VertexBuffer(std::vector<Vector3f>& _attribVertices)
-	{
-		glGenBuffers(1, &m_RenderID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
-		glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(Vector3f), _attribVertices.data(),GL_STATIC_DRAW);
-	}
+    VertexBuffer::VertexBuffer(std::vector<Vector3f>& _attribVertices)
+    {
+        glGenBuffers(1, &m_RenderID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+        glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(Vector3f), _attribVertices.data(),GL_STATIC_DRAW);
+    }
 
-	VertexBuffer::VertexBuffer(std::vector<Vector2f>& _attribVertices)
-	{
-		glGenBuffers(1, &m_RenderID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
-		glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(Vector2f), _attribVertices.data(),GL_STATIC_DRAW);
-	}
+    VertexBuffer::VertexBuffer(Vector<Vector3>& buffer)
+    {
+        glGenBuffers(1, &m_RenderID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+        glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(Vector3f), buffer.data(),GL_STATIC_DRAW);
+    }
 
+    VertexBuffer::VertexBuffer(std::vector<Vector2f>& _attribVertices)
+    {
+        glGenBuffers(1, &m_RenderID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+        glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(Vector2f), _attribVertices.data(),GL_STATIC_DRAW);
+    }
 
-	VertexBuffer::VertexBuffer(std::vector<SkinnedVertex>& _attribVertices)
-	{
-		glGenBuffers(1, &m_RenderID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
-		glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(SkinnedVertex), _attribVertices.data(),GL_STATIC_DRAW);
-	}
+    VertexBuffer::VertexBuffer(Vector<Vector2>& buffer)
+    {
+        glGenBuffers(1, &m_RenderID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+        glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(Vector2), buffer.data(),GL_STATIC_DRAW);
+    }
 
-	VertexBuffer::~VertexBuffer()
-	{
-		GLCall(glDeleteBuffers(1, &m_RenderID));
-	}
+    VertexBuffer::VertexBuffer(std::vector<SkinnedVertex>& _attribVertices)
+    {
+        glGenBuffers(1, &m_RenderID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_RenderID);
+        glBufferData(GL_ARRAY_BUFFER, _attribVertices.size() * sizeof(SkinnedVertex), _attribVertices.data(),
+                     GL_STATIC_DRAW);
+    }
 
-	void VertexBuffer::Bind() const
-	{
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RenderID));
-	}
+    VertexBuffer::~VertexBuffer()
+    {
+        GLCall(glDeleteBuffers(1, &m_RenderID));
+    }
 
-	void VertexBuffer::Unbind() const
-	{
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-	}
+    void VertexBuffer::Bind() const
+    {
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RenderID));
+    }
+
+    void VertexBuffer::Unbind() const
+    {
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    }
 } // namespace elf

@@ -7,6 +7,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Core/Math/GaussianKernel.hpp"
 #include "ImGui/FlexComponentView/TransformComponentView.h"
+#include "Render/Light.h"
 #include "Render/Model.h"
 #include "Render/Pass/RenderPass.h"
 
@@ -99,17 +100,15 @@ namespace Sparrow
         RenderPass m_RenderPass;
 
         // Entities
-        Plane    m_Plane;
-        Cylinder m_Cylinder {Vector3f(0, 0.5f, 0.f), Vector3f(0.f, 0.001f, 0.f)};
+        Plane m_Plane;
+        Cylinder m_Cylinder{Vector3f(0, 0.5f, 0.f), Vector3f(0.f, 0.001f, 0.f)};
+        UVSphere m_UVSphere = UVSphere{};
 
-        // sphere
-        UVSphere sphereObject;
-
-        // sphere
 
         // MRT
         std::shared_ptr<FrameBuffer> mrtFBO;
 
+        Light m_Light;
 
         TextureManager textureManager;
 
@@ -134,8 +133,7 @@ namespace Sparrow
          * Shaders
          */
         std::shared_ptr<Shader> BlurShader;
-        // std::shared_ptr<Shader> CylinderShader;
-        std::shared_ptr<Shader> SphereShader;
+
         std::shared_ptr<Shader> m_PlaneShader;
 
         unsigned int quadVAO = 0;
@@ -187,10 +185,6 @@ namespace Sparrow
 
             // Init Plane
             m_PlaneShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
-            SphereShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
-
-            // cylinderObject = std::make_shared<Cylinder>();
-            // CylinderShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
 
             //load model
             scene_Model = Model::LoadModel(AssetPath("DamagedHelmet/DamagedHelmet.gltf"));
@@ -282,17 +276,10 @@ namespace Sparrow
                                                                           "ibl/equirectangular_to_cubemap.frag"));
 
 
-            m_Plane.BuildMeshComponent();
-            m_Plane.BuildMeshRendererComponent(m_PlaneShader);
-
-            m_Cylinder.BuildMeshComponent();
-            m_Cylinder.BuildMeshRendererComponent(m_PlaneShader);
-
-
-            m_TransformComponentView = MakeUnique<TransformComponentView>();
-
             InitSceneRenderPipelineLayouts();
             InitRenderPass();
+
+            m_TransformComponentView = MakeUnique<TransformComponentView>();
         }
 
         ~Scene_LoadModel() override = default;
@@ -332,17 +319,22 @@ namespace Sparrow
 
             fn_wireframeMode(is_wireframe);
 
+            // Matrix4x4::CreateTRS(light.position, QuaternionW::Identity(), Vector3(0.05f));
+            // glm::mat4 M = glm::translate(glm::mat4(1.0f), light.position);
+            // M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
+
+            m_UVSphere.m_TransformComponent.position  = m_Light.position;
+            m_UVSphere.m_TransformComponent.scaling   = Vector3(0.05f);
 
             m_RenderPass.SetShader(m_PlaneShader);
             m_RenderPass.EnqueueRenderEntity(m_Cylinder.m_EntityId);
             m_RenderPass.EnqueueRenderEntity(m_Plane.m_EntityId);
+            m_RenderPass.EnqueueRenderEntity(m_UVSphere.m_EntityId);
 
             //
             // ECS Update
             //
             g_Engine.m_MeshSystem->Tick(_deltaTime);
-
-
         }
 
         void OnRender() override
@@ -353,7 +345,6 @@ namespace Sparrow
             {
                 ReloadShader(MrtShader);
                 ReloadShader(m_PlaneShader);
-                ReloadShader(SphereShader);
                 ReloadShader(BlurShader);
                 ReloadShader(SceneShader);
                 reloadShaders = false;
@@ -382,13 +373,14 @@ namespace Sparrow
                     MrtShader->SetUniformMat4f("MV", ModelViewMatrix);
 
                     // Lighting Relevant
-                    MrtShader->SetUniform3f("lightColor", light.color);
-                    MrtShader->SetUniform3f("lightPos", light.position);
+                    MrtShader->SetUniform3f("lightColor", m_Light.color);
+                    MrtShader->SetUniform3f("lightPos", m_Light.position);
                     MrtShader->SetUniform3f("viewPos", mainCamera.cameraPos);
 
-                    glm::vec3 lightDirection = glm::normalize(light.position - scene_Transform.position.GetGLMVec3());
 
-                    MrtShader->SetUniform3f("lit.direction", lightDirection);
+                    Vector3 light_direction = (m_Light.position - scene_Transform.position).Normalized();
+
+                    MrtShader->SetUniform3f("lit.direction", light_direction);
                     MrtShader->SetUniform1f("lit.innerCutOff", glm::cos(glm::radians(innerCutOff)));
                     MrtShader->SetUniform1f("lit.outerCutOff", glm::cos(glm::radians(outerCutOff)));
 
@@ -520,16 +512,6 @@ namespace Sparrow
             glEnable(GL_DEPTH_TEST);
             glDepthMask(GL_TRUE);
 
-            /*
-             * Normal Single Render Pass
-             * */
-
-            {
-                glm::mat4 M = glm::translate(glm::mat4(1.0f), light.position);
-                M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
-                sphereObject.Render(SphereShader, mainCamera, M, light);
-            }
-
             //
             // Plane Pass
             //
@@ -574,8 +556,8 @@ namespace Sparrow
             ImGui::BeginChild("Light", ImVec2(0, 90));
             if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                ImGui::DragFloat3("Position", glm::value_ptr(light.position), 0.01f);
-                ImGui::DragFloat3("Color", glm::value_ptr(light.color), 0.01f);
+                ImGui::DragFloat3("Position", m_Light.position.GetPtr(), 0.01f);
+                ImGui::DragFloat3("Color", m_Light.color.GetPtr(), 0.01f);
             }
             ImGui::EndChild();
 

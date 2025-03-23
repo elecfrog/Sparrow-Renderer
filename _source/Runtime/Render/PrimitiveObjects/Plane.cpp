@@ -8,45 +8,49 @@
 #include "System/MeshSystem.h"
 #include "Render/MeshRenderer.h"
 #include "System/MeshRenderSystem.h"
-#include "Render/UBOManager.h"
-#include "Render/PipelineLayoutManager.h"
 
 namespace Sparrow
 {
+    Plane::Plane()
+    {
+        BuildMeshComponent();
+        BuildMeshRendererComponent();
+    }
+
     void Plane::BuildMeshComponent()
     {
         MeshComponent component;
         component.m_PositionBuffer  = {
-            Vector3f(-2.0f, 0.0f, 2.0f),   // 第 0 个顶点
-            Vector3f(-2.0f, 0.0f, -2.0f),  // 第 1 个顶点
-            Vector3f(2.0f, 0.0f, 2.0f),    // 第 2 个顶点
-            Vector3f(2.0f, 0.0f, 2.0f),    // 第 3 个顶点（重复）
-            Vector3f(-2.0f, 0.0f, -2.0f),  // 第 4 个顶点（重复）
-            Vector3f(2.0f, 0.0f, -2.0f)    // 第 5 个顶点
+            Vector3(-2.0f, 0.0f, 2.0f),   // 第 0 个顶点
+            Vector3(-2.0f, 0.0f, -2.0f),  // 第 1 个顶点
+            Vector3(2.0f, 0.0f, 2.0f),    // 第 2 个顶点
+            Vector3(2.0f, 0.0f, 2.0f),    // 第 3 个顶点（重复）
+            Vector3(-2.0f, 0.0f, -2.0f),  // 第 4 个顶点（重复）
+            Vector3(2.0f, 0.0f, -2.0f)    // 第 5 个顶点
         };
         component.m_NormalsBuffer   = {
-            Vector3f(0.0f, 1.0f, 0.0f),    // 第 0 个顶点
-            Vector3f(0.0f, 1.0f, 0.0f),    // 第 1 个顶点
-            Vector3f(0.0f, 1.0f, 0.0f),    // 第 2 个顶点
-            Vector3f(0.0f, 1.0f, 0.0f),    // 第 3 个顶点（重复）
-            Vector3f(0.0f, 1.0f, 0.0f),    // 第 4 个顶点（重复）
-            Vector3f(0.0f, 1.0f, 0.0f)     // 第 5 个顶点
+            Vector3(0.0f, 1.0f, 0.0f),    // 第 0 个顶点
+            Vector3(0.0f, 1.0f, 0.0f),    // 第 1 个顶点
+            Vector3(0.0f, 1.0f, 0.0f),    // 第 2 个顶点
+            Vector3(0.0f, 1.0f, 0.0f),    // 第 3 个顶点（重复）
+            Vector3(0.0f, 1.0f, 0.0f),    // 第 4 个顶点（重复）
+            Vector3(0.0f, 1.0f, 0.0f)     // 第 5 个顶点
         };;
         component.m_TangentsBuffer   = {
-            Vector3f(0.f),    // 第 0 个顶点
-            Vector3f(0.f),    // 第 1 个顶点
-            Vector3f(0.f),    // 第 2 个顶点
-            Vector3f(0.f),    // 第 3 个顶点（重复）
-            Vector3f(0.f),    // 第 4 个顶点（重复）
-            Vector3f(0.f)     // 第 5 个顶点
+            Vector3(0.f),    // 第 0 个顶点
+            Vector3(0.f),    // 第 1 个顶点
+            Vector3(0.f),    // 第 2 个顶点
+            Vector3(0.f),    // 第 3 个顶点（重复）
+            Vector3(0.f),    // 第 4 个顶点（重复）
+            Vector3(0.f)     // 第 5 个顶点
         };
         component.m_TexCoord0Buffer  = {
-            Vector2f(1.0f, 0.0f),    // 第 0 个顶点
-            Vector2f(1.0f, 1.0f),    // 第 1 个顶点
-            Vector2f(0.0f, 0.0f),    // 第 2 个顶点
-            Vector2f(0.0f, 0.0f),    // 第 3 个顶点（重复）
-            Vector2f(1.0f, 1.0f),    // 第 4 个顶点（重复）
-            Vector2f(0.0f, 1.0f)     // 第 5 个顶点
+            Vector2(1.0f, 0.0f),    // 第 0 个顶点
+            Vector2(1.0f, 1.0f),    // 第 1 个顶点
+            Vector2(0.0f, 0.0f),    // 第 2 个顶点
+            Vector2(0.0f, 0.0f),    // 第 3 个顶点（重复）
+            Vector2(1.0f, 1.0f),    // 第 4 个顶点（重复）
+            Vector2(0.0f, 1.0f)     // 第 5 个顶点
         };
 
         component.m_IndicesBuffer    = {
@@ -61,9 +65,9 @@ namespace Sparrow
         m_MeshComponent = g_Engine.m_MeshSystem->GetComponent(m_EntityId);
     }
 
-    void Plane::BuildMeshRendererComponent(SharedPtr<Shader> shader)
+    void Plane::BuildMeshRendererComponent()
     {
-        MeshRendererComponent renderer_component(*m_MeshComponent, shader);
+        MeshRendererComponent renderer_component(*m_MeshComponent);
         // renderer_component.m_Shader = shader;
         // renderer_component.m_MeshComponent =  m_MeshComponent;
         g_Engine.m_MeshRenderSystem->AddComponent(m_EntityId, std::move(renderer_component));

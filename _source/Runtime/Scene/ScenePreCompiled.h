@@ -2,14 +2,11 @@
 
 #include <Core/Core.h>
 
-// LIGHT
-#include "Render/Light.h"
 #include "Render/TextureCube.h"
 #include <cereal/cereal.hpp>
 
 namespace Sparrow
 {
-    static inline Light light;
     static inline glm::mat4 model_matrix = glm::mat4(1.0f);
 
     // static void ExportOBJ(fs::path path, std::shared_ptr<Cloth>& cloth)

@@ -232,9 +232,8 @@ namespace Sparrow
         void CheckShaderProgram(unsigned int shaderId, std::string type);
     };
 
-
-    static void ReloadShader(const std::shared_ptr<Shader>& shader)
+    static SharedPtr<Shader> ReloadShader(const std::shared_ptr<Shader>& shader)
     {
-        std::make_shared<Shader>(shader->vertPath, shader->fragPath);
+        return std::make_shared<Shader>(shader->vertPath, shader->fragPath);
     }
 }

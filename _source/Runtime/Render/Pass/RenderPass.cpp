@@ -41,15 +41,21 @@ namespace Sparrow
             switch (mesh_renderer_component->m_RenderMode)
             {
             case RenderMode::PerTriangle:
-                mesh_renderer_component->m_EBO->Bind();
-                GLCall(glDrawElements(GL_TRIANGLES, mesh_component->m_IndexCount * sizeof(GLuint), GL_UNSIGNED_INT, 0));
-                mesh_renderer_component->m_EBO->Unbind();
-                break;
+                {
+                    mesh_renderer_component->m_EBO->Bind();
+                    UInt index_count = mesh_component->m_IndexCount;
+                    GLCall(glDrawElements(GL_TRIANGLES, index_count * sizeof(GLuint), GL_UNSIGNED_INT, 0));
+                    mesh_renderer_component->m_EBO->Unbind();
+                    break;
+                }
             case RenderMode::PerTriangle_Strip:
-                GLCall(
-                    glDrawElements(GL_TRIANGLE_STRIP, mesh_component->m_IndexCount * sizeof(GLuint), GL_UNSIGNED_INT, 0
-                    ));
-                break;
+                {
+                    mesh_renderer_component->m_EBO->Bind();
+                    UInt index_count = mesh_component->m_IndexCount;
+                    GLCall(glDrawElements(GL_TRIANGLE_STRIP, index_count * sizeof(GLuint), GL_UNSIGNED_INT, 0));
+                    mesh_renderer_component->m_EBO->Unbind();
+                    break;
+                }
             case RenderMode::PerVertex:
                 GLCall(glDrawArrays(GL_TRIANGLES, 0, mesh_component->m_VertexCount));
                 break;

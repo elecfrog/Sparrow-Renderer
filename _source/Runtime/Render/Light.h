@@ -6,9 +6,9 @@ namespace Sparrow
 {
     struct Light
     {
-        Vector3f position = Vector3f(0.0f, 0.836f, 2.889f);
-        Vector3f color = Vector3f(1.f, 1.f, 1.f);
-        Vector3f ambient_color = Vector3f(0.5f, 0.5f, 0.5f);
+        Vector3 position      = Vector3(0.0f, 0.836f, 2.889f);
+        Vector3 color         = Vector3(1.f, 1.f, 1.f);
+        Vector3 ambient_color = Vector3(0.5f, 0.5f, 0.5f);
     };
 
     // struct PointLight

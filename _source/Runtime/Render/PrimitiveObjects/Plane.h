@@ -10,18 +10,18 @@
 namespace Sparrow
 {
     class Shader;
-    class MeshComponent;
-    class MeshRendererComponent;
+
+    struct MeshComponent;
+    struct MeshRendererComponent;
 
     struct Plane : public Entity
     {
-        Plane() = default;
+        Plane();
 
-    public:
         void BuildMeshComponent();
-        void BuildMeshRendererComponent(SharedPtr<Shader> shader);
+        void BuildMeshRendererComponent();
 
-        MeshComponent* m_MeshComponent;
-        MeshRendererComponent* m_MeshRendererComponent;
+        MeshComponent* m_MeshComponent{nullptr};
+        MeshRendererComponent* m_MeshRendererComponent{nullptr};
     };
 }

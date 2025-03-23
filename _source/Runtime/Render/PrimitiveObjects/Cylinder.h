@@ -10,22 +10,24 @@
 namespace Sparrow
 {
     class Shader;
-    class MeshComponent;
-    class MeshRendererComponent;
+
+    struct MeshComponent;
+    struct MeshRendererComponent;
 
     // https://community.khronos.org/t/using-vbos-to-draw-a-cylinder-with-selectable-faces/107232/9
     struct Cylinder : public Entity
     {
         Cylinder() = default;
-        explicit Cylinder(Vector3f start, Vector3f end);
+        explicit Cylinder(Vector3 top_center, Vector3 bottom_center);
 
+    private:
         void BuildMeshComponent();
-        void BuildMeshRendererComponent(SharedPtr<Shader> shader);
+        void BuildMeshRendererComponent();
 
     public:
-        Vector3f start{};
-        Vector3f end{};
-        MeshComponent* m_MeshComponent;
-        MeshRendererComponent* m_MeshRendererComponent;
+        Vector3 m_TopCenter{};
+        Vector3 m_BottomCenter{};
+        MeshComponent* m_MeshComponent{nullptr};
+        MeshRendererComponent* m_MeshRendererComponent{nullptr};
     };
 }

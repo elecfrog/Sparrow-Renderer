@@ -8,36 +8,14 @@
 
 namespace Sparrow
 {
-    struct MeshRendererComponentCreationInfo
-    {
-        MeshComponent*    meshComponent {nullptr};
-        SharedPtr<Shader> shader        {nullptr};
-    };
+
 
     struct MeshRendererComponent
     {
         explicit MeshRendererComponent() = default;
 
-        explicit MeshRendererComponent(MeshRendererComponentCreationInfo& creationInfo)
+        explicit MeshRendererComponent(MeshComponent& mesh_component)
         {
-            m_Shader        = creationInfo.shader;
-            m_MeshComponent = creationInfo.meshComponent;
-            m_PositionVBO   = std::make_unique<VBO>(m_MeshComponent->m_PositionBuffer);
-            m_NormalsVBO    = std::make_unique<VBO>(m_MeshComponent->m_NormalsBuffer);
-            m_TexCoord0VBO  = std::make_unique<VBO>(m_MeshComponent->m_TexCoord0Buffer);
-            m_EBO           = std::make_unique<EBO>(m_MeshComponent->m_IndicesBuffer);
-
-            m_VAO = std::make_unique<VAO>();
-            m_VAO->Bind();
-            m_VAO->LinkAttrib(*m_PositionVBO, 0, 3, GL_FLOAT, sizeof(Vector3f), (void*)0);
-            m_VAO->LinkAttrib(*m_NormalsVBO, 1, 3, GL_FLOAT, sizeof(Vector3f), (void*)0);
-            m_VAO->LinkAttrib(*m_TexCoord0VBO, 2, 2, GL_FLOAT, sizeof(Vector2f), (void*)0);
-            m_VAO->Unbind();
-        }
-
-        explicit MeshRendererComponent(MeshComponent& mesh_component, SharedPtr<Shader> shader)
-        {
-            m_Shader        = shader;
             m_MeshComponent = &mesh_component;
             m_PositionVBO   = std::make_unique<VBO>(m_MeshComponent->m_PositionBuffer);
             m_NormalsVBO    = std::make_unique<VBO>(m_MeshComponent->m_NormalsBuffer);
