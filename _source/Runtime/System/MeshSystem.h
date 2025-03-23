@@ -6,7 +6,7 @@
 #pragma once
 #include "BaseDefinition.h"
 #include "Component/MeshComponent.h"
-#include "Entity/EntityIdGenerator.h"
+#include "Entity/Entity.h"
 
 namespace Sparrow
 {

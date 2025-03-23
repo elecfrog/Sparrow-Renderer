@@ -3,16 +3,18 @@
 #include "Scene.hpp"
 #include "ScenePreCompiled.h"
 #include "Engine/Engine.h"
-#include "Render/Prototype/Cylinder.hpp"
 #include "Component/TransformComponent.h"
 #include "FileSystem/FileSystem.h"
 #include "Core/Math/GaussianKernel.hpp"
 #include "ImGui/FlexComponentView/TransformComponentView.h"
 #include "Render/Model.h"
-#include "Render/PrimitiveObjects/Plane.hpp"
-#include "Render/PrimitiveObjects/UVSphere.hpp"
+#include "Render/Pass/RenderPass.h"
+
+#include "Render/PrimitiveObjects/Plane.h"
+#include "Render/PrimitiveObjects/Cylinder.h"
+#include "Render/PrimitiveObjects/UVSphere.h"
+
 #include "Render/RHI/FrameBuffer.h"
-#include "System/MeshRenderSystem.h"
 #include "System/MeshSystem.h"
 
 namespace Sparrow
@@ -93,15 +95,17 @@ namespace Sparrow
         UniquePtr<TransformComponentView> m_TransformComponentView;
 
 
-        // plane
-        Plane m_Plane;
-        // std::shared_ptr<Mesh> planeMesh;
+        // Passes
+        RenderPass m_RenderPass;
+
+        // Entities
+        Plane    m_Plane;
+        Cylinder m_Cylinder {Vector3f(0, 0.5f, 0.f), Vector3f(0.f, 0.001f, 0.f)};
 
         // sphere
         UVSphere sphereObject;
 
         // sphere
-        std::shared_ptr<Cylinder> cylinderObject;
 
         // MRT
         std::shared_ptr<FrameBuffer> mrtFBO;
@@ -130,9 +134,9 @@ namespace Sparrow
          * Shaders
          */
         std::shared_ptr<Shader> BlurShader;
-        std::shared_ptr<Shader> CylinderShader;
+        // std::shared_ptr<Shader> CylinderShader;
         std::shared_ptr<Shader> SphereShader;
-        std::shared_ptr<Shader> PlaneShader;
+        std::shared_ptr<Shader> m_PlaneShader;
 
         unsigned int quadVAO = 0;
         unsigned int quadVBO;
@@ -182,11 +186,11 @@ namespace Sparrow
             RegisterInputs();
 
             // Init Plane
-            PlaneShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
+            m_PlaneShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
             SphereShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
 
-            cylinderObject = std::make_shared<Cylinder>(glm::vec3(0, 0.5f, 0.f), glm::vec3(0.f, 0.001f, 0.f));
-            CylinderShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
+            // cylinderObject = std::make_shared<Cylinder>();
+            // CylinderShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
 
             //load model
             scene_Model = Model::LoadModel(AssetPath("DamagedHelmet/DamagedHelmet.gltf"));
@@ -279,16 +283,23 @@ namespace Sparrow
 
 
             m_Plane.BuildMeshComponent();
-            m_Plane.BuildMeshRendererComponent(PlaneShader);
+            m_Plane.BuildMeshRendererComponent(m_PlaneShader);
+
+            m_Cylinder.BuildMeshComponent();
+            m_Cylinder.BuildMeshRendererComponent(m_PlaneShader);
+
 
             m_TransformComponentView = MakeUnique<TransformComponentView>();
 
             InitSceneRenderPipelineLayouts();
+            InitRenderPass();
         }
 
         ~Scene_LoadModel() override = default;
 
         void InitSceneRenderPipelineLayouts();
+
+        void InitRenderPass();
 
         void InitOpenGLFunctions() override
         {
@@ -307,7 +318,6 @@ namespace Sparrow
             double currentTime = glfwGetTime();
             float deltaTime = float(currentTime - lastTime);
 
-            g_Engine.m_MeshSystem->Tick(_deltaTime);
 
             model_matrix = scene_Transform.GetTransformMatrix();
 
@@ -321,6 +331,18 @@ namespace Sparrow
             mainCamera.UpdateCameraMatrix();
 
             fn_wireframeMode(is_wireframe);
+
+
+            m_RenderPass.SetShader(m_PlaneShader);
+            m_RenderPass.EnqueueRenderEntity(m_Cylinder.m_EntityId);
+            m_RenderPass.EnqueueRenderEntity(m_Plane.m_EntityId);
+
+            //
+            // ECS Update
+            //
+            g_Engine.m_MeshSystem->Tick(_deltaTime);
+
+
         }
 
         void OnRender() override
@@ -330,7 +352,7 @@ namespace Sparrow
             if (reloadShaders)
             {
                 ReloadShader(MrtShader);
-                ReloadShader(PlaneShader);
+                ReloadShader(m_PlaneShader);
                 ReloadShader(SphereShader);
                 ReloadShader(BlurShader);
                 ReloadShader(SceneShader);
@@ -502,23 +524,16 @@ namespace Sparrow
              * Normal Single Render Pass
              * */
 
-            // {
-            //     glm::mat4 M = glm::translate(glm::mat4(1.0f), light.position);
-            //     M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
-            //     sphereObject.Render(SphereShader, mainCamera, M, light);
-            // }
+            {
+                glm::mat4 M = glm::translate(glm::mat4(1.0f), light.position);
+                M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
+                sphereObject.Render(SphereShader, mainCamera, M, light);
+            }
 
-            /* Draw plane*/
-            m_Plane.PreRender(PlaneShader, mainCamera, light);
-
-            g_Engine.m_MeshRenderSystem->Tick(0.f);
-
-            // PlaneShader->Unbind();
-
-            /* Draw cylinder*/
-            auto cylinderM = glm::mat4(0.5f);
-            cylinderObject->Render(*CylinderShader, mainCamera, cylinderM, light);
-
+            //
+            // Plane Pass
+            //
+            m_RenderPass.Execute();
 
             {
                 // Skybox
@@ -551,7 +566,7 @@ namespace Sparrow
             ImGui::Checkbox("Wireframe Mode", &is_wireframe);
             if (ImGui::Button("ReloadShader") || ImGui::IsKeyPressed('F')) reloadShaders = true;
 
-            m_TransformComponentView->SetTransformComponent(&m_Plane.m_TransformComponent);
+            m_TransformComponentView->SetTransformComponent(&m_Cylinder.m_TransformComponent);
             m_TransformComponentView->OnImGuiRender();
 
             ImGui::Separator();

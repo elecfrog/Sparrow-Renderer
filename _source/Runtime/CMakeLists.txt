@@ -36,12 +36,12 @@ add_library(${LIB_NAME} STATIC
         Render/RHI/VertexBuffer.h
         Render/RHI/VertexBufferLayout.cpp
         Render/RHI/VertexBufferLayout.h
-        Render/PrimitiveObjects/Plane.hpp
-        Render/PrimitiveObjects/UVSphere.hpp
+        Render/PrimitiveObjects/Plane.h
+        Render/PrimitiveObjects/UVSphere.h
         Render/Prototype/Cone.cpp
         Render/Prototype/Cone.hpp
-        Render/Prototype/Cylinder.cpp
-        Render/Prototype/Cylinder.hpp
+        Render/PrimitiveObjects/Cylinder.cpp
+        Render/PrimitiveObjects/Cylinder.h
         Render/Prototype/Prototype.cpp
         Render/Prototype/Prototype.hpp
         Render/UBO.h
@@ -51,6 +51,8 @@ add_library(${LIB_NAME} STATIC
         Render/PipelineLayout.h
         Render/PipelineLayoutManager.cpp
         Render/PipelineLayoutManager.h
+
+        Render/Pass/RenderPass.h
 
 
         Engine/Engine.cpp
@@ -103,14 +105,14 @@ add_library(${LIB_NAME} STATIC
         Component/MeshRendererComponent.h
         System/MeshRenderSystem.cpp
         System/MeshRenderSystem.h
-        Entity/EntityIdGenerator.cpp
-        Entity/EntityIdGenerator.h
         Entity/Entity.h
         System/MeshSystem.cpp
         System/MeshSystem.h
         Render/PrimitiveObjects/Plane.cpp
-        Entity/EntityId.h
         Scene/Scene.cpp
+        Render/Pass/RenderPass.cpp
+        Entity/Entity.cpp
+        Render/PrimitiveObjects/UVSphere.cpp
 )
 
 find_package(OpenGL REQUIRED)

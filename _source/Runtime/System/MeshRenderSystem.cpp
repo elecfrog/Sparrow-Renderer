@@ -3,8 +3,6 @@
 * Copyright (c) 2025 East10 All rights reserved.
 ------------------------------------------------------------------------------------------------------------ */
 
-#pragma once
-
 #include "MeshRenderSystem.h"
 
 namespace Sparrow {

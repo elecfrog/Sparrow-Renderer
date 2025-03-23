@@ -4,10 +4,10 @@
 ------------------------------------------------------------------------------------------------------------ */
 
 #pragma once
+
 #include "BaseDefinition.h"
 #include "Component/MeshRendererComponent.h"
-#include "Entity/EntityIdGenerator.h"
-#include "Render/PrimitiveObjects/Plane.hpp"
+#include "Entity/Entity.h"
 
 namespace Sparrow
 {

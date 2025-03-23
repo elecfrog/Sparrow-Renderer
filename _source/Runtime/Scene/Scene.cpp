@@ -20,4 +20,15 @@ namespace Sparrow
 
         pipeline_layout_manager->InitAll();
     }
+
+    void Scene_LoadModel::InitRenderPass()
+    {
+        PipelineLayoutManager*    pipeline_layout_manager = g_Engine.m_RenderManager->m_PipelineLayoutManager;
+        SharedPtr<PipelineLayout> layout = pipeline_layout_manager->GetPipelineLayout("DefaultPipeline");
+
+        m_RenderPass.SetShader(m_PlaneShader);
+        m_RenderPass.SetPipelineLayout(layout);
+        m_RenderPass.SetMainCameraComponent(&mainCamera);
+        m_RenderPass.SetLightComponent(&light);
+    }
 }

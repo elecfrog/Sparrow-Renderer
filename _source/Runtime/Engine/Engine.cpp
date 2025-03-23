@@ -17,8 +17,8 @@ namespace Sparrow
     void Engine::Run()
     {
         Initialize().
-        MainLoop().
-        CleanUp();
+            MainLoop().
+            CleanUp();
     }
 
     Engine& Engine::Initialize()
@@ -44,7 +44,7 @@ namespace Sparrow
         m_RenderManager = new RenderManager();
         m_RenderManager->Initialize();
 
-        m_MeshSystem       = new MeshSystem();
+        m_MeshSystem = new MeshSystem();
         m_MeshRenderSystem = new MeshRenderSystem();
 
         LOG_INFO(LogModule::App, "Engine::Initialize End");

@@ -5,23 +5,42 @@
 
 #pragma once
 
-#include "EntityId.h"
-#include "EntityIdGenerator.h"
 #include "Component/TransformComponent.h"
 
 namespace Sparrow
 {
+    using EntityId = UInt;
+    constexpr EntityId k_InvalidEntityId = 0xFFFFFFFF;
+
     class Entity
     {
     public:
         Entity();
+        ~Entity();
     public:
         EntityId           m_EntityId           {k_InvalidEntityId};
         TransformComponent m_TransformComponent {                 };
     };
 
-    inline Entity::Entity()
+    extern HashMap<EntityId, Entity*> g_EntityMap;
+
+    class EntityIdGenerator
     {
-        m_EntityId = EntityIdGenerator::GetNextId();
-    }
+    public:
+        // 获取下一个唯一的 EntityId
+        static EntityId GetNextId()
+        {
+            return s_nextId.fetch_add(1, std::memory_order_relaxed);
+        }
+
+        // 重置计数器（如果需要）
+        static void Reset(EntityId value = 0)
+        {
+            s_nextId.store(value, std::memory_order_relaxed);
+        }
+
+    private:
+        // 使用 atomic 保证线程安全
+        static std::atomic<EntityId> s_nextId;
+    };
 }

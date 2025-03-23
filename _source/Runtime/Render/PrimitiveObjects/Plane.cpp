@@ -3,11 +3,13 @@
 * Copyright (c) 2025 East10 All rights reserved.
 ------------------------------------------------------------------------------------------------------------ */
 
-#include "Plane.hpp"
-
-#include "Component/TransformComponent.h"
+#include "Plane.h"
 #include "Engine/Engine.h"
 #include "System/MeshSystem.h"
+#include "Render/MeshRenderer.h"
+#include "System/MeshRenderSystem.h"
+#include "Render/UBOManager.h"
+#include "Render/PipelineLayoutManager.h"
 
 namespace Sparrow
 {
