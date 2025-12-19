@@ -156,25 +156,6 @@ public:
 		}
 	}
 
-	void OnImGuiRender() override 
-	{ 
-		ImGui::Checkbox("Wireframe Mode", &is_wireframe);
-
-		//ImGui::ColorEdit3("Light Color", ToFArray3(lightColors[0]));
-		//ImGui::SliderFloat3("Light Position", ToFArray3(lightPositions[0], 0.0f, 3.0f);
-
-		ImGui::SliderFloat("Sensitivity", &mainCamera.keySensitivity, 0.01f, 2.0f);
-		ImGui::SliderFloat("Yaw Angle", &mainCamera.yaw, 0.0f, 360.0f);
-		ImGui::SliderFloat("Pitch Angle", &mainCamera.pitch, -90.0f, 90.0f);
-		ImGui::SliderFloat("FOV", &mainCamera.FOV, 10.0f, 120.0f);
-
-		ImGui::Text("W/A/S/D to control Camera Move");
-		ImGui::Text("Q/E to control Camera Yaw");
-		ImGui::Text("Ctrl+Q/E to control Camera Pitch");
-		ImGui::Text("Alt+Q/E to control Camera FOV");
-
-	}
-
 	void processInput(GLFWwindow* window, float deltaTime)
 	{
 		float cameraSpeed = 0.05f * deltaTime; // adjust accordingly

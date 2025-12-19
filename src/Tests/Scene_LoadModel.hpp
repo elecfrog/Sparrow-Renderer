@@ -153,7 +153,6 @@ class Scene_LoadModel : public Scene {
 public:
     Scene_LoadModel(WindowSystem *windowSystem)
             : Scene(windowSystem) {
-        InitOpenGLFunctions();
         RegisterInputs();
 
         // Init Plane
@@ -165,7 +164,6 @@ public:
 
         //load model
         scene_Model = Model::LoadModel(ModelPath("DamagedHelmet/DamagedHelmet.gltf"));
-//        scene_Model = Model::LoadModel(ModelPath("WaterBottle/WaterBottle.gltf"));
         scene_Transform.position = glm::vec3(0.f, 1.1f, 0.f);
         scene_Transform.rotation = Rotation{glm::vec3(89.43f, .0f, 0.f)};
 
@@ -258,15 +256,6 @@ public:
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
         equirectangularToCubemapShader = std::make_shared<Shader>(ShaderPath("ibl/cubemap.vert"),
                                                                   ShaderPath("ibl/equirectangular_to_cubemap.frag"));
-    }
-
-    ~Scene_LoadModel() override = default;
-
-    void InitOpenGLFunctions() override {
-        //glEnable(GL_DEPTH_TEST);
-        // glEnable(GL_CULL_FACE);
-        // glCullFace(GL_BACK);
-        // glFrontFace(GL_CCW);
     }
 
     void OnUpdate(float _deltaTime = 0.0f) override {
@@ -516,35 +505,6 @@ public:
     }
 
     void OnImGuiRender() override {
-        ImGui::Checkbox("Wireframe Mode", &is_wireframe);
-        if (ImGui::Button("ReloadShader") || ImGui::IsKeyPressed('F')) reloadShaders = true;
-
-        ImGui::BeginChild("Transform", ImVec2(0, 90));
-        if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::DragFloat3("Position", glm::value_ptr(scene_Transform.position), 0.01f);
-            ImGui::DragFloat3("Scale", glm::value_ptr(scene_Transform.scaling), 0.01f);
-            ImGui::DragFloat3("Rotation", glm::value_ptr(scene_Transform.rotation.euler), 0.01f);
-            scene_Transform.rotation.quaternion = glm::quat(scene_Transform.rotation.euler);
-        }
-        ImGui::EndChild();
-
-        ImGui::Separator();
-
-        ImGui::BeginChild("Light", ImVec2(0, 90));
-        if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::DragFloat3("Position", glm::value_ptr(light.position), 0.01f);
-            ImGui::DragFloat3("Color", glm::value_ptr(light.color), 0.01f);
-        }
-        ImGui::EndChild();
-
-        ImGui::Separator();
-
-        ImGui::BeginChild("Camera", ImVec2(0, 90));
-        if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::DragFloat3("Position", glm::value_ptr(mainCamera.cameraPos), 0.01f);
-        }
-        ImGui::EndChild();
-
 
         //--------------------------------------------------------
         //bloom scale,bloom strength,bloom
@@ -563,22 +523,6 @@ public:
         if (ImGui::CollapsingHeader("IBL Effects", ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::Checkbox("Enable IBL", &bEnableIBL);
         }
-        ImGui::EndChild();
-
-
-        ImGui::BeginChild("Camera");
-
-
-        ImGui::SliderFloat("Sensitivity", &mainCamera.keySensitivity, 0.01f, 2.0f);
-        ImGui::SliderFloat("Yaw Angle", &mainCamera.yaw, 0.0f, 360.0f);
-        ImGui::SliderFloat("Pitch Angle", &mainCamera.pitch, -90.0f, 90.0f);
-        ImGui::SliderFloat("FOV", &mainCamera.FOV, 10.0f, 120.0f);
-
-        ImGui::Text("W/A/S/D to control Camera Move");
-        ImGui::Text("Q/E to control Camera Yaw");
-        ImGui::Text("Ctrl+Q/E to control Camera Pitch");
-        ImGui::Text("Alt+Q/E to control Camera FOV");
-
         ImGui::EndChild();
     }
 

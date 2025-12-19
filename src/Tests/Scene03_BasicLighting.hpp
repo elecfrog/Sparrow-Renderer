@@ -131,29 +131,6 @@ public:
 		// TODO: DrawElements();
     }
 
-    void OnImGuiRender() override
-    {
-		ImGui::Checkbox("Wireframe Mode", &is_wireframe);
-		if (ImGui::Button("ReloadShader") || ImGui::IsKeyPressed('F')) reloadShaders = true;
-
-		ImGui::ColorEdit3("Light Color", lightColor);
-		ImGui::SliderFloat3("Light Position", lightPos, 0.0f, 3.0f);
-		ImGui::ColorEdit3("Light Color", lightColor);
-
-		ImGui::SliderFloat("InnerCutOffAngle", &innerCutOff, 0.0f, 90.0f); ImGui::SameLine();
-		ImGui::SliderFloat("OuterCutOffAngle", &outerCutOff, 0.0f, 90.0f);
-
-		ImGui::SliderFloat("Sensitivity", &m_camera.keySensitivity, 0.01f, 2.0f);
-		ImGui::SliderFloat("Yaw Angle", &m_camera.yaw, 0.0f, 360.0f);
-		ImGui::SliderFloat("Pitch Angle", &m_camera.pitch, -90.0f, 90.0f);
-		ImGui::SliderFloat("FOV", &m_camera.FOV, 10.0f, 120.0f);
-
-		ImGui::Text("W/A/S/D to control Camera Move");
-		ImGui::Text("Q/E to control Camera Yaw");
-		ImGui::Text("Ctrl+Q/E to control Camera Pitch");
-		ImGui::Text("Alt+Q/E to control Camera FOV");
-    }
-
     void processInput(GLFWwindow *window, float deltaTime)
     {
 		float cameraSpeed = 0.05f * deltaTime; // adjust accordingly

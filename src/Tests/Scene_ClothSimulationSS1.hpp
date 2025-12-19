@@ -41,7 +41,6 @@ public:
 	Scene_ClothSimulationSS1(WindowSystem* windowSystem)
 		: Scene(windowSystem)
 	{
-		InitOpenGLFunctions();
 		Scene::RegisterInputs();
 
 		{
@@ -68,16 +67,6 @@ public:
 
 		auto data = ImportOBJ(AssetPath("cloth/cloth.obj"));
 		clothObject = std::make_shared<Cloth>(glm::vec3(0), data);
-	}
-
-	~Scene_ClothSimulationSS1() override = default;
-
-	void InitOpenGLFunctions() override
-	{
-		// glEnable(GL_DEPTH_TEST);
-		// glEnable(GL_CULL_FACE); 
-		// glCullFace(GL_BACK);
-		// glFrontFace(GL_CCW);
 	}
 
 	void OnUpdate(float _deltaTime = 1.0f / 24.0f) override
@@ -124,18 +113,6 @@ public:
 
 	void OnRender() override
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		if (reloadShaders)
-		{
-			ReloadShader(planeShader);
-			ReloadShader(sphereShader);
-			reloadShaders = false;
-			SPW_INFO("Reload Shaders");
-		}
-
-		glEnable(GL_DEPTH_TEST);
-
 		glm::mat4 I = glm::mat4(1.0f);
 		if (renderSphere)
 		{

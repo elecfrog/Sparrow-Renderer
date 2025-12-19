@@ -78,9 +78,6 @@ public:
         }));
 
 
-
-        InitOpenGLFunctions();
-
         // Init plane
         {
             GLCall(glGenVertexArrays(1, &plane_VAO));
@@ -196,16 +193,6 @@ public:
             glBindTexture(GL_TEXTURE_2D, depthMap);
             debugDepthQuad_Shader->SetUniform1i("depthMap", 8);
         }
-    }
-
-    ~Scene06_ShadowMapping() {}
-
-    void InitOpenGLFunctions() override
-    {
-        glEnable(GL_DEPTH_TEST);
-        // glEnable(GL_CULL_FACE);
-        // glCullFace(GL_BACK);
-        // glFrontFace(GL_CCW);
     }
 
     void OnUpdate(float _deltaTime = 0.0f) override

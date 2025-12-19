@@ -25,9 +25,8 @@ class Scene_PBRTest : public Scene {
     float roughness = 1.f;
 
 public:
-    Scene_PBRTest(WindowSystem *windowSystem)
-            : Scene(windowSystem) {
-        InitOpenGLFunctions();
+    Scene_PBRTest() 
+    {
         RegisterInputs();
 
         // Init Plane

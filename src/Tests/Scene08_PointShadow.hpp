@@ -54,8 +54,6 @@ public:
     Scene08_PointShadow(WindowSystem* windowSystem)
             : Scene(windowSystem)
     {
-        InitOpenGLFunctions();
-
         // Load Model Data
         cp_cube = Model::LoadModel(k_ModelList.at("cpCube_GLTF"));
         sf_cube = Model::LoadModel(k_ModelList.at("scifiCube_GLTF"));
@@ -138,16 +136,6 @@ public:
 
         // configure depth map FBO
         InitDpethCubeMap();
-    }
-
-    ~Scene08_PointShadow() {}
-
-    void InitOpenGLFunctions() override
-    {
-        glEnable(GL_DEPTH_TEST);
-        // glEnable(GL_CULL_FACE);
-        // glCullFace(GL_BACK);
-        // glFrontFace(GL_CCW);
     }
 
     void OnUpdate(float _deltaTime = 0.0f) override

@@ -45,11 +45,8 @@ class Scene_ClothSimulationSS2 : public Scene {
     bool corner_fixed = true;
 
 public:
-    Scene_ClothSimulationSS2(WindowSystem *windowSystem)
-            : Scene(windowSystem) {
-        InitOpenGLFunctions();
-        Scene::RegisterInputs();
-
+    Scene_ClothSimulationSS2() 
+    {
         {
             // Init Skybox
             GLCall(glGenVertexArrays(1, &skybox_VAO));
@@ -75,15 +72,6 @@ public:
         auto data = ImportOBJ(AssetPath("cloth/cloth.obj"));
         clothObject = std::make_shared<Cloth>(glm::vec3(0), data);
 
-    }
-
-    ~Scene_ClothSimulationSS2() override = default;
-
-    void InitOpenGLFunctions() override {
-        //glEnable(GL_DEPTH_TEST);
-        // glEnable(GL_CULL_FACE);
-        // glCullFace(GL_BACK);
-        // glFrontFace(GL_CCW);
     }
 
     void OnUpdate(float _deltaTime = 1.0f / 24.0f) override {

@@ -47,10 +47,8 @@ class Scene_BVHViewer : public Scene {
     std::vector<Cone> linkageCones;
 
 public:
-    Scene_BVHViewer(WindowSystem *windowSystem)
-            : Scene(windowSystem) {
-        Scene::RegisterInputs();
-
+    Scene_BVHViewer() 
+    {
         // Init Plane
         sphereShader = std::make_shared<Shader>(vsPath, fsPath);
         mainShader = std::make_shared<Shader>(vsPath, fsPath);
@@ -58,10 +56,7 @@ public:
         cylinderObject = std::make_shared<Cylinder>(glm::vec3(0, 0.5f, 0.f), glm::vec3(0.f, 0.001f, 0.f));
         coneObject = std::make_shared<Cone>(glm::vec3(0, 0.5f, 0.f), glm::vec3(0.f, 0.001f, 0.f));
 
-
-//        auto data = ReadBVHAnimationFile(Path("./assets/animations/bvh/rest.bvh"));
         auto data = ReadBVHAnimationFile(Path("./assets/animations/bvh/rest.bvh"));
-//        auto data = ReadBVHAnimationFile(Path("C:\\Users\\elecfrog\\Documents\\Sparrow-Renderer\\assets\\animations\\cmuconvert-daz-01-09\\01\\01_01.bvh"));
         if (data.has_value())
             bvhRawData = std::move(data.value());
 
@@ -126,48 +121,6 @@ public:
             link.Render(*mainShader, mainCamera, coneM, light);
         }
     }
-
-    void OnImGuiRender() override {
-        ImGui::Checkbox("Wireframe Mode", &is_wireframe);
-        if (ImGui::Button("ReloadShader") || ImGui::IsKeyPressed('F')) reloadShaders = true;
-
-        ImGui::BeginChild("BVH Skeleton");
-        DrawAnimationComponent();
-        ImGui::EndChild();
-
-        ImGui::BeginChild("Transform", ImVec2(0, 90));
-        if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-        }
-        ImGui::EndChild();
-
-        ImGui::Separator();
-
-        ImGui::BeginChild("Light", ImVec2(0, 90));
-        if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::DragFloat3("Position", glm::value_ptr(light.position), 0.01f);
-            ImGui::DragFloat3("Color", glm::value_ptr(light.color), 0.01f);
-        }
-        ImGui::EndChild();
-
-        ImGui::Separator();
-
-        ImGui::BeginChild("Camera", ImVec2(0, 90));
-        if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::DragFloat3("Position", glm::value_ptr(mainCamera.cameraPos), 0.01f);
-        }
-        ImGui::EndChild();
-
-        ImGui::BeginChild("Camera", ImVec2(0, 90));
-
-        ImGui::EndChild();
-
-        ImGui::SliderFloat("Sensitivity", &mainCamera.keySensitivity, 0.01f, 2.0f);
-        ImGui::SliderFloat("Yaw Angle", &mainCamera.yaw, 0.0f, 360.0f);
-        ImGui::SliderFloat("Pitch Angle", &mainCamera.pitch, -90.0f, 90.0f);
-        ImGui::SliderFloat("FOV", &mainCamera.FOV, 10.0f, 120.0f);
-    }
-
-
 
     void DrawAnimationComponent() const {
         ImGui::PushID("Animation");
