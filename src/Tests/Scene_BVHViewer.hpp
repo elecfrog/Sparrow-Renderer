@@ -1,22 +1,6 @@
 #pragma once
 
-#include "ScenePreCompiled.h"
-#include "Function/Base/Transform.hpp"
-#include "Function/Animation/BVHAnim.hpp"
-#include "src/Function/Render/Prototype/Cone.hpp"
-#include "src/Function/Render/Prototype/Cylinder.hpp"
-#include "glm/ext.hpp"
-
-using namespace elf::anim;
-
-class Scene_BVHViewer : public Scene {
-
-    // Camera
-    Camera mainCamera{glm::vec3(1.45, 0.348, 2.021), 240.f, -11.45f, 45.0f, 0.01f};
-
-    // GUI Variables
-    bool is_wireframe = false;
-    bool reloadShaders = false;
+class Scene_BVHViewer  {
 
     bool is_dragging = false;
     double start_x = 0, start_y = 0;
@@ -78,24 +62,6 @@ public:
 
         // bvhBonePositions itself is a dummy, we don't need to render this dummy point
         GenerateJointLinkages(0.1f, linkageCones, bvhBonePositions.childrens[0]);
-    }
-
-
-    ~Scene_BVHViewer() override = default;
-
-    void OnUpdate(float _deltaTime = 0.0f) override {
-        // glfwGetTime is called only once, the first time this function is called
-        static double lastTime = glfwGetTime();
-
-        // Compute time difference between current and last frame
-        double currentTime = glfwGetTime();
-        float deltaTime = float(currentTime - lastTime);
-
-        ProcessInput(deltaTime);
-
-        mainCamera.UpdateCameraMatrix();
-
-        fn_wireframeMode(is_wireframe);
     }
 
     void OnRender() override {

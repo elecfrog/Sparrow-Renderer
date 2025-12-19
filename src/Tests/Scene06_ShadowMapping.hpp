@@ -1,10 +1,4 @@
-#pragma once
-
-#include "ScenePreCompiled.h"
-
-class WindowSystem;
-
-class Scene06_ShadowMapping : public Scene
+class Scene06_ShadowMapping
 {
     // Model
     std::shared_ptr<Model> cp_cube, sf_cube;
@@ -13,21 +7,11 @@ class Scene06_ShadowMapping : public Scene
     std::shared_ptr<Shader> scene_Shader;
     std::shared_ptr<Shader> lightView_Shader; // Render in Light View
 
-    // Camera
-    Camera mainCamera{ glm::vec3(1.45, 0.348, 2.021), 240.f, -11.45f, 45.0f, 0.01f };
-
-    // GUI Variables
-    bool is_wireframe{ false };
-    bool reloadShaders{ false };
-
-    float lightColor[3]{ 1.0f, 1.0f, 1.0f };
-    float lightPos[3]{ 0.0f, 0.836f, 2.889f };
-
     float innerCutOff = 7.5f;
     float outerCutOff = 12.5f;
 
-    float near_plane { 1.f };
-    float far_plane  { 7.5f };
+    float near_plane{ 1.f };
+    float far_plane{ 7.5f };
 
     bool visiable_cpCube{ true };
     bool visiable_sfCube{ true };
@@ -36,77 +20,63 @@ class Scene06_ShadowMapping : public Scene
     bool visiable_debugDepthMap{ false };
 
     // Skybox
-    unsigned int skybox_VAO, skybox_VBO;
-    std::shared_ptr<Shader> skybox_Shader;
+    unsigned int                 skybox_VAO, skybox_VBO;
+    std::shared_ptr<Shader>      skybox_Shader;
     std::shared_ptr<TextureCube> skybox_textureCube;
 
-    float scaling{ 1.0f };
-    float translation[3] = { 0.0f, 0.0f, 0.0f };
-    float rotation[3] = { 0.0f, 0.0f, 0.0f };
-
     // Create plane Objects
-    unsigned int plane_VAO, plane_VBO, plane_EBO;
-    Texture2D* tex_plane_diffuse;
+    unsigned int            plane_VAO, plane_VBO, plane_EBO;
+    Texture2D*              tex_plane_diffuse;
     std::shared_ptr<Shader> plane_Shader;
 
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-    unsigned int depthMapFBO, depthMap;
+    unsigned int       depthMapFBO, depthMap;
 
-    unsigned int quad_VAO, quad_VBO;
+    unsigned int            quad_VAO, quad_VBO;
     std::shared_ptr<Shader> debugDepthQuad_Shader;
 
     ResourceManager resourceManager;
 
-public:
+  public:
     Scene06_ShadowMapping(WindowSystem* windowSystem)
-            : Scene(windowSystem)
+        : Scene(windowSystem)
     {
-        m_GameObjects.emplace_back(std::make_shared<elf::GameObject>("Renderer", std::vector<elf::GameOjbectComponent> {
-                {
-                        elf::GameOjbectComponentType::Transform,
-                        elf::ComponentData<elf::GameOjbectComponentType::Transform>(glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1)),
-                        [] {}
-                }
-        }));
-        m_GameObjects.emplace_back(std::make_shared<elf::GameObject>("Light", std::vector<elf::GameOjbectComponent> {
-                {
-                        elf::GameOjbectComponentType::Transform, elf::ComponentData<elf::GameOjbectComponentType::Transform>(), [] {}
-                },
-                {
-                        elf::GameOjbectComponentType::Light, elf::ComponentData<elf::GameOjbectComponentType::Light>(glm::vec3(0.0f, 0.836f, 2.889f)), [] {}
-                }
-        }));
-
+        m_GameObjects.emplace_back(std::make_shared<elf::GameObject>("Renderer", std::vector<elf::GameOjbectComponent>{
+                                                                                     { elf::GameOjbectComponentType::Transform,
+                                                                                       elf::ComponentData<elf::GameOjbectComponentType::Transform>(glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1)),
+                                                                                       [] {} } }));
+        m_GameObjects.emplace_back(std::make_shared<elf::GameObject>("Light", std::vector<elf::GameOjbectComponent>{
+                                                                                  { elf::GameOjbectComponentType::Transform, elf::ComponentData<elf::GameOjbectComponentType::Transform>(), [] {} },
+                                                                                  { elf::GameOjbectComponentType::Light, elf::ComponentData<elf::GameOjbectComponentType::Light>(glm::vec3(0.0f, 0.836f, 2.889f)), [] {} } }));
 
         // Init plane
         {
-            GLCall(glGenVertexArrays(1, &plane_VAO));
+            (glGenVertexArrays(1, &plane_VAO));
 
-            GLCall(glGenBuffers(1, &plane_VBO));
-            GLCall(glGenBuffers(1, &plane_EBO));
-            GLCall(glBindVertexArray(plane_VAO));
+            (glGenBuffers(1, &plane_VBO));
+            (glGenBuffers(1, &plane_EBO));
+            (glBindVertexArray(plane_VAO));
 
-            GLCall(glBindBuffer(GL_ARRAY_BUFFER, plane_VBO));
-            GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW));
+            (glBindBuffer(GL_ARRAY_BUFFER, plane_VBO));
+            (glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW));
 
-            GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, plane_EBO));
-            GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(planeIndices), planeIndices, GL_STATIC_DRAW));
+            (glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, plane_EBO));
+            (glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(planeIndices), planeIndices, GL_STATIC_DRAW));
 
-            GLCall(glEnableVertexAttribArray(0));
-            GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0));
-            GLCall(glEnableVertexAttribArray(1));
-            GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))));
-            GLCall(glEnableVertexAttribArray(2));
-            GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))));
-            GLCall(glBindVertexArray(0));
+            (glEnableVertexAttribArray(0));
+            (glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0));
+            (glEnableVertexAttribArray(1));
+            (glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))));
+            (glEnableVertexAttribArray(2));
+            (glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))));
+            (glBindVertexArray(0));
 
             tex_plane_diffuse = new Texture2D("res/textures/elecfrog.jpg");
             tex_plane_diffuse->Bind(5);
             plane_Shader = std::make_shared<Shader>("res/Shaders/shadow_mapping/plane.vert", "res/Shaders/shadow_mapping/plane.frag");
         }
 
-
-        {// screen quad VAO
+        { // screen quad VAO
             glGenVertexArrays(1, &quad_VAO);
             glGenBuffers(1, &quad_VBO);
             glBindVertexArray(quad_VAO);
@@ -145,48 +115,47 @@ public:
         }
 
         // Load Shader
-        scene_Shader = std::make_shared<Shader>("res/Shaders/shadow_mapping/render.vert", "res/Shaders/shadow_mapping/render.frag");
+        scene_Shader          = std::make_shared<Shader>("res/Shaders/shadow_mapping/render.vert", "res/Shaders/shadow_mapping/render.frag");
         debugDepthQuad_Shader = std::make_shared<Shader>("res/Shaders/shadow_mapping/debug_depth_quad.vert", "res/Shaders/shadow_mapping/debug_depth_quad.frag");
-        lightView_Shader = std::make_shared<Shader>("res/Shaders/shadow_mapping/light_view.vert", "res/Shaders/shadow_mapping/light_view.frag");
+        lightView_Shader      = std::make_shared<Shader>("res/Shaders/shadow_mapping/light_view.vert", "res/Shaders/shadow_mapping/light_view.frag");
 
-        {// Init Skybox
-            GLCall(glGenVertexArrays(1, &skybox_VAO));
-            GLCall(glGenBuffers(1, &skybox_VBO));
-            GLCall(glBindVertexArray(skybox_VAO));
-            GLCall(glBindBuffer(GL_ARRAY_BUFFER, skybox_VBO));
-            GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW));
-            GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(nullptr)));
-            GLCall(glEnableVertexAttribArray(0));
-            GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-            GLCall(glBindVertexArray(0));
+        { // Init Skybox
+            (glGenVertexArrays(1, &skybox_VAO));
+            (glGenBuffers(1, &skybox_VBO));
+            (glBindVertexArray(skybox_VAO));
+            (glBindBuffer(GL_ARRAY_BUFFER, skybox_VBO));
+            (glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW));
+            (glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(nullptr)));
+            (glEnableVertexAttribArray(0));
+            (glBindBuffer(GL_ARRAY_BUFFER, 0));
+            (glBindVertexArray(0));
 
-            skybox_Shader = std::make_shared<Shader>("res/Shaders/Scene08/Skybox.vert", "res/Shaders/Scene08/Skybox.frag");
+            skybox_Shader      = std::make_shared<Shader>("res/Shaders/Scene08/Skybox.vert", "res/Shaders/Scene08/Skybox.frag");
             skybox_textureCube = std::make_shared<TextureCube>(texCube_Cloud);
             skybox_textureCube->Bind(4);
         }
 
         // configure depth map FBO
         {
-            GLCall(glGenFramebuffers(1, &depthMapFBO));
+            (glGenFramebuffers(1, &depthMapFBO));
             // create depth texture
-            GLCall(glGenTextures(1, &depthMap));
-            GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
-            GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+            (glGenTextures(1, &depthMap));
+            (glBindTexture(GL_TEXTURE_2D, depthMap));
+            (glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
 
-
-            GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-            GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-            GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
-            GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
+            (glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+            (glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+            (glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
+            (glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
             const float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-            GLCall(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor));
+            (glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor));
 
             // attach depth texture as FBO's depth buffer
-            GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
-            GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0));
-            GLCall(glDrawBuffer(GL_NONE));
-            GLCall(glReadBuffer(GL_NONE));
-            GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+            (glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
+            (glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0));
+            (glDrawBuffer(GL_NONE));
+            (glReadBuffer(GL_NONE));
+            (glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
             debugDepthQuad_Shader->Bind();
             glActiveTexture(GL_TEXTURE8);
@@ -202,16 +171,16 @@ public:
 
         // Compute time difference between current and last frame
         double currentTime = glfwGetTime();
-        float deltaTime = float(currentTime - lastTime);
+        float  deltaTime   = float(currentTime - lastTime);
 
-        float angle = 20.0f;
+        float     angle = 20.0f;
         glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(angle) * deltaTime, glm::vec3(1.0f, 0.3f, 0.5f));
 
         for (const auto& subMesh : cp_cube->GetMeshes())
         {
             glm::mat4 tmpModel = glm::mat4(1.0f);
-            tmpModel = glm::translate(tmpModel, glm::vec3(1.079 + translation[0], 0.169 + translation[1], 1.045 + translation[2]));
-            tmpModel = glm::scale(tmpModel, glm::vec3(0.2f * scaling, 0.2f * scaling, 0.2f * scaling));
+            tmpModel           = glm::translate(tmpModel, glm::vec3(1.079 + translation[0], 0.169 + translation[1], 1.045 + translation[2]));
+            tmpModel           = glm::scale(tmpModel, glm::vec3(0.2f * scaling, 0.2f * scaling, 0.2f * scaling));
             subMesh->UpdateModelMatrix(tmpModel);
         }
 
@@ -219,8 +188,8 @@ public:
         {
 
             glm::mat4 tmpModel = glm::mat4(1.0f);
-            tmpModel = glm::translate(tmpModel, glm::vec3(0.275 + translation[0], 0.118 + translation[1], 0.908 + translation[2]));
-            tmpModel = glm::scale(tmpModel, glm::vec3(0.015f * scaling, 0.015f * scaling, 0.015f * scaling));
+            tmpModel           = glm::translate(tmpModel, glm::vec3(0.275 + translation[0], 0.118 + translation[1], 0.908 + translation[2]));
+            tmpModel           = glm::scale(tmpModel, glm::vec3(0.015f * scaling, 0.015f * scaling, 0.015f * scaling));
 
             subMesh->UpdateModelMatrix(tmpModel);
         }
@@ -244,25 +213,24 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // 1. render depth of scene to texture (from light's perspective)
-        glm::mat4 lightProjection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, near_plane, far_plane);
-        glm::mat4 lightView = glm::lookAt(tmp_LighPosition, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+        glm::mat4 lightProjection  = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, near_plane, far_plane);
+        glm::mat4 lightView        = glm::lookAt(tmp_LighPosition, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
-
-        GLCall(glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT));
-        GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
-        GLCall(glClear(GL_DEPTH_BUFFER_BIT));
+        (glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT));
+        (glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
+        (glClear(GL_DEPTH_BUFFER_BIT));
 
         RenderLightView(lightSpaceMatrix);
 
-        GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+        (glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
         // 2. reset viewport, and then render the scene
-        GLCall(glViewport(0, 0, m_WindowSystem->GetWindowWidth(), m_WindowSystem->GetWindowHeight()))
+        (glViewport(0, 0, m_WindowSystem->GetWindowWidth(), m_WindowSystem->GetWindowHeight()))
 
-    	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
+            (glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
 
-        if (visiable_cpCube)
+                if (visiable_cpCube)
         {
             for (const auto& submesh : cp_cube->GetMeshes())
             {
@@ -292,9 +260,9 @@ public:
                 scene_Shader->SetUniform3f("lit.specular", 1.0f, 1.0f, 1.0f);
 
                 // Setting Materials
-                GLCall(glActiveTexture(GL_TEXTURE5));
+                (glActiveTexture(GL_TEXTURE5));
                 tex_plane_diffuse->Bind(5);
-                // GLCall(glBindTexture(GL_TEXTURE_2D, tex_plane_diffuse));
+                // (glBindTexture(GL_TEXTURE_2D, tex_plane_diffuse));
 
                 scene_Shader->SetUniform1i("material.tex_banana_d", 5);
                 scene_Shader->SetUniform3f("material.specular", submesh->m_Material->GetMaterialProperites().specularColor);
@@ -304,12 +272,11 @@ public:
 
                 // ShadowMapping
                 scene_Shader->SetUniform1i("shadowMap", 8);
-                GLCall(glActiveTexture(GL_TEXTURE8));
-                GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
+                (glActiveTexture(GL_TEXTURE8));
+                (glBindTexture(GL_TEXTURE_2D, depthMap));
 
                 submesh->DrawCall(DrawCallType::ELE_TRIANGLE);
             }
-
         }
 
         if (visiable_sfCube)
@@ -323,7 +290,7 @@ public:
                 scene_Shader->SetUniformMat4f("P", mainCamera.projMatrix); // View & Porj Matrix Come from Current Camera
 
                 glm::mat4 ModelViewMatrix = mainCamera.viewMatrix * submesh->mat_transformLocalToWorld;
-                scene_Shader->SetUniformMat4f("MV", ModelViewMatrix); // View & Porj Matrix Come from Current Camera
+                scene_Shader->SetUniformMat4f("MV", ModelViewMatrix);                // View & Porj Matrix Come from Current Camera
                 scene_Shader->SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix); // View & Porj Matrix Come from Current Camera
 
                 // Lighting Relevant
@@ -349,13 +316,11 @@ public:
 
                 // ShadowMapping
                 scene_Shader->SetUniform1i("shadowMap", 8);
-                GLCall(glActiveTexture(GL_TEXTURE8));
-                GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
-
+                (glActiveTexture(GL_TEXTURE8));
+                (glBindTexture(GL_TEXTURE_2D, depthMap));
 
                 submesh->DrawCall(DrawCallType::ELE_TRIANGLE);
             }
-
         }
 
         if (visiable_plane)
@@ -382,18 +347,14 @@ public:
                 plane_Shader->SetUniform1i("tex_Diffuse", 5);
                 // ShadowMapping
                 plane_Shader->SetUniform1i("shadowMap", 8);
-                GLCall(glActiveTexture(GL_TEXTURE8));
-                GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
+                (glActiveTexture(GL_TEXTURE8));
+                (glBindTexture(GL_TEXTURE_2D, depthMap));
 
                 // DrawCall
                 glDrawElements(GL_TRIANGLES, sizeof(planeIndices), GL_UNSIGNED_INT, (const void*)nullptr);
                 plane_Shader->Unbind();
             }
-
         }
-
-        if (visiable_skybox)
-            RenderSkybox();
     }
 
     void OnImGuiRender() override
@@ -403,11 +364,6 @@ public:
         ImGui::Checkbox("visiable_plane", &visiable_plane);
         ImGui::Checkbox("visiable_depthMap", &visiable_debugDepthMap);
         ImGui::Checkbox("visiable_skyBox", &visiable_skybox);
-
-        if (ImGui::Button("ReloadShader") || ImGui::IsKeyPressed('F')) reloadShaders = true;
-
-        ImGui::ColorEdit3("Light Color", lightColor);
-        ImGui::SliderFloat3("Light Position", lightPos, 0.0f, 3.0f);
 
         ImGui::SliderFloat("InnerCutOffAngle", &innerCutOff, 0.0f, 90.0f);
         ImGui::SliderFloat("OuterCutOffAngle", &outerCutOff, 0.0f, 90.0f);
@@ -428,8 +384,6 @@ public:
         ImGui::Text("Ctrl+Q/E to control Camera Pitch");
         ImGui::Text("Alt+Q/E to control Camera FOV");
     }
-
-
 
     void RenderLightView(glm::mat4 lightSpaceMatrix)
     {
@@ -460,30 +414,5 @@ public:
             glDrawElements(GL_TRIANGLES, sizeof(planeIndices), GL_UNSIGNED_INT, (const void*)nullptr);
             lightView_Shader->Unbind();
         }
-
-    }
-
-    void RenderSkybox()
-    {
-        // Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
-        glDepthFunc(GL_LEQUAL);
-
-        skybox_Shader->Bind();
-
-        glm::mat3 v_mat3 = glm::mat3(mainCamera.viewMatrix);
-        glm::mat4 v_mat4 = glm::mat4(v_mat3);
-        skybox_Shader->SetUniformMat4f("V", v_mat4);
-        skybox_Shader->SetUniformMat4f("P", mainCamera.projMatrix);
-
-        glBindVertexArray(skybox_VAO);
-        glActiveTexture(GL_TEXTURE4);
-        skybox_Shader->SetUniform1i("skybox", 4);
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-        // Switch back to the normal depth function
-        glDepthFunc(GL_LESS);
     }
 };
-
-

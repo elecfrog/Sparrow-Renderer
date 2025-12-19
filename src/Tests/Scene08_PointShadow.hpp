@@ -1,8 +1,4 @@
-#pragma once
-
-#include "ScenePreCompiled.h"
-
-class Scene08_PointShadow : public Scene
+class Scene08_PointShadow
 {
     // Model
     std::shared_ptr<Model> cp_cube, sf_cube;
@@ -12,24 +8,17 @@ class Scene08_PointShadow : public Scene
     std::shared_ptr<Shader> lightView_Shader; // Render in Light View
     std::shared_ptr<Shader> plane_Shader;
 
-    // Camera
-    Camera mainCamera{ glm::vec3(1.45, 0.348, 2.021), 240.f, -11.45f, 45.0f, 0.01f };
-
-    // GUI Variables
-    bool is_wireframe{ false };
-    bool reloadShaders{ false };
-
     float lightColor[3]{ 1.0f, 1.0f, 1.0f };
     float lightPos[3]{ 0.0f, 0.836f, 2.889f };
 
     float innerCutOff = 7.5f;
     float outerCutOff = 12.5f;
 
-    float near_plane { 1.f };
-    float far_plane  { 7.5f };
+    float near_plane{ 1.f };
+    float far_plane{ 7.5f };
 
     const uint32_t SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-    uint32_t depthCubemapFBO, depthCubemap;
+    uint32_t       depthCubemapFBO, depthCubemap;
 
     bool visiable_cpCube{ true };
     bool visiable_sfCube{ false };
@@ -38,21 +27,20 @@ class Scene08_PointShadow : public Scene
     bool visiable_debugDepthMap{ true };
 
     // Skybox
-    uint32_t skybox_VAO, skybox_VBO;
-    std::shared_ptr<Shader> skybox_Shader;
+    uint32_t                     skybox_VAO, skybox_VBO;
+    std::shared_ptr<Shader>      skybox_Shader;
     std::shared_ptr<TextureCube> skybox_textureCube;
 
     float scaling{ 1.0f };
     float translation[3] = { 0.0f, 0.0f, 0.0f };
-    float rotation[3] = { 0.0f, 0.0f, 0.0f };
+    float rotation[3]    = { 0.0f, 0.0f, 0.0f };
 
     // Create plane Objects
-    uint32_t plane_VAO, plane_VBO, plane_EBO;
+    uint32_t   plane_VAO, plane_VBO, plane_EBO;
     Texture2D* tex_plane_diffuse;
 
-public:
-    Scene08_PointShadow(WindowSystem* windowSystem)
-            : Scene(windowSystem)
+  public:
+    Scene08_PointShadow()
     {
         // Load Model Data
         cp_cube = Model::LoadModel(k_ModelList.at("cpCube_GLTF"));
@@ -66,21 +54,15 @@ public:
 
         // Load Shader
         scene_Shader = std::make_shared<Shader>(
-                "res/Shaders/point_shadow/render.vert",
-                "res/Shaders/point_shadow/render.frag");
-
+            "res/Shaders/point_shadow/render.vert",
+            "res/Shaders/point_shadow/render.frag");
 
         // Dealing with subMeshes
         for (const auto& submesh : sf_cube->GetMeshes())
         {
             // Mesh
             submesh->BuildMeshFilter();
-            // Material
-            // TODO sf_cube has no texture.. so, I need to think about a method to deal with such a case in the future...
-            // submesh->m_Material->GetMaterialProperites().textures.albedo->Bind(0);
-            // submesh->m_Material->GetAlbedoTexture()->Bind(0);
         }
-
 
         // Init plane
         {
@@ -121,41 +103,36 @@ public:
             GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
             GLCall(glBindVertexArray(0));
 
-            skybox_Shader = std::make_shared<Shader>("res/Shaders/skybox/skybox.vert", "res/Shaders/skybox/skybox.frag");
+            skybox_Shader      = std::make_shared<Shader>("res/Shaders/skybox/skybox.vert", "res/Shaders/skybox/skybox.frag");
             skybox_textureCube = std::make_shared<TextureCube>(texCube_Cloud);
             skybox_textureCube->Bind(4);
             skybox_Shader->Unbind();
         }
 
-
-        // light view  shader get the depth buffer in the first render pass 
+        // light view  shader get the depth buffer in the first render pass
         lightView_Shader = std::make_shared<Shader>(
-                "res/Shaders/point_shadow/light_view.vert",
-                "res/Shaders/point_shadow/light_view.frag",
-                "res/Shaders/point_shadow/light_view.geom");
+            "res/Shaders/point_shadow/light_view.vert",
+            "res/Shaders/point_shadow/light_view.frag",
+            "res/Shaders/point_shadow/light_view.geom");
 
         // configure depth map FBO
         InitDpethCubeMap();
     }
 
-    void OnRender() override
+    void OnRender()
     {
+        const glm::mat4        shadowProj = glm::perspective(glm::radians(90.0f), static_cast<float>(SHADOW_WIDTH) / static_cast<float>(SHADOW_HEIGHT), near_plane, far_plane);
+        std::vector<glm::mat4> shadowTransforms{
+            (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f))),
+            (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f))),
+            (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f))),
+            (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f))),
+            (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f))),
+            (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)))
+        };
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        const glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), static_cast<float>(SHADOW_WIDTH) / static_cast<float>(SHADOW_HEIGHT), near_plane, far_plane);
-        std::vector<glm::mat4> shadowTransforms
-                {
-                        (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f))),
-                        (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f))),
-                        (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f))),
-                        (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f))),
-                        (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f))),
-                        (shadowProj * glm::lookAt(ToGLMVec3(lightPos), ToGLMVec3(lightPos) + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)))
-                };
-
-        glm::mat4 lightProjection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, near_plane, far_plane);
-        glm::mat4 lightView = glm::lookAt(ToGLMVec3(lightPos), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+        glm::mat4 lightProjection  = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, near_plane, far_plane);
+        glm::mat4 lightView        = glm::lookAt(ToGLMVec3(lightPos), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
         // 1. render depth of scene to depth cube map texture (from light's perspective)
@@ -169,9 +146,9 @@ public:
 
         // reset viewport
         GLCall(glViewport(0, 0, m_WindowSystem->GetWindowWidth(), m_WindowSystem->GetWindowHeight()))
-        GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
+            GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
 
-        if (visiable_cpCube)
+                if (visiable_cpCube)
         {
             for (const auto& submesh : cp_cube->GetMeshes())
             {
@@ -196,7 +173,6 @@ public:
                 scene_Shader->SetUniform1f("lit.innerCutOff", glm::cos(glm::radians(innerCutOff)));
                 scene_Shader->SetUniform1f("lit.outerCutOff", glm::cos(glm::radians(outerCutOff)));
 
-
                 scene_Shader->SetUniform3f("lit.ambient", 0.2f, 0.2f, 0.2f);
                 scene_Shader->SetUniform3f("lit.diffuse", 0.5f, 0.5f, 0.5f);
                 scene_Shader->SetUniform3f("lit.specular", 1.0f, 1.0f, 1.0f);
@@ -212,7 +188,6 @@ public:
 
                 scene_Shader->SetUniform1f("far_plane", far_plane);
 
-
                 // ShadowMapping
                 GLCall(glActiveTexture(GL_TEXTURE8));
                 GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap));
@@ -220,7 +195,6 @@ public:
 
                 submesh->DrawCall(DrawCallType::ELE_TRIANGLE);
             }
-
         }
 
         if (visiable_sfCube)
@@ -234,7 +208,7 @@ public:
                 scene_Shader->SetUniformMat4f("P", mainCamera.projMatrix); // View & Porj Matrix Come from Current Camera
 
                 glm::mat4 ModelViewMatrix = mainCamera.viewMatrix * submesh->mat_transformLocalToWorld;
-                scene_Shader->SetUniformMat4f("MV", ModelViewMatrix); // View & Porj Matrix Come from Current Camera
+                scene_Shader->SetUniformMat4f("MV", ModelViewMatrix);                // View & Porj Matrix Come from Current Camera
                 scene_Shader->SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix); // View & Porj Matrix Come from Current Camera
 
                 // Lighting Relevant
@@ -261,7 +235,6 @@ public:
                 scene_Shader->SetUniform3f("material.ambient", submesh->m_Material->GetMaterialProperites().ambientColor);
 
                 scene_Shader->SetUniform1f("far_plane", far_plane);
-
 
                 // ShadowMapping
                 GLCall(glActiveTexture(GL_TEXTURE8));
@@ -314,7 +287,8 @@ public:
         ImGui::Checkbox("visiable_depthMap", &visiable_debugDepthMap);
         ImGui::Checkbox("visiable_skyBox", &visiable_skybox);
 
-        if (ImGui::Button("ReloadShader") || ImGui::IsKeyPressed('F')) reloadShaders = true;
+        if (ImGui::Button("ReloadShader") || ImGui::IsKeyPressed('F'))
+            reloadShaders = true;
 
         ImGui::SliderFloat("InnerCutOffAngle", &innerCutOff, 0.0f, 90.0f);
         ImGui::SliderFloat("OuterCutOffAngle", &outerCutOff, 0.0f, 90.0f);
@@ -338,7 +312,6 @@ public:
         ImGui::Text("Ctrl+Q/E to control Camera Pitch");
         ImGui::Text("Alt+Q/E to control Camera FOV");
     }
-
 
     void RenderLightView(std::vector<glm::mat4> shadowTransforms)
     {
@@ -380,9 +353,7 @@ public:
             glDrawElements(GL_TRIANGLES, sizeof(planeIndices), GL_UNSIGNED_INT, (const void*)nullptr);
             lightView_Shader->Unbind();
         }
-
     }
-
 
     void InitDpethCubeMap()
     {
@@ -402,18 +373,16 @@ public:
 
         for (unsigned int i = 0; i < 6; ++i)
         {
-            glTexImage2D
-                    (
-                            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                            0,
-                            GL_DEPTH_COMPONENT,
-                            SHADOW_WIDTH,
-                            SHADOW_HEIGHT,
-                            0,
-                            GL_DEPTH_COMPONENT,
-                            GL_FLOAT,
-                            nullptr
-                    );
+            glTexImage2D(
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0,
+                GL_DEPTH_COMPONENT,
+                SHADOW_WIDTH,
+                SHADOW_HEIGHT,
+                0,
+                GL_DEPTH_COMPONENT,
+                GL_FLOAT,
+                nullptr);
         }
 
         // attach depth texture as FBO's depth buffer
@@ -440,7 +409,6 @@ public:
 
         skybox_textureCube->Bind(4);
 
-
         glActiveTexture(GL_TEXTURE4);
 
         skybox_Shader->SetUniform1i("skybox", 4);
@@ -453,5 +421,3 @@ public:
         skybox_Shader->Unbind();
     }
 };
-
-

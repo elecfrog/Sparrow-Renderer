@@ -1,86 +1,18 @@
-#pragma once
-
-#include "ScenePreCompiled.h"
-#include "Function/Render/Prototype/Cylinder.hpp"
-#include "Function/Base/Transform.hpp"
-#include "Core/Maths/GaussianKernel.hpp"
-
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
-
 glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-glm::mat4 captureViews[] =
-        {
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
-        };
-
-inline void RenderQuad() {
-    if (quadVAO == 0) {
-        float quadVertices[] = {
-                // positions        // texture Coords
-                -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-                1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-        };
-        // setup plane VAO
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &quadVBO);
-        glBindVertexArray(quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
-    }
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
-}
-
-class TextureManager {
-public:
-    // Texture | Slot
-    std::unordered_map<uint32_t, uint32_t> textureIdSlotMap;
-
-    int counter = 0;
-
-    void Include(uint32_t id, uint32_t slot) {
-        textureIdSlotMap.emplace(id, slot);
-
-        glActiveTexture(GL_TEXTURE0 + slot);
-        glBindTexture(GL_TEXTURE_2D, id);
-    }
-
-    void Include(uint32_t id) {
-        textureIdSlotMap.emplace(id, counter);
-
-        glActiveTexture(GL_TEXTURE0 + counter);
-        glBindTexture(GL_TEXTURE_2D, id);
-        counter++;
-    }
-
-    void Update(uint32_t id) {
-        glActiveTexture(GL_TEXTURE0 + textureIdSlotMap[id]);
-        glBindTexture(GL_TEXTURE_2D, id);
-    }
-
-
-    uint32_t GetSlot(uint32_t id) {
-        return textureIdSlotMap.at(id);
-    }
+glm::mat4 captureViews[]    = {
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
 };
 
-class Scene_LoadModel : public Scene {
+class Scene_LoadModel
+{
     // Model
     std::shared_ptr<Model> scene_Model;
-    Transform scene_Transform;
+    Transform              scene_Transform;
 
     // Shader
     std::shared_ptr<Shader> MrtShader;
@@ -93,146 +25,78 @@ class Scene_LoadModel : public Scene {
 
     std::shared_ptr<Shader> equirectangularToCubemapShader;
 
-    // // Camera
-    // Camera mainCamera{glm::vec3(1.45, 0.348, 2.021), 240.f, -11.45f, 45.0f, 0.01f};
-
-    // GUI Variables
-    bool is_wireframe = false;
-    bool reloadShaders = false;
-
-    float innerCutOff = 7.5f;
-    float outerCutOff = 12.5f;
-
     // skybox Members
-    unsigned int skybox_VAO, skybox_VBO;
-    std::shared_ptr<Shader> skybox_Shader;
+    unsigned int                 skybox_VAO, skybox_VBO;
+    std::shared_ptr<Shader>      skybox_Shader;
     std::shared_ptr<TextureCube> skybox_textureCube;
 
     // blur shader
     std::shared_ptr<Shader> SceneShader;
 
-
     // Objects
-    Plane planeObject; /* Plane */
-    UVSphere sphereObject; /* UVSphere */
+    Plane                     planeObject;    /* Plane */
+    UVSphere                  sphereObject;   /* UVSphere */
     std::shared_ptr<Cylinder> cylinderObject; /* Cylinder */
 
     // MRT
     std::shared_ptr<FrameBuffer> mrtFBO;
 
-
-    TextureManager textureManager;
-
-
     // Bloom Effects
     std::shared_ptr<FrameBuffer> BlurHFBO;
     std::shared_ptr<FrameBuffer> BlurVFBO;
-    glm::mat3 BlurKernel = Maths::GaussianKernel1DMat3(1.5);
-    std::array<double, 9> BlurKernel1 = Maths::GaussianKernel1D<9>(1.0);
-    float BlurScaleKernel = 1.5f;
-    float PreScaleKernel = 1.5f;
-    float BlurScaleSampling = 0.5f;
-    float BlurStrength = 0.7f;
-    bool bEnableBloom = false;
-
+    glm::mat3                    BlurKernel        = Maths::GaussianKernel1DMat3(1.5);
+    std::array<double, 9>        BlurKernel1       = Maths::GaussianKernel1D<9>(1.0);
+    float                        BlurScaleKernel   = 1.5f;
+    float                        PreScaleKernel    = 1.5f;
+    float                        BlurScaleSampling = 0.5f;
+    float                        BlurStrength      = 0.7f;
+    bool                         bEnableBloom      = false;
 
     // IBL Effects
     unsigned int captureFBO;
     unsigned int captureRBO;
-    bool bEnableIBL = false;
+    bool         bEnableIBL = false;
 
     /*
      * Shaders
      */
     std::shared_ptr<Shader> BlurShader;
-    std::shared_ptr<Shader> CylinderShader;
-    std::shared_ptr<Shader> SphereShader;
-    std::shared_ptr<Shader> PlaneShader;
 
-
-public:
-    Scene_LoadModel(WindowSystem *windowSystem)
-            : Scene(windowSystem) {
-        RegisterInputs();
-
-        // Init Plane
-        PlaneShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
-        SphereShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
-
-        cylinderObject = std::make_shared<Cylinder>(glm::vec3(0, 0.5f, 0.f), glm::vec3(0.f, 0.001f, 0.f));
-        CylinderShader = std::make_shared<Shader>(ShaderPath("plane/plane.vert"), ShaderPath("plane/plane.frag"));
-
-        //load model
-        scene_Model = Model::LoadModel(ModelPath("DamagedHelmet/DamagedHelmet.gltf"));
+  public:
+    Scene_LoadModel()
+    {
+        // load model
+        scene_Model              = Model::LoadModel(ModelPath("DamagedHelmet/DamagedHelmet.gltf"));
         scene_Transform.position = glm::vec3(0.f, 1.1f, 0.f);
-        scene_Transform.rotation = Rotation{glm::vec3(89.43f, .0f, 0.f)};
+        scene_Transform.rotation = Rotation{ glm::vec3(89.43f, .0f, 0.f) };
 
         // Framebuffers
-        auto w_width = windowSystem->GetWindowWidth();
+        auto w_width  = windowSystem->GetWindowWidth();
         auto w_height = windowSystem->GetWindowHeight();
 
-        mrtFBO = std::make_shared<FrameBuffer>(w_width, w_height, AttachmentFormat::RGBA16F, 5, true);
+        mrtFBO   = std::make_shared<FrameBuffer>(w_width, w_height, AttachmentFormat::RGBA16F, 5, true);
         BlurHFBO = std::make_shared<FrameBuffer>(w_width, w_height, AttachmentFormat::RGBA16F, 1, false);
         BlurVFBO = std::make_shared<FrameBuffer>(w_width, w_height, AttachmentFormat::RGBA16F, 1, false);
 
-        const auto &bloomHtextureId = BlurHFBO->GetTextureIds();
-        const auto &bloomVtextureId = BlurVFBO->GetTextureIds();
-
-        /*
-         * Texture Slot Nightmare Solution:
-         * Matching textureIds and slot indices
-         * */
-        for (auto &&texId: mrtFBO->GetTextureIds()) {
-            textureManager.Include(texId);
-        }
-        textureManager.Include(bloomHtextureId[0]);
-        textureManager.Include(bloomVtextureId[0]);
+        const auto& bloomHtextureId = BlurHFBO->GetTextureIds();
+        const auto& bloomVtextureId = BlurVFBO->GetTextureIds();
 
         // Dealing with subMeshes
-        for (auto &&mesh: scene_Model->GetMeshes()) {
+        for (auto&& mesh : scene_Model->GetMeshes())
+        {
             // Mesh
             mesh->BuildMeshes();
             // Material
-            auto &material_props = mesh->m_Material->m_MaterialProperties;
-            auto &&mr_textures = mesh->m_Material->m_MaterialProperties.mrTextures;
-            auto &&common_textures = mesh->m_Material->m_MaterialProperties.cmTextures;
-
-            textureManager.Include(common_textures.albedo->GetTextureId());
-            textureManager.Include(common_textures.normal->GetTextureId());
-            if(common_textures.emissive)
-                textureManager.Include(common_textures.emissive->GetTextureId());
-
-            if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_MR) {
-                textureManager.Include(mr_textures.metallic->GetTextureId());
-            } else if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_SG) {
-                textureManager.Include(material_props.sgTextures.specularGlossiness->GetTextureId());
-                textureManager.Include(material_props.sgTextures.ao->GetTextureId());
-            }
+            auto&  material_props  = mesh->m_Material->m_MaterialProperties;
+            auto&& mr_textures     = mesh->m_Material->m_MaterialProperties.mrTextures;
+            auto&& common_textures = mesh->m_Material->m_MaterialProperties.cmTextures;
         }
 
         // Load Shader
         MrtShader = std::make_shared<Shader>(ShaderPath("mrt/mrt.vert"), ShaderPath("mrt/mrt.frag"));
 
-        {
-            // Init Skybox
-            GLCall(glGenVertexArrays(1, &skybox_VAO))
-            GLCall(glGenBuffers(1, &skybox_VBO))
-            GLCall(glBindVertexArray(skybox_VAO))
-            GLCall(glBindBuffer(GL_ARRAY_BUFFER, skybox_VBO))
-            GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW))
-            GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void *>(nullptr)))
-            GLCall(glEnableVertexAttribArray(0))
-            GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0))
-            GLCall(glBindVertexArray(0))
-        }
-
-        skybox_Shader = std::make_shared<Shader>(ShaderPath("skybox/cubemap.vert"), ShaderPath("skybox/cubemap.frag"));
-        skybox_Shader->Bind();
-        skybox_textureCube = std::make_shared<TextureCube>(texCube_Cloud);
-        textureManager.Include(skybox_textureCube->GetRenderId());
-
         // IBL Bloom
-        BlurShader = std::make_shared<Shader>(ShaderPath("blur/gaussblur.vert"), ShaderPath("blur/gaussblur.frag"));
+        BlurShader  = std::make_shared<Shader>(ShaderPath("blur/gaussblur.vert"), ShaderPath("blur/gaussblur.frag"));
         SceneShader = std::make_shared<Shader>(ShaderPath("final.vert"), ShaderPath("final.frag"));
 
         SceneShader->Bind();
@@ -243,8 +107,7 @@ public:
         SceneShader->SetUniform1u("gNormal", textureManager.GetSlot(mrtFBO->GetTextureId(3)));
 
         shaderLightingPass = std::make_shared<Shader>(ShaderPath("final.vert"), ShaderPath("ssao_lighting.frag"));
-        lightShader = std::make_shared<Shader>(ShaderPath("light/light.vert"), ShaderPath("light/light.frag"));
-
+        lightShader        = std::make_shared<Shader>(ShaderPath("light/light.vert"), ShaderPath("light/light.frag"));
 
         // IBL Effects
         glGenFramebuffers(1, &captureFBO);
@@ -254,58 +117,20 @@ public:
         glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
-        equirectangularToCubemapShader = std::make_shared<Shader>(ShaderPath("ibl/cubemap.vert"),
-                                                                  ShaderPath("ibl/equirectangular_to_cubemap.frag"));
+        equirectangularToCubemapShader = std::make_shared<Shader>(ShaderPath("ibl/cubemap.vert"), ShaderPath("ibl/equirectangular_to_cubemap.frag"));
     }
 
-    void OnUpdate(float _deltaTime = 0.0f) override {
-        // glfwGetTime is called only once, the first time this function is called
-        static double lastTime = glfwGetTime();
-
-        // Compute time difference between current and last frame
-        double currentTime = glfwGetTime();
-        float deltaTime = float(currentTime - lastTime);
-
-
-        model_matrix
-                = glm::translate(glm::mat4(1.0f), scene_Transform.position)
-                  * glm::mat4_cast(scene_Transform.rotation.quaternion)
-                  * glm::scale(glm::mat4(1.0f), scene_Transform.scaling);
-
-        for (const auto &subMesh: scene_Model->GetMeshes()) {
-            subMesh->UpdateModelMatrix(model_matrix);
-        }
-
-        ProcessInput(deltaTime);
-
-        mainCamera.UpdateCameraMatrix();
-
-        fn_wireframeMode(is_wireframe);
-    }
-
-    void OnRender() override {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        if (reloadShaders) {
-            ReloadShader(MrtShader);
-            ReloadShader(PlaneShader);
-            ReloadShader(SphereShader);
-            ReloadShader(BlurShader);
-            ReloadShader(SceneShader);
-            reloadShaders = false;
-            SPW_INFO("Reload Shaders");
-        }
-
+    void OnRender()
+    {
         /*
          * Color Pass 1 : MRT Pass
          * Attach all the Results to the MRT FBO we created
          * */
         {
             mrtFBO->Bind();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glEnable(GL_DEPTH_TEST);
 
-            for (auto &&mesh: scene_Model->GetMeshes()) {
+            for (auto&& mesh : scene_Model->GetMeshes())
+            {
                 MrtShader->Bind();
 
                 MrtShader->SetUniformMat4f("M", model_matrix);
@@ -334,26 +159,29 @@ public:
                 // Setting Materials
 
                 // Material
-                auto &material_props = mesh->m_Material->m_MaterialProperties;
+                auto& material_props = mesh->m_Material->m_MaterialProperties;
 
                 auto albedo = material_props.cmTextures.albedo;
                 auto normal = material_props.cmTextures.normal;
                 MrtShader->SetUniform1u("material.albedoTexture", textureManager.GetSlot(albedo->GetTextureId()));
                 MrtShader->SetUniform1u("material.normalTexture", textureManager.GetSlot(normal->GetTextureId()));
 
-                if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_MR) {
+                if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_MR)
+                {
                     auto metallic = material_props.mrTextures.metallic;
-                    MrtShader->SetUniform1u("material.metallicRoughnessTexture",textureManager.GetSlot(metallic->GetTextureId()));
-                } else if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_SG) {
+                    MrtShader->SetUniform1u("material.metallicRoughnessTexture", textureManager.GetSlot(metallic->GetTextureId()));
+                }
+                else if (material_props.workFlow == PBRWorkFlow::PBR_WORKFLOW_SG)
+                {
                     auto specularGlossiness = material_props.sgTextures.specularGlossiness;
-                    MrtShader->SetUniform1u("material.sgTex",textureManager.GetSlot(specularGlossiness->GetTextureId()));
+                    MrtShader->SetUniform1u("material.sgTex", textureManager.GetSlot(specularGlossiness->GetTextureId()));
                     auto ao = material_props.sgTextures.ao;
-                    MrtShader->SetUniform1u("material.aoTex",textureManager.GetSlot(ao->GetTextureId()));
+                    MrtShader->SetUniform1u("material.aoTex", textureManager.GetSlot(ao->GetTextureId()));
                 }
                 MrtShader->SetUniform1ui("material.WORKFLOW", static_cast<uint32_t>(material_props.workFlow));
-//                MrtShader->SetUniform1u("material.WORKFLOW", 0);
-                    
-                if(material_props.cmTextures.emissive!= nullptr)
+                //                MrtShader->SetUniform1u("material.WORKFLOW", 0);
+
+                if (material_props.cmTextures.emissive != nullptr)
                 {
                     auto emissive = material_props.cmTextures.emissive;
                     MrtShader->SetUniform1u("material.emissiveTexture", textureManager.GetSlot(emissive->GetTextureId()));
@@ -369,23 +197,25 @@ public:
             mrtFBO->Unbind();
         }
 
-
         /*
          * Screen Pass
          * */
         {
-            if (std::fabs(BlurScaleKernel - PreScaleKernel) > 0.1) {
-                BlurKernel = Maths::GaussianKernel1DMat3(BlurScaleKernel);
+            if (std::fabs(BlurScaleKernel - PreScaleKernel) > 0.1)
+            {
+                BlurKernel     = Maths::GaussianKernel1DMat3(BlurScaleKernel);
                 PreScaleKernel = BlurScaleKernel;
             }
 
-            for (int horizontal = 0; horizontal <= 1; ++horizontal) {
-                if (horizontal) {
+            for (int horizontal = 0; horizontal <= 1; ++horizontal)
+            {
+                if (horizontal)
+                {
                     BlurShader->Bind();
                     {
                         BlurHFBO->Bind();
                         BlurShader->SetUniform1i("uBlurDirection", horizontal);
-                        // Here is a HACK, must Fit the Index in the Shader 
+                        // Here is a HACK, must Fit the Index in the Shader
                         BlurShader->SetUniform1i("uBlurSourceImage", textureManager.GetSlot(mrtFBO->GetTextureId(1)));
                         BlurShader->SetUniform1f("uBlurSamplingScale", BlurScaleSampling);
                         BlurShader->SetUniform1f("uBlurStrength", BlurStrength);
@@ -394,7 +224,9 @@ public:
                         RenderQuad();
                         BlurHFBO->Unbind();
                     }
-                } else {
+                }
+                else
+                {
                     BlurShader->Bind();
 
                     BlurVFBO->Bind();
@@ -419,19 +251,20 @@ public:
                                                          textureManager.GetSlot(skybox_textureCube->GetRenderId()));
             equirectangularToCubemapShader->SetUniformMat4f("projection", captureProjection);
 
-            for (unsigned int i = 0; i < 6; ++i) {
+            for (unsigned int i = 0; i < 6; ++i)
+            {
                 equirectangularToCubemapShader->SetUniformMat4f("view", captureViews[i]);
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                                        skybox_textureCube->m_RendererId, 0);
             }
 
             GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0))
-            GLCall(glActiveTexture(GL_TEXTURE0 + textureManager.GetSlot(skybox_textureCube->GetRenderId())))
-            //            textureManager.Update(skybox_textureCube->GetRenderId());
-            GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_textureCube->GetRenderId()));
+                GLCall(glActiveTexture(GL_TEXTURE0 + textureManager.GetSlot(skybox_textureCube->GetRenderId())))
+                //            textureManager.Update(skybox_textureCube->GetRenderId());
+                GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_textureCube->GetRenderId()));
             GLCall(glViewport(0, 0, m_WindowSystem->GetWindowWidth(), m_WindowSystem->GetWindowHeight()))
 
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             SceneShader->Bind();
             SceneShader->SetUniform1i("bloom", bEnableBloom);
             SceneShader->SetUniform1i("isSsao", 0);
@@ -442,17 +275,16 @@ public:
             RenderQuad();
         }
 
-
         // Bind your framebuffer (source)
         mrtFBO->BindRead();
         mrtFBO->BindDraw();
-        int window_width = m_WindowSystem->GetWindowWidth();
+        int window_width  = m_WindowSystem->GetWindowWidth();
         int window_height = m_WindowSystem->GetWindowHeight();
         glBlitFramebuffer(
-                0, 0, window_width, window_height, // Source rectangle
-                0, 0, window_width, window_height, // Destination rectangle
-                GL_DEPTH_BUFFER_BIT, // Mask indicating what to copy
-                GL_NEAREST // Interpolation method
+            0, 0, window_width, window_height, // Source rectangle
+            0, 0, window_width, window_height, // Destination rectangle
+            GL_DEPTH_BUFFER_BIT,               // Mask indicating what to copy
+            GL_NEAREST                         // Interpolation method
         );
         // Unbind your framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -465,7 +297,7 @@ public:
 
         {
             glm::mat4 M = glm::translate(glm::mat4(1.0f), light.position);
-            M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
+            M           = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
             sphereObject.Render(SphereShader, mainCamera, M, light);
         }
 
@@ -476,7 +308,6 @@ public:
         /* Draw cylinder*/
         auto cylinderM = glm::mat4(0.5f);
         cylinderObject->Render(*CylinderShader, mainCamera, cylinderM, light);
-
 
         {
             // Skybox
@@ -504,50 +335,26 @@ public:
         }
     }
 
-    void OnImGuiRender() override {
-
+    void OnImGuiRender() override
+    {
         //--------------------------------------------------------
-        //bloom scale,bloom strength,bloom
+        // bloom scale,bloom strength,bloom
         ImGui::BeginChild("Bloom Effects", ImVec2(0, 120));
-        if (ImGui::CollapsingHeader("Bloom Effects", ImGuiTreeNodeFlags_DefaultOpen)) {
+        if (ImGui::CollapsingHeader("Bloom Effects", ImGuiTreeNodeFlags_DefaultOpen))
+        {
             ImGui::Checkbox("Enable Bloom", &bEnableBloom);
             ImGui::SliderFloat("Blur Scale (kernel, effects strength)", &BlurScaleKernel, 0.001f, 3.0f);
             ImGui::SliderFloat("Blur Scale (sampling, effects area)", &BlurScaleSampling, 0.0f, 10.0f);
-            // 滑动条，范围从 0.0 到 2.0
-            ImGui::SliderFloat("Blur Strength", &BlurStrength, 0.0f, 2.0f); // 滑动条，范围从 0.0 到 2.0
+            ImGui::SliderFloat("Blur Strength", &BlurStrength, 0.0f, 2.0f);
         }
         ImGui::EndChild();
 
         //--------------------------------------------------------
         ImGui::BeginChild("IBL Effects");
-        if (ImGui::CollapsingHeader("IBL Effects", ImGuiTreeNodeFlags_DefaultOpen)) {
+        if (ImGui::CollapsingHeader("IBL Effects", ImGuiTreeNodeFlags_DefaultOpen))
+        {
             ImGui::Checkbox("Enable IBL", &bEnableIBL);
         }
         ImGui::EndChild();
-    }
-
-    void RegisterInputs() override {
-        Scene::RegisterInputs();
-        m_WindowSystem->RegisterOnFramebufferFunc(
-                std::bind(&Scene_LoadModel::onFramebufferSizeChanged, this, std::placeholders::_1,
-                          std::placeholders::_2));
-    }
-
-    inline void onFramebufferSizeChanged(int w, int h) {
-        mrtFBO->Resize(w, h);
-
-        BlurHFBO->Resize(w, h);
-        BlurVFBO->Resize(w, h);
-
-        // active one by one 
-        for (const auto &textureId: mrtFBO->GetTextureIds()) {
-            textureManager.Update(textureId);
-        }
-        for (const auto &textureId: BlurHFBO->GetTextureIds()) {
-            textureManager.Update(textureId);
-        }
-        for (const auto &textureId: BlurVFBO->GetTextureIds()) {
-            textureManager.Update(textureId);
-        }
     }
 };
