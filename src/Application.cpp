@@ -1,7 +1,5 @@
 RegisterScene<Scene_BVHViewer>("BVH Animation Viewer");
-RegisterScene<Scene_PBRTest>("PBR Test");
 RegisterScene<Scene_LoadModel>("Forward+");
-RegisterScene<Scene_Terrain>("Terrain");
 RegisterScene<Scene06_ShadowMapping>("Shadow Mapping");
 RegisterScene<Scene_ClothSimulationSS1>("Cloth Simulation SS1");
 RegisterScene<Scene_ClothSimulationSS2>("Cloth Simulation SS2");
@@ -63,3 +61,5 @@ if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_
 if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
         mainCamera.FOV *= -1.0f;
 }
+
+// https://learnopengl.com/Lighting/Multiple-lights

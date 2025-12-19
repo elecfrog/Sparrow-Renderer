@@ -1,1 +1,0 @@
-// https://learnopengl.com/Lighting/Multiple-lights
