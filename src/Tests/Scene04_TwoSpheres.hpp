@@ -103,30 +103,6 @@ public:
 
 	}
 
-	~Scene04_TwoSpheres() {}
-
-	void OnUpdate(float _deltaTime = 0.0f) override
-	{
-		// glfwGetTime is called only once, the first time this function is called
-		static double lastTime = glfwGetTime();
-
-		// Compute time difference between current and last frame
-		double currentTime = glfwGetTime();
-		float deltaTime = float(currentTime - lastTime);
-
-		float angle = 20.0f;
-		glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(angle) * deltaTime, glm::vec3(1.0f, 0.3f, 0.5f));
-
-		for(const auto& subMesh: obj_Model->GetMeshes())
-		{
-			subMesh->UpdateModelMatrix(glm::mat4(1.0f));
-		}
-
-		processInput(m_WindowSystem->GetWindowHandle(), deltaTime);
-
-		mainCamera.UpdateCameraMatrix();
-	}
-
 	void OnRender() override
 	{
 		fn_wireframeMode(is_wireframe);
@@ -256,36 +232,3 @@ public:
 		}
 	
 	}
-
-	void processInput(GLFWwindow *window, float deltaTime)
-	{
-		float cameraSpeed = 0.05f * deltaTime; // adjust accordingly
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		  mainCamera.cameraPos += mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		  mainCamera.cameraPos -= mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		  mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		  mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-		  mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-		  mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-		  mainCamera.yaw -= mainCamera.keySensitivity * 5.0f;
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-		  mainCamera.yaw += mainCamera.keySensitivity * 5.0f;
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-		  mainCamera.pitch -= mainCamera.keySensitivity * 5.0f;
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-		  mainCamera.pitch += mainCamera.keySensitivity * 5.0f;
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-		  mainCamera.FOV -= mainCamera.keySensitivity * 2.0f;
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-		  mainCamera.FOV += mainCamera.keySensitivity * 2.0f;
-		if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-		  mainCamera.FOV *=  -1.0f;
-		}
-
-	};

@@ -22,63 +22,44 @@ static std::vector<AttribVertex> ImportOBJ(fs::path path) {
     return std::move(ret);
 }
 
-constexpr float planeVertices[] =
-        {
-                // Positions           // Normals         // Texture Coords
-                -2.0f, 0.0f, 2.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // Top-left
-                2.0f, 0.0f, 2.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, // Top-right
-                -2.0f, 0.0f, -2.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // Bottom-left
-                2.0f, 0.0f, -2.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f  // Bottom-right
-        };
-
-constexpr unsigned int planeIndices[] =
-        {
-                0, 2, 1, // Triangle 1 (CCW)
-                1, 2, 3  // Triangle 2 (CCW)
-        };
-
-
-constexpr float skyboxVertices[] = {
-        // positions          
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
-
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, 1.0f,
-
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, 1.0f,
-
-        -1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f
+struct MousePosition
+{
+	double x{}, y{};
 };
+
+struct MouseCursor
+{
+	bool bIsDragging{ false };
+	MousePosition start{};
+	MousePosition curr{};
+};
+void processInput(GLFWwindow* window, float deltaTime)
+{
+float cameraSpeed = 0.05f * deltaTime; // adjust accordingly
+if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        mainCamera.cameraPos += mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
+if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        mainCamera.cameraPos -= mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
+if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
+if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
+if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
+if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+        mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
+if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
+        mainCamera.yaw -= mainCamera.keySensitivity * 5.0f;
+if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
+        mainCamera.yaw += mainCamera.keySensitivity * 5.0f;
+if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        mainCamera.pitch -= mainCamera.keySensitivity * 5.0f;
+if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        mainCamera.pitch += mainCamera.keySensitivity * 5.0f;
+if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+        mainCamera.FOV -= mainCamera.keySensitivity * 2.0f;
+if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+        mainCamera.FOV += mainCamera.keySensitivity * 2.0f;
+if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+        mainCamera.FOV *= -1.0f;
+}

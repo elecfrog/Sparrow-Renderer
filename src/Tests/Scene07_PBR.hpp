@@ -80,27 +80,8 @@ public:
 		ao = std::make_shared<Texture2D>(aoPath);
 	}
 
-	~Scene07_PBR() {}
-
-	void OnUpdate(float deltaTime = 0.0f) override
-	{
-		// glfwGetTime is called only once, the first time this function is called
-		static double lastTime = glfwGetTime();
-
-		// Compute time difference between current and last frame
-		double currentTime = glfwGetTime();
-		deltaTime = float(currentTime - lastTime);
-		float angle = 20.0f;
-		glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(angle) * deltaTime, glm::vec3(1.0f, 0.3f, 0.5f));
-
-		processInput(m_WindowSystem->GetWindowHandle(), deltaTime);
-		mainCamera.UpdateCameraMatrix();
-	}
-
 	void OnRender() override
 	{
-		fn_wireframeMode(is_wireframe);
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		sphere_shader->Bind();
@@ -111,13 +92,9 @@ public:
 		roughness->Bind(3);
 		ao->Bind(4);
 
-		sphere_shader->SetUniformMat4f("view", mainCamera.viewMatrix); // View & Porj Matrix Come from Current Camera
-		sphere_shader->SetUniformMat4f("projection", mainCamera.projMatrix); // View & Porj Matrix Come from Current Camera
-
 		// Lighting Relevant
 		sphere_shader->SetUniform3f("lightColors", lightColors[0][0], lightColors[0][1], lightColors[0][2]);
 		sphere_shader->SetUniform3f("lightPositions", lightPositions[0][0], lightPositions[0][1], lightPositions[0][2]);
-		sphere_shader->SetUniform3f("camPos", mainCamera.cameraPos);
 
 		sphere_shader->setInt("albedoMap", 0);
 		sphere_shader->setInt("normalMap", 1);
@@ -154,37 +131,6 @@ public:
 			sphere_shader->SetUniformMat4f("model", model);
 			createSphere();
 		}
-	}
-
-	void processInput(GLFWwindow* window, float deltaTime)
-	{
-		float cameraSpeed = 0.05f * deltaTime; // adjust accordingly
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			mainCamera.cameraPos += mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			mainCamera.cameraPos -= mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-			mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-			mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-			mainCamera.yaw -= mainCamera.keySensitivity * 5.0f;
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-			mainCamera.yaw += mainCamera.keySensitivity * 5.0f;
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-			mainCamera.pitch -= mainCamera.keySensitivity * 5.0f;
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-			mainCamera.pitch += mainCamera.keySensitivity * 5.0f;
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-			mainCamera.FOV -= mainCamera.keySensitivity * 2.0f;
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-			mainCamera.FOV += mainCamera.keySensitivity * 2.0f;
-		if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-			mainCamera.FOV *= -1.0f;
 	}
 
 	// renders (and builds at first invocation) a sphere

@@ -224,21 +224,6 @@ public:
 
             subMesh->UpdateModelMatrix(tmpModel);
         }
-
-        processInput(m_WindowSystem->GetWindowHandle(), deltaTime);
-
-        mainCamera.UpdateCameraMatrix();
-
-        if (reloadShaders)
-        {
-            scene_Shader = std::make_shared<Shader>(scene_Shader->vertPath, scene_Shader->fragPath);
-            debugDepthQuad_Shader = std::make_shared<Shader>(debugDepthQuad_Shader->vertPath, debugDepthQuad_Shader->fragPath);
-            plane_Shader = std::make_shared<Shader>(plane_Shader->vertPath, plane_Shader->fragPath);
-            reloadShaders = false;
-            std::cout << "[Reload Shader]" << std::endl;
-        }
-
-        fn_wireframeMode(is_wireframe);
     }
 
     void OnRender() override
@@ -413,7 +398,6 @@ public:
 
     void OnImGuiRender() override
     {
-        ImGui::Checkbox("Wireframe Mode", &is_wireframe);
         ImGui::Checkbox("visiable_cpCube", &visiable_cpCube);
         ImGui::Checkbox("visiable_sfCube", &visiable_sfCube);
         ImGui::Checkbox("visiable_plane", &visiable_plane);
@@ -431,9 +415,6 @@ public:
         ImGui::SliderFloat("Near", &near_plane, 0.0f, 5.0f);
         ImGui::SliderFloat("Far", &far_plane, 5.0f, 10.0f);
 
-        ImGui::SliderFloat("X", &mainCamera.cameraPos.x, 0.f, 1.0f);
-        ImGui::SliderFloat("Y", &mainCamera.cameraPos.y, 0.f, 1.0f);
-        ImGui::SliderFloat("Z", &mainCamera.cameraPos.z, 0.f, 1.0f);
         ImGui::SliderFloat("Sensitivity", &mainCamera.keySensitivity, 0.01f, 2.0f);
         ImGui::SliderFloat("Yaw Angle", &mainCamera.yaw, 0.0f, 360.0f);
         ImGui::SliderFloat("Pitch Angle", &mainCamera.pitch, -90.0f, 90.0f);
@@ -448,36 +429,7 @@ public:
         ImGui::Text("Alt+Q/E to control Camera FOV");
     }
 
-    void processInput(GLFWwindow* window, float deltaTime)
-    {
-        float cameraSpeed = 0.05f * deltaTime; // adjust accordingly
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV -= mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV += mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV *= -1.0f;
-    }
+
 
     void RenderLightView(glm::mat4 lightSpaceMatrix)
     {

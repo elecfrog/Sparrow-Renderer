@@ -138,53 +138,6 @@ public:
         InitDpethCubeMap();
     }
 
-    void OnUpdate(float _deltaTime = 0.0f) override
-    {
-        // glfwGetTime is called only once, the first time this function is called
-        static double lastTime = glfwGetTime();
-
-        // Compute time difference between current and last frame
-        double currentTime = glfwGetTime();
-        float deltaTime = float(currentTime - lastTime);
-
-        float angle = 20.0f;
-        glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(angle) * deltaTime, glm::vec3(1.0f, 0.3f, 0.5f));
-
-        for (const auto& subMesh : cp_cube->GetMeshes())
-        {
-            glm::mat4 tmpModel = glm::mat4(1.0f);
-            tmpModel = glm::translate(tmpModel, glm::vec3(1.079 + translation[0], 0.169 + translation[1], 1.045 + translation[2]));
-            tmpModel = glm::scale(tmpModel, glm::vec3(0.2f * scaling, 0.2f * scaling, 0.2f * scaling));
-            subMesh->UpdateModelMatrix(tmpModel);
-        }
-
-        for (const auto& subMesh : sf_cube->GetMeshes())
-        {
-
-            glm::mat4 tmpModel = glm::mat4(1.0f);
-            tmpModel = glm::translate(tmpModel, glm::vec3(0.275 + translation[0], 0.118 + translation[1], 0.908 + translation[2]));
-            tmpModel = glm::scale(tmpModel, glm::vec3(0.015f * scaling, 0.015f * scaling, 0.015f * scaling));
-
-            subMesh->UpdateModelMatrix(tmpModel);
-        }
-
-        processInput(m_WindowSystem->GetWindowHandle(), deltaTime);
-
-        mainCamera.UpdateCameraMatrix();
-
-        if (reloadShaders)
-        {
-            scene_Shader = std::make_shared<Shader>(scene_Shader->vertPath, scene_Shader->fragPath);
-            plane_Shader = std::make_shared<Shader>(plane_Shader->vertPath, plane_Shader->fragPath);
-            skybox_Shader = std::make_shared<Shader>(skybox_Shader->vertPath, skybox_Shader->fragPath);
-
-            reloadShaders = false;
-            std::cout << "[Reload Shader]" << std::endl;
-        }
-
-        fn_wireframeMode(is_wireframe);
-    }
-
     void OnRender() override
     {
 
@@ -217,8 +170,6 @@ public:
         // reset viewport
         GLCall(glViewport(0, 0, m_WindowSystem->GetWindowWidth(), m_WindowSystem->GetWindowHeight()))
         GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
-
-        // RenderDepthMap(visiable_debugDepthMap);
 
         if (visiable_cpCube)
         {
@@ -357,7 +308,6 @@ public:
 
     void OnImGuiRender() override
     {
-        ImGui::Checkbox("Wireframe Mode", &is_wireframe);
         ImGui::Checkbox("visiable_cpCube", &visiable_cpCube);
         ImGui::Checkbox("visiable_sfCube", &visiable_sfCube);
         ImGui::Checkbox("visiable_plane", &visiable_plane);
@@ -365,9 +315,6 @@ public:
         ImGui::Checkbox("visiable_skyBox", &visiable_skybox);
 
         if (ImGui::Button("ReloadShader") || ImGui::IsKeyPressed('F')) reloadShaders = true;
-
-        ImGui::ColorEdit3("Light Color", lightColor);
-        ImGui::SliderFloat3("Light Position", lightPos, 0.0f, 3.0f);
 
         ImGui::SliderFloat("InnerCutOffAngle", &innerCutOff, 0.0f, 90.0f);
         ImGui::SliderFloat("OuterCutOffAngle", &outerCutOff, 0.0f, 90.0f);
@@ -392,36 +339,6 @@ public:
         ImGui::Text("Alt+Q/E to control Camera FOV");
     }
 
-    void processInput(GLFWwindow* window, float deltaTime)
-    {
-        float cameraSpeed = 0.05f * deltaTime; // adjust accordingly
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * cameraSpeed * mainCamera.cameraFront;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-            mainCamera.cameraPos -= mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-            mainCamera.cameraPos += mainCamera.keySensitivity * glm::normalize(mainCamera.cameraUp) * cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) != GLFW_PRESS)
-            mainCamera.yaw += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch -= mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-            mainCamera.pitch += mainCamera.keySensitivity * 5.0f;
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV -= mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV += mainCamera.keySensitivity * 2.0f;
-        if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-            mainCamera.FOV *= -1.0f;
-    }
 
     void RenderLightView(std::vector<glm::mat4> shadowTransforms)
     {
@@ -470,19 +387,15 @@ public:
     void InitDpethCubeMap()
     {
 
-        // unsigned int depthCubemapFBO;
-
         GLCall(glGenFramebuffers(1, &depthCubemapFBO));
 
-        // unsigned int depthCubemap;
         glGenTextures(1, &depthCubemap);
 
-        // const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
         glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        // These are very important to prevent seams
+
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
